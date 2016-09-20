@@ -637,6 +637,23 @@ class PlentymarketsExportEntityOrder
 	 */
 	protected function getShopId()
 	{
+		$shop_id = Shopware()->Db()->fetchOne('
+			SELECT id FROM s_core_shops
+			join plenty_mapping_shop on plenty_mapping_shop.shopwareID = s_core_shops.id
+			WHERE s_core_shops.locale_id = '.$this->Order->getLanguageIso()
+		);
+
+		// Shop
+		if ($shop_id) {
+			try {
+				return PlentymarketsMappingController::getShopByShopwareID($shop_id);
+			}
+			catch (PlentymarketsMappingExceptionNotExistant $E) {
+			}
+		}
+
+		return null;
+
 		// Sub-objects
 		$Shop = $this->Order->getShop();
 
