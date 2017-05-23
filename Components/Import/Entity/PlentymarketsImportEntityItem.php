@@ -180,11 +180,16 @@ class PlentymarketsImportEntityItem
 
 		$this->data['highlight'] = ($this->ItemBase->WebShopSpecial == 3);
 		$this->data['lastStock'] = ($this->ItemBase->Stock->Limitation == 1);
-		$this->data['added'] = date('c', $this->ItemBase->Inserted);
 		$this->data['changed'] = date('c', $this->ItemBase->LastUpdate);
 		$this->data['availableTo'] = null;
 		$this->data['active'] = $this->ItemBase->Availability->Inactive == 0 && $this->ItemBase->Availability->Webshop == 1;
 		$this->data['taxId'] = $this->getTaxId();
+
+		if ($this->ItemBase->FreeTextFields->Free13 == null || $this->ItemBase->FreeTextFields->Free13 == '') {
+			$this->data['added'] = date('c', $this->ItemBase->Inserted);
+		} else {
+			$this->data['added'] = date('c', $this->ItemBase->FreeTextFields->Free13);
+		}
 
 		if ($this->ItemBase->Availability->AvailableUntil > 0)
 		{
