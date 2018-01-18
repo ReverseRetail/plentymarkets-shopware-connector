@@ -130,7 +130,8 @@ class ProductResponseParser implements ProductResponseParserInterface
 
         $productObject = new Product();
         $productObject->setIdentifier($identity->getObjectIdentifier());
-        $productObject->setName((string) $product['texts'][0]['name1']);
+        # 2018-01-18 BVK change name1 to name3
+        $productObject->setName((string) $product['texts'][0]['name3']);
         $productObject->setActive($this->getActive($variations, $mainVariation));
         $productObject->setNumber($this->getProductNumber($variations));
         $productObject->setShopIdentifiers($shopIdentifiers);
@@ -350,10 +351,11 @@ class ProductResponseParser implements ProductResponseParserInterface
                 continue;
             }
 
+            # 2018-01-18 BVK change name1 to name3
             $translations[] = Translation::fromArray([
                 'languageIdentifier' => $languageIdentifier->getObjectIdentifier(),
                 'property' => 'name',
-                'value' => $text['name1'],
+                'value' => $text['name3'],
             ]);
 
             $translations[] = Translation::fromArray([
@@ -482,6 +484,11 @@ class ProductResponseParser implements ProductResponseParserInterface
 
         foreach ($properties as $property) {
             if (!$property['property']['isSearchable']) {
+                continue;
+            }
+
+            # 2018-01-18 BVK skip all propertyGroups except 1
+            if ($property['property']['propertyGroupId'] != 1) {
                 continue;
             }
 
