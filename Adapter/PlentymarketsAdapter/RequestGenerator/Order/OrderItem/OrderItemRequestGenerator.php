@@ -81,13 +81,15 @@ class OrderItemRequestGenerator implements OrderItemRequestGeneratorInterface
         if ($orderItem->getType() === OrderItem::TYPE_PRODUCT) {
             $typeId = 1;
         } elseif ($orderItem->getType() === OrderItem::TYPE_DISCOUNT) {
-            $typeId = 4;
+            # 2018-01-18 BVK change discount to be an order line item
+            $typeId = 1;
         } elseif ($orderItem->getType() === OrderItem::TYPE_VOUCHER) {
             $typeId = 4;
         } elseif ($orderItem->getType() === OrderItem::TYPE_COUPON) {
             $typeId = 5;
         } elseif ($orderItem->getType() === OrderItem::TYPE_PAYMENT_SURCHARGE) {
-            $typeId = 7;
+            # 2018-01-18 BVK change payment surcharge to be an order line item
+            $typeId = 1;
         } elseif ($orderItem->getType() === OrderItem::TYPE_SHIPPING_COSTS) {
             $typeId = 6;
         } else {
