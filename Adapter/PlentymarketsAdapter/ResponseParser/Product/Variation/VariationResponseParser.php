@@ -222,6 +222,11 @@ class VariationResponseParser implements VariationResponseParserInterface
      */
     private function getReleaseDate(array $variation)
     {
+        # 2018-01-18 BVK change release date to be based on the position
+        if (null !== $variation['position']) {
+            $position = $variation['position'];
+            return new DateTimeImmutable("@$position", new DateTimeZone("Europe/Berlin"));
+        }
         if (null !== $variation['releasedAt']) {
             return new DateTimeImmutable($variation['releasedAt']);
         }
