@@ -254,8 +254,7 @@ class OrderResponseParser implements OrderResponseParserInterface
             }
 
             if ($isNet) {
-                $priceNet = $orderItem['price'];
-                $orderItem['price'] = $priceNet + (($priceNet / 100) * $orderItem['taxRate']);
+                $orderItems[$key]['price'] = $orderItem['price'] + (($orderItem['price'] / 100) * $orderItem['taxRate']);
             }
         }
 
@@ -263,7 +262,7 @@ class OrderResponseParser implements OrderResponseParserInterface
     }
 
     /**
-     * @param $entry
+     * @param array $entry
      *
      * @return Comment[]
      */

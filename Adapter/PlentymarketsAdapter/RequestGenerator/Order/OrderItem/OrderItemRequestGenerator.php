@@ -170,7 +170,7 @@ class OrderItemRequestGenerator implements OrderItemRequestGeneratorInterface
     }
 
     /**
-     * @param $identifier
+     * @param string $identifier
      *
      * @return int
      */
@@ -188,7 +188,7 @@ class OrderItemRequestGenerator implements OrderItemRequestGeneratorInterface
     }
 
     /**
-     * @param $number
+     * @param string $number
      *
      * @return int
      */

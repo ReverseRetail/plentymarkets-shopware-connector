@@ -32,6 +32,10 @@ class PaymentStatusResponseParser implements PaymentStatusResponseParserInterfac
     public function parse(array $entry)
     {
         if (empty($entry['id'])) {
+            $entry['id'] = $entry['statusId'];
+        }
+
+        if (empty($entry['id'])) {
             return null;
         }
 
@@ -48,7 +52,7 @@ class PaymentStatusResponseParser implements PaymentStatusResponseParserInterfac
     }
 
     /**
-     * @param $entry
+     * @param array $entry
      *
      * @return string
      */
@@ -58,7 +62,7 @@ class PaymentStatusResponseParser implements PaymentStatusResponseParserInterfac
             return $entry['id'];
         }
 
-        $names = array_filter(array_column($entry['names'], 'backendName'));
+        $names = $entry['names'];
 
         if (!empty($names)) {
             return array_shift($names);

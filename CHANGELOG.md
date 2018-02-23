@@ -4,13 +4,21 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased]
 ### Added
+- fallback for the import of the weight (@jppeter)
 
 ### Fixed
 - prepareOrderItems validation fix 
 - only transfer variations with valid clientid
 - import alternate media text as name if is set
+- import correct main translation
+- use correct item tax when transferring order to plenty
+- prevent the import of pseudoprices that are equal to the usual price (@jppeter)
+- fix of orderstatus and paymentstatus mapping (@smxvh)
 
 ### Changed
+- changed the sequence in which the definitions are processed, orders and payments are now fetched first.
+- reset unused Shopware attributes for shipping profiles
+- handle Shopware's DateTime attributes correctly
 
 ## [4.2.1]
 ### Added
