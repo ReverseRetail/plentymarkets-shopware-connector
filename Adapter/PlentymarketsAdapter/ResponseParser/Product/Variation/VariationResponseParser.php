@@ -3,6 +3,7 @@
 namespace PlentymarketsAdapter\ResponseParser\Product\Variation;
 
 use DateTimeImmutable;
+use DateTimeZone;
 use PlentyConnector\Connector\ConfigService\ConfigServiceInterface;
 use PlentyConnector\Connector\IdentityService\Exception\NotFoundException;
 use PlentyConnector\Connector\IdentityService\IdentityServiceInterface;
