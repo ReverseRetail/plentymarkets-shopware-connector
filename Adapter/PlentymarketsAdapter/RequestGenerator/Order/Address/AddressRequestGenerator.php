@@ -62,6 +62,7 @@ class AddressRequestGenerator implements AddressRequestGeneratorInterface
             'name1' => trim($address->getCompany() . ' ' . $address->getDepartment()),
             'name2' => $address->getFirstname(),
             'name3' => $address->getLastname(),
+            'gender' => $address->getGender(),
             'postalCode' => $address->getPostalCode(),
             'town' => $address->getCity(),
             'countryId' => $countryIdentity->getAdapterIdentifier(),
@@ -125,6 +126,13 @@ class AddressRequestGenerator implements AddressRequestGeneratorInterface
             $params['options'][] = [
                 'typeId' => 4,
                 'value' => $order->getCustomer()->getPhoneNumber(),
+            ];
+        }
+
+        if (null !== $address->getVatId()) {
+            $params['options'][] = [
+                'typeId' => 1,
+                'value' => $address->getVatId(),
             ];
         }
 

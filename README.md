@@ -9,7 +9,7 @@
 ## Requirements
 
 * plentymarkets version >= 7.0
-* shopware version >= 5.2
+* shopware version >= 5.3
 * shell access
 * cronjobs
 * active plentymarkets webshop
@@ -29,7 +29,7 @@
 * cd Shopware
 * ./bin/console sw:plugin:refresh
 * ./bin/console sw:plugin:install --activate PlentyConnector
-* ./var/cache/clear_cache.sh
+* ./bin/console sw:cache:clear
 
 **Configure Plugin**
 * visit yourshopwaredomain/backend
