@@ -16,3 +16,6 @@ Thumbs.db
 .externalToolBuilders
 .buildpath
 nbproject
+.idea
+vendor
+
