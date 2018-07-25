@@ -3,6 +3,7 @@
 namespace PlentymarketsAdapter\ResponseParser\Product\Variation;
 
 use DateTimeImmutable;
+use DateTimeZone;
 use PlentyConnector\Connector\ConfigService\ConfigServiceInterface;
 use PlentyConnector\Connector\IdentityService\Exception\NotFoundException;
 use PlentyConnector\Connector\IdentityService\IdentityServiceInterface;
@@ -222,6 +223,11 @@ class VariationResponseParser implements VariationResponseParserInterface
      */
     private function getReleaseDate(array $variation)
     {
+        # 2018-01-18 BVK change release date to be based on the position
+        if (null !== $variation['position']) {
+            $position = $variation['position'];
+            return new DateTimeImmutable("@$position", new DateTimeZone("Europe/Berlin"));
+        }
         if (null !== $variation['releasedAt']) {
             return new DateTimeImmutable($variation['releasedAt']);
         }
