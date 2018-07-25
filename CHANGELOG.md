@@ -2,13 +2,29 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [unreleased]
+### Fixed
+- paymentstatus is set correctly
+- fixed category image import
+- fixed price origin configuration 
+
+## [4.5.0]
+## warning ##
+- complete product import necessary after update, otherwise images will be removed by cleanup cron!
+
+### Fixed
+- fixed cdn problem (images have disappeared)
+- fixed search for an existing
+
+### Changed
+
 ## [4.4.0]
 ### Added
 - transfer category description 2 as attribute to shopware
 - optional check if mainvariation is active
 
 ### Fixed
-- fix salutation in order an customer
+- fix salutation in order and customer
 - paypal invoice and paypal installment payment data was discarded, the data is now transfered correctly
 - automatically set changed date time field for products
 - import images without md5Checksum and use filename for adapterIdentifier hash generation
