@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [unreleased]
 ### Fixed
+- paypal installment validation error
+
+## [4.5.1]
+### Fixed
 - paymentstatus is set correctly
 - fixed category image import
 - fixed price origin configuration 
