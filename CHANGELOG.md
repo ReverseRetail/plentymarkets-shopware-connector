@@ -2,9 +2,15 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-## [unreleased]
+## [4.6.0]
 ### Fixed
 - paypal installment validation error
+- item notification is set correctly
+- order status is set correctly
+
+### Changed
+- removed shipping profiles rest call in item read api
+- removed properties rest call in productresponseparser
 
 ## [4.5.1]
 ### Fixed
