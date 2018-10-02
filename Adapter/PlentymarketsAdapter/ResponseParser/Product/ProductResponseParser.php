@@ -481,8 +481,9 @@ class ProductResponseParser implements ProductResponseParserInterface
                 continue;
             }
 
-            # 2018-01-18 BVK skip all propertyGroups except 1
-            if ($property['property']['propertyGroupId'] != 1) {
+            # 2018-10-02 JG skip all propertyGroups except 1 (legacy Shopware), 377 (Common) and 378 (VeV)
+            $allowedPropertyGroups = [1, 377, 378];
+            if (!in_array($property['property']['propertyGroupId'], $allowedPropertyGroups)) {
                 continue;
             }
 
