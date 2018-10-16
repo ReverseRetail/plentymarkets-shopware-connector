@@ -7,6 +7,6 @@
     <copyright>(c) plentymarkets GmbH</copyright>
     <link>https://www.plentymarkets.eu/</link>
     <author>arvatis media GmbH</author>
-    <compatibility minVersion="5.3.0" />
+    <compatibility minVersion="5.2.0" />
     <license>MIT</license>
 </plugin>
