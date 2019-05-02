@@ -1,12 +1,9 @@
 <?php
 
-namespace PlentyConnector\Connector\TransferObject\Unit;
+namespace SystemConnector\TransferObject\Unit;
 
-use PlentyConnector\Connector\TransferObject\AbstractTransferObject;
+use SystemConnector\TransferObject\AbstractTransferObject;
 
-/**
- * Class Unit
- */
 class Unit extends AbstractTransferObject
 {
     const TYPE = 'Unit';
@@ -38,7 +35,7 @@ class Unit extends AbstractTransferObject
     }
 
     /**
-     * @param string $identifier
+     * {@inheritdoc}
      */
     public function setIdentifier($identifier)
     {
@@ -59,5 +56,16 @@ class Unit extends AbstractTransferObject
     public function setName($name)
     {
         $this->name = $name;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getClassProperties()
+    {
+        return [
+            'identifier' => $this->getIdentifier(),
+            'name' => $this->getName(),
+        ];
     }
 }

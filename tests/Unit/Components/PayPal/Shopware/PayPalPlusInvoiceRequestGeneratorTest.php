@@ -6,12 +6,9 @@ use DateTimeImmutable;
 use PHPUnit\Framework\TestCase;
 use PlentyConnector\Components\PayPal\PaymentData\PayPalPlusInvoicePaymentData;
 use PlentyConnector\Components\PayPal\Plentymarkets\PayPalPlusInvoiceRequestGenerator;
-use PlentyConnector\Connector\TransferObject\Payment\Payment;
 use PlentymarketsAdapter\RequestGenerator\Payment\PaymentRequestGenerator;
+use SystemConnector\TransferObject\Payment\Payment;
 
-/**
- * Class PayPalPlusInvoiceRequestGeneratorTest
- */
 class PayPalPlusInvoiceRequestGeneratorTest extends TestCase
 {
     /**

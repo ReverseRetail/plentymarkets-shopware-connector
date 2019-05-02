@@ -1,14 +1,12 @@
 <?php
 
-namespace PlentyConnector\Connector\Validator\Order\Package;
+namespace SystemConnector\Validator\Order\Package;
 
 use Assert\Assertion;
-use PlentyConnector\Connector\TransferObject\Order\Package\Package;
-use PlentyConnector\Connector\Validator\ValidatorInterface;
+use DateTimeImmutable;
+use SystemConnector\TransferObject\Order\Package\Package;
+use SystemConnector\Validator\ValidatorInterface;
 
-/**
- * Class PackageValidator
- */
 class PackageValidator implements ValidatorInterface
 {
     /**
@@ -24,7 +22,7 @@ class PackageValidator implements ValidatorInterface
      */
     public function validate($object)
     {
-        Assertion::isInstanceOf($object->getShippingTime(), \DateTimeImmutable::class, null, 'order.package.shippingTime');
+        Assertion::isInstanceOf($object->getShippingTime(), DateTimeImmutable::class, null, 'order.package.shippingTime');
         Assertion::string($object->getShippingCode(), null, 'order.package.shippingCode');
         Assertion::nullOrNotBlank($object->getShippingProvider(), null, 'order.package.shippingProvider');
     }

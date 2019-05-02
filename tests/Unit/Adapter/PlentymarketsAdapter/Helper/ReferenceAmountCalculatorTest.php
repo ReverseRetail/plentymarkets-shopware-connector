@@ -6,9 +6,6 @@ use PHPUnit\Framework\TestCase;
 use PlentymarketsAdapter\Helper\ReferenceAmountCalculator;
 use PlentymarketsAdapter\ReadApi\Item\Unit;
 
-/**
- * Class ReferenceAmountCalculatorTest
- */
 class ReferenceAmountCalculatorTest extends TestCase
 {
     /**
@@ -26,7 +23,7 @@ class ReferenceAmountCalculatorTest extends TestCase
         $units = json_decode(file_get_contents(__DIR__ . '/Fixture/units.json'), true);
 
         $unitApi = $this->createMock(Unit::class);
-        $unitApi->expects($this->any())->method('findAll')->willReturn($units);
+        $unitApi->method('findAll')->willReturn($units);
 
         $this->calculator = new ReferenceAmountCalculator($unitApi);
     }
@@ -43,7 +40,7 @@ class ReferenceAmountCalculatorTest extends TestCase
             [['unit' => ['unitId' => 3, 'content' => 1100]], 1000],
             [['unit' => ['unitId' => 3, 'content' => 1050]], 1000],
 
-            [['unit' => ['unitId' => 2, 'content' => 0.25]], 0.1],
+            [['unit' => ['unitId' => 2, 'content' => 0.25]], 1],
             [['unit' => ['unitId' => 2, 'content' => 0.254]], 1.0],
             [['unit' => ['unitId' => 2, 'content' => 0.254]], 1.0],
 

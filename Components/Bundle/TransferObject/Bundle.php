@@ -4,14 +4,11 @@ namespace PlentyConnector\Components\Bundle\TransferObject;
 
 use DateTimeImmutable;
 use PlentyConnector\Components\Bundle\TransferObject\BundleProduct\BundleProduct;
-use PlentyConnector\Connector\TransferObject\AbstractTransferObject;
-use PlentyConnector\Connector\TransferObject\Product\Price\Price;
-use PlentyConnector\Connector\ValueObject\Attribute\Attribute;
-use PlentyConnector\Connector\ValueObject\Translation\Translation;
+use SystemConnector\TransferObject\AbstractTransferObject;
+use SystemConnector\TransferObject\Product\Price\Price;
+use SystemConnector\ValueObject\Attribute\Attribute;
+use SystemConnector\ValueObject\Translation\Translation;
 
-/**
- * Class Bundle
- */
 class Bundle extends AbstractTransferObject
 {
     const TYPE = 'Bundle';
@@ -337,5 +334,29 @@ class Bundle extends AbstractTransferObject
     public function setTranslations(array $translations)
     {
         $this->translations = $translations;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getClassProperties()
+    {
+        return [
+            'identifier' => $this->getIdentifier(),
+            'active' => $this->isActive(),
+            'productIdentifier' => $this->getProductIdentifier(),
+            'name' => $this->getName(),
+            'number' => $this->getNumber(),
+            'position' => $this->getPosition(),
+            'stock' => $this->getStock(),
+            'stockLimitation' => $this->hasStockLimitation(),
+            'prices' => $this->getPrices(),
+            'vatRateIdentifier' => $this->getVatRateIdentifier(),
+            'availableFrom' => $this->getAvailableFrom(),
+            'availableTo' => $this->getAvailableTo(),
+            'bundleProducts' => $this->getBundleProducts(),
+            'attributes' => $this->getAttributes(),
+            'translations' => $this->getTranslations(),
+        ];
     }
 }

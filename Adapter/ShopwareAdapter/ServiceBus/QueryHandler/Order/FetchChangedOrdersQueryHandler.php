@@ -3,20 +3,17 @@
 namespace ShopwareAdapter\ServiceBus\QueryHandler\Order;
 
 use Exception;
-use PlentyConnector\Connector\ServiceBus\Query\FetchTransferObjectQuery;
-use PlentyConnector\Connector\ServiceBus\Query\QueryInterface;
-use PlentyConnector\Connector\ServiceBus\QueryHandler\QueryHandlerInterface;
-use PlentyConnector\Connector\ServiceBus\QueryType;
-use PlentyConnector\Connector\TransferObject\Order\Order;
-use PlentyConnector\Console\OutputHandler\OutputHandlerInterface;
 use Psr\Log\LoggerInterface;
 use ShopwareAdapter\DataProvider\Order\OrderDataProviderInterface;
 use ShopwareAdapter\ResponseParser\Order\OrderResponseParserInterface;
 use ShopwareAdapter\ShopwareAdapter;
+use SystemConnector\Console\OutputHandler\OutputHandlerInterface;
+use SystemConnector\ServiceBus\Query\FetchTransferObjectQuery;
+use SystemConnector\ServiceBus\Query\QueryInterface;
+use SystemConnector\ServiceBus\QueryHandler\QueryHandlerInterface;
+use SystemConnector\ServiceBus\QueryType;
+use SystemConnector\TransferObject\Order\Order;
 
-/**
- * Class FetchChangedOrdersQueryHandler
- */
 class FetchChangedOrdersQueryHandler implements QueryHandlerInterface
 {
     /**
@@ -39,14 +36,6 @@ class FetchChangedOrdersQueryHandler implements QueryHandlerInterface
      */
     private $outputHandler;
 
-    /**
-     * FetchChangedOrdersQueryHandler constructor.
-     *
-     * @param OrderResponseParserInterface $responseParser
-     * @param OrderDataProviderInterface   $dataProvider
-     * @param LoggerInterface              $logger
-     * @param OutputHandlerInterface       $outputHandler
-     */
     public function __construct(
         OrderResponseParserInterface $responseParser,
         OrderDataProviderInterface $dataProvider,

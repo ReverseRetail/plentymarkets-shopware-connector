@@ -2,18 +2,15 @@
 
 namespace PlentymarketsAdapter\ServiceBus\QueryHandler\PaymentStatus;
 
-use PlentyConnector\Connector\ServiceBus\Query\FetchTransferObjectQuery;
-use PlentyConnector\Connector\ServiceBus\Query\QueryInterface;
-use PlentyConnector\Connector\ServiceBus\QueryHandler\QueryHandlerInterface;
-use PlentyConnector\Connector\ServiceBus\QueryType;
-use PlentyConnector\Connector\TransferObject\PaymentStatus\PaymentStatus;
 use PlentymarketsAdapter\Client\ClientInterface;
 use PlentymarketsAdapter\PlentymarketsAdapter;
 use PlentymarketsAdapter\ResponseParser\PaymentStatus\PaymentStatusResponseParserInterface;
+use SystemConnector\ServiceBus\Query\FetchTransferObjectQuery;
+use SystemConnector\ServiceBus\Query\QueryInterface;
+use SystemConnector\ServiceBus\QueryHandler\QueryHandlerInterface;
+use SystemConnector\ServiceBus\QueryType;
+use SystemConnector\TransferObject\PaymentStatus\PaymentStatus;
 
-/**
- * Class FetchAllPaymentStatusesQueryHandler
- */
 class FetchAllPaymentStatusesQueryHandler implements QueryHandlerInterface
 {
     /**
@@ -26,12 +23,6 @@ class FetchAllPaymentStatusesQueryHandler implements QueryHandlerInterface
      */
     private $responseParser;
 
-    /**
-     * FetchAllPaymentStatusesQueryHandler constructor.
-     *
-     * @param ClientInterface                      $client
-     * @param PaymentStatusResponseParserInterface $responseParser
-     */
     public function __construct(
         ClientInterface $client,
         PaymentStatusResponseParserInterface $responseParser

@@ -1,14 +1,11 @@
 <?php
 
-namespace PlentyConnector\Connector\Validator\Definition;
+namespace SystemConnector\Validator\Definition;
 
 use Assert\Assertion;
-use PlentyConnector\Connector\Validator\ValidatorInterface;
-use PlentyConnector\Connector\ValueObject\Definition\Definition;
+use SystemConnector\DefinitionProvider\Struct\Definition;
+use SystemConnector\Validator\ValidatorInterface;
 
-/**
- * Class DefinitionValidator
- */
 class DefinitionValidator implements ValidatorInterface
 {
     /**

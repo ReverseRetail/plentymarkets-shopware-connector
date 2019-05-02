@@ -5,18 +5,15 @@ namespace PlentyConnector\Subscriber;
 use Enlight\Event\SubscriberInterface;
 use Enlight_Components_Cron_EventArgs as Args;
 use Exception;
-use PlentyConnector\Connector\BacklogService\BacklogServiceInterface;
-use PlentyConnector\Connector\CleanupService\CleanupServiceInterface;
-use PlentyConnector\Connector\ConnectorInterface;
-use PlentyConnector\Connector\ServiceBus\QueryType;
-use PlentyConnector\Connector\ServiceBus\ServiceBusInterface;
 use PlentyConnector\PlentyConnector;
 use Psr\Log\LoggerInterface;
+use SystemConnector\BacklogService\BacklogServiceInterface;
+use SystemConnector\CleanupService\CleanupServiceInterface;
+use SystemConnector\ConnectorInterface;
+use SystemConnector\ServiceBus\QueryType;
+use SystemConnector\ServiceBus\ServiceBusInterface;
 use Throwable;
 
-/**
- * Class CronjobSubscriber
- */
 class CronjobSubscriber implements SubscriberInterface
 {
     /**
@@ -44,15 +41,6 @@ class CronjobSubscriber implements SubscriberInterface
      */
     private $logger;
 
-    /**
-     * CronjobSubscriber constructor.
-     *
-     * @param ConnectorInterface      $connector
-     * @param CleanupServiceInterface $cleanupService
-     * @param BacklogServiceInterface $backlogService
-     * @param ServiceBusInterface     $serviceBus
-     * @param LoggerInterface         $logger
-     */
     public function __construct(
         ConnectorInterface $connector,
         CleanupServiceInterface $cleanupService,
@@ -88,9 +76,9 @@ class CronjobSubscriber implements SubscriberInterface
     {
         try {
             $this->connector->handle(QueryType::CHANGED);
-        } catch (Throwable $exception) {
-            $this->logger->error($exception->getMessage());
         } catch (Exception $exception) {
+            $this->logger->error($exception->getMessage());
+        } catch (Throwable $exception) {
             $this->logger->error($exception->getMessage());
         }
 
@@ -113,9 +101,9 @@ class CronjobSubscriber implements SubscriberInterface
 
                 $this->serviceBus->handle($command);
             }
-        } catch (Throwable $exception) {
-            $this->logger->error($exception->getMessage());
         } catch (Exception $exception) {
+            $this->logger->error($exception->getMessage());
+        } catch (Throwable $exception) {
             $this->logger->error($exception->getMessage());
         }
 
@@ -133,9 +121,9 @@ class CronjobSubscriber implements SubscriberInterface
     {
         try {
             $this->cleanupService->cleanup();
-        } catch (Throwable $exception) {
-            $this->logger->error($exception->getMessage());
         } catch (Exception $exception) {
+            $this->logger->error($exception->getMessage());
+        } catch (Throwable $exception) {
             $this->logger->error($exception->getMessage());
         }
 

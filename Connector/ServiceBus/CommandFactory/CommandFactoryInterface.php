@@ -1,21 +1,19 @@
 <?php
 
-namespace PlentyConnector\Connector\ServiceBus\CommandFactory;
+namespace SystemConnector\ServiceBus\CommandFactory;
 
-use PlentyConnector\Connector\ServiceBus\Command\CommandInterface;
+use SystemConnector\ServiceBus\Command\CommandInterface;
 
-/**
- * Class CommandFactoryInterface.
- */
 interface CommandFactoryInterface
 {
     /**
      * @param string $adapterName
      * @param string $objectType
      * @param string $commandType
+     * @param int    $priority
      * @param mixed  $payload
      *
      * @return CommandInterface
      */
-    public function create($adapterName, $objectType, $commandType, $payload = null);
+    public function create($adapterName, $objectType, $commandType, $priority, $payload);
 }

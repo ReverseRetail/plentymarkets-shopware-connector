@@ -1,26 +1,21 @@
 <?php
 
-namespace PlentyConnector\Connector\TransferObject\Order;
+namespace SystemConnector\TransferObject\Order;
 
 use DateTimeImmutable;
-use PlentyConnector\Connector\TransferObject\AbstractTransferObject;
-use PlentyConnector\Connector\TransferObject\AttributableInterface;
-use PlentyConnector\Connector\TransferObject\Order\Address\Address;
-use PlentyConnector\Connector\TransferObject\Order\Comment\Comment;
-use PlentyConnector\Connector\TransferObject\Order\Customer\Customer;
-use PlentyConnector\Connector\TransferObject\Order\OrderItem\OrderItem;
-use PlentyConnector\Connector\TransferObject\Order\Package\Package;
-use PlentyConnector\Connector\ValueObject\Attribute\Attribute;
 use ReflectionClass;
+use SystemConnector\TransferObject\AbstractTransferObject;
+use SystemConnector\TransferObject\AttributableInterface;
+use SystemConnector\TransferObject\Order\Address\Address;
+use SystemConnector\TransferObject\Order\Comment\Comment;
+use SystemConnector\TransferObject\Order\Customer\Customer;
+use SystemConnector\TransferObject\Order\OrderItem\OrderItem;
+use SystemConnector\TransferObject\Order\Package\Package;
+use SystemConnector\ValueObject\Attribute\Attribute;
 
-/**
- * Class Order.
- */
 class Order extends AbstractTransferObject implements AttributableInterface
 {
     const TYPE = 'Order';
-    const TYPE_ORDER = 1;
-    const TYPE_OFFER = 2;
 
     /**
      * Identifier of the object.
@@ -28,11 +23,6 @@ class Order extends AbstractTransferObject implements AttributableInterface
      * @var string
      */
     private $identifier = '';
-
-    /**
-     * @var int
-     */
-    private $orderType = self::TYPE_ORDER;
 
     /**
      * @var string
@@ -109,9 +99,6 @@ class Order extends AbstractTransferObject implements AttributableInterface
      */
     private $attributes = [];
 
-    /**
-     * Order constructor.
-     */
     public function __construct()
     {
         $this->orderTime = new DateTimeImmutable('now');
@@ -134,27 +121,11 @@ class Order extends AbstractTransferObject implements AttributableInterface
     }
 
     /**
-     * @param string $identifier
+     * {@inheritdoc}
      */
     public function setIdentifier($identifier)
     {
         $this->identifier = $identifier;
-    }
-
-    /**
-     * @return int
-     */
-    public function getOrderType()
-    {
-        return $this->orderType;
-    }
-
-    /**
-     * @param int $orderType
-     */
-    public function setOrderType($orderType)
-    {
-        $this->orderType = $orderType;
     }
 
     /**
@@ -405,5 +376,30 @@ class Order extends AbstractTransferObject implements AttributableInterface
     public function setAttributes(array $attributes)
     {
         $this->attributes = $attributes;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getClassProperties()
+    {
+        return [
+            'identifier' => $this->getIdentifier(),
+            'orderNumber' => $this->getOrderNumber(),
+            'orderTime' => $this->getOrderTime(),
+            'customer' => $this->getCustomer(),
+            'billingAddress' => $this->getBillingAddress(),
+            'shoppingAddress' => $this->getShippingAddress(),
+            'orderItems' => $this->getOrderItems(),
+            'shopIdentifier' => $this->getShopIdentifier(),
+            'currentyIdentifier' => $this->getCurrencyIdentifier(),
+            'orderStatusIdentifier' => $this->getOrderStatusIdentifier(),
+            'paymentStatusIdentifier' => $this->getPaymentStatusIdentifier(),
+            'paymentMethodIdentifier' => $this->getPaymentMethodIdentifier(),
+            'shippingProfileIdentifier' => $this->getShippingProfileIdentifier(),
+            'comments' => $this->getComments(),
+            'packages' => $this->getPackages(),
+            'attributes' => $this->getAttributes(),
+        ];
     }
 }

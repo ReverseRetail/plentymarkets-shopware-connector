@@ -1,17 +1,12 @@
 <?php
 
-namespace PlentyConnector\Connector\TransferObject\Order\Address;
+namespace SystemConnector\TransferObject\Order\Address;
 
-use PlentyConnector\Connector\TransferObject\AttributableInterface;
-use PlentyConnector\Connector\ValueObject\AbstractValueObject;
-use PlentyConnector\Connector\ValueObject\Attribute\Attribute;
 use ReflectionClass;
+use SystemConnector\TransferObject\AttributableInterface;
+use SystemConnector\ValueObject\AbstractValueObject;
+use SystemConnector\ValueObject\Attribute\Attribute;
 
-/**
- * TOOD: camelCase
- *
- * Class Address
- */
 class Address extends AbstractValueObject implements AttributableInterface
 {
     const GENDER_MALE = 'male';
@@ -340,5 +335,29 @@ class Address extends AbstractValueObject implements AttributableInterface
     public function setAttributes(array $attributes)
     {
         $this->attributes = $attributes;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getClassProperties()
+    {
+        return [
+            'company' => $this->getCompany(),
+            'department' => $this->getDepartment(),
+            'gender' => $this->getGender(),
+            'title' => $this->getTitle(),
+            'firstname' => $this->getFirstname(),
+            'lastname' => $this->getLastname(),
+            'street' => $this->getStreet(),
+            'additional' => $this->getAdditional(),
+            'postalCode' => $this->getPostalCode(),
+            'city' => $this->getCity(),
+            'countryIdentifier' => $this->getCountryIdentifier(),
+            'vatId' => $this->getVatId(),
+            'phoneNumber' => $this->getPhoneNumber(),
+            'mobilePhoneNumber' => $this->getMobilePhoneNumber(),
+            'attributes' => $this->getAttributes(),
+        ];
     }
 }

@@ -1,13 +1,10 @@
 <?php
 
-namespace PlentyConnector\Connector\TransferObject\Manufacturer;
+namespace SystemConnector\TransferObject\Manufacturer;
 
-use PlentyConnector\Connector\TransferObject\AbstractTransferObject;
-use PlentyConnector\Connector\ValueObject\Attribute\Attribute;
+use SystemConnector\TransferObject\AbstractTransferObject;
+use SystemConnector\ValueObject\Attribute\Attribute;
 
-/**
- * Class TransferObjects.
- */
 class Manufacturer extends AbstractTransferObject
 {
     const TYPE = 'Manufacturer';
@@ -54,7 +51,7 @@ class Manufacturer extends AbstractTransferObject
     }
 
     /**
-     * @param string $identifier
+     * {@inheritdoc}
      */
     public function setIdentifier($identifier)
     {
@@ -123,5 +120,19 @@ class Manufacturer extends AbstractTransferObject
     public function setAttributes(array $attributes)
     {
         $this->attributes = $attributes;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getClassProperties()
+    {
+        return [
+            'identifier' => $this->getIdentifier(),
+            'name' => $this->getName(),
+            'logoIdentifier' => $this->getLogoIdentifier(),
+            'link' => $this->getLink(),
+            'attributes' => $this->getAttributes(),
+        ];
     }
 }

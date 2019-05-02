@@ -2,19 +2,16 @@
 
 namespace PlentymarketsAdapter\ServiceBus\QueryHandler\Order;
 
-use PlentyConnector\Connector\IdentityService\IdentityServiceInterface;
-use PlentyConnector\Connector\ServiceBus\Query\FetchTransferObjectQuery;
-use PlentyConnector\Connector\ServiceBus\Query\QueryInterface;
-use PlentyConnector\Connector\ServiceBus\QueryHandler\QueryHandlerInterface;
-use PlentyConnector\Connector\ServiceBus\QueryType;
-use PlentyConnector\Connector\TransferObject\Order\Order;
 use PlentymarketsAdapter\PlentymarketsAdapter;
 use PlentymarketsAdapter\ReadApi\Order\Order as OrderApi;
 use PlentymarketsAdapter\ResponseParser\Order\OrderResponseParserInterface;
+use SystemConnector\IdentityService\IdentityServiceInterface;
+use SystemConnector\ServiceBus\Query\FetchTransferObjectQuery;
+use SystemConnector\ServiceBus\Query\QueryInterface;
+use SystemConnector\ServiceBus\QueryHandler\QueryHandlerInterface;
+use SystemConnector\ServiceBus\QueryType;
+use SystemConnector\TransferObject\Order\Order;
 
-/**
- * Class FetchOrderQueryHandler
- */
 class FetchOrderQueryHandler implements QueryHandlerInterface
 {
     /**
@@ -32,13 +29,6 @@ class FetchOrderQueryHandler implements QueryHandlerInterface
      */
     private $responseParser;
 
-    /**
-     * FetchAllOrdersQueryHandler constructor.
-     *
-     * @param OrderApi                     $api
-     * @param IdentityServiceInterface     $identityService
-     * @param OrderResponseParserInterface $responseParser
-     */
     public function __construct(
         OrderApi $api,
         IdentityServiceInterface $identityService,

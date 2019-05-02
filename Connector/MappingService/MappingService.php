@@ -1,26 +1,20 @@
 <?php
 
-namespace PlentyConnector\Connector\MappingService;
+namespace SystemConnector\MappingService;
 
 use Assert\Assertion;
-use PlentyConnector\Connector\ServiceBus\QueryFactory\QueryFactoryInterface;
-use PlentyConnector\Connector\ServiceBus\QueryType;
-use PlentyConnector\Connector\ServiceBus\ServiceBusInterface;
-use PlentyConnector\Connector\TransferObject\TransferObjectInterface;
-use PlentyConnector\Connector\ValidatorService\ValidatorServiceInterface;
-use PlentyConnector\Connector\ValueObject\Definition\Definition;
-use PlentyConnector\Connector\ValueObject\Mapping\Mapping;
+use Psr\Log\LoggerInterface;
+use SystemConnector\DefinitionProvider\DefinitionProviderInterface;
+use SystemConnector\DefinitionProvider\Struct\Definition;
+use SystemConnector\MappingService\Struct\Mapping;
+use SystemConnector\ServiceBus\QueryFactory\QueryFactoryInterface;
+use SystemConnector\ServiceBus\QueryType;
+use SystemConnector\ServiceBus\ServiceBusInterface;
+use SystemConnector\TransferObject\TransferObjectInterface;
+use SystemConnector\ValidatorService\ValidatorServiceInterface;
 
-/**
- * Class MappingService.
- */
 class MappingService implements MappingServiceInterface
 {
-    /**
-     * @var Definition[]
-     */
-    private $definitions;
-
     /**
      * @var QueryFactoryInterface
      */
@@ -37,28 +31,27 @@ class MappingService implements MappingServiceInterface
     private $validator;
 
     /**
-     * MappingService constructor.
-     *
-     * @param QueryFactoryInterface     $queryFactory
-     * @param ServiceBusInterface       $serviceBus
-     * @param ValidatorServiceInterface $validator
+     * @var DefinitionProviderInterface
      */
+    private $definitionProvider;
+
+    /**
+     * @var LoggerInterface
+     */
+    private $logger;
+
     public function __construct(
         QueryFactoryInterface $queryFactory,
         ServiceBusInterface $serviceBus,
-        ValidatorServiceInterface $validator
+        ValidatorServiceInterface $validator,
+        DefinitionProviderInterface $definitionProvider,
+        LoggerInterface $logger
     ) {
         $this->queryFactory = $queryFactory;
         $this->serviceBus = $serviceBus;
         $this->validator = $validator;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function addDefinition(Definition $definition)
-    {
-        $this->definitions[] = $definition;
+        $this->definitionProvider = $definitionProvider;
+        $this->logger = $logger;
     }
 
     /**
@@ -68,42 +61,28 @@ class MappingService implements MappingServiceInterface
     {
         Assertion::nullOrString($objectType);
 
-        $result = [];
-        $definitions = $this->getDefinitions($objectType);
+        $definitions = $this->definitionProvider->getMappingDefinitions($objectType);
 
-        array_walk($definitions, function (Definition $definition) use (&$result) {
-            $mapping = Mapping::fromArray([
-                'originAdapterName' => $definition->getOriginAdapterName(),
-                'originTransferObjects' => $this->query($definition, $definition->getOriginAdapterName()),
-                'destinationAdapterName' => $definition->getDestinationAdapterName(),
-                'destinationTransferObjects' => $this->query($definition, $definition->getDestinationAdapterName()),
-                'objectType' => $definition->getObjectType(),
-            ]);
+        if (empty($definitions)) {
+            $this->logger->notice('No mappingdefinition found');
+        }
+
+        $result = [];
+
+        foreach ($definitions as $definition) {
+            $mapping = new Mapping();
+            $mapping->setOriginAdapterName($definition->getOriginAdapterName());
+            $mapping->setOriginTransferObjects($this->query($definition, $definition->getOriginAdapterName()));
+            $mapping->setDestinationAdapterName($definition->getDestinationAdapterName());
+            $mapping->setDestinationTransferObjects($this->query($definition, $definition->getDestinationAdapterName()));
+            $mapping->setObjectType($definition->getObjectType());
 
             $this->validator->validate($mapping);
 
             $result[] = $mapping;
-        });
-
-        return $result;
-    }
-
-    /**
-     * @param null|string $objectType
-     *
-     * @return null|Definition[]
-     */
-    private function getDefinitions($objectType = null)
-    {
-        if (null === count($this->definitions)) {
-            return [];
         }
 
-        $definitions = array_filter($this->definitions, function (Definition $definition) use ($objectType) {
-            return strtolower($definition->getObjectType()) === strtolower($objectType) || null === $objectType;
-        });
-
-        return $definitions;
+        return $result;
     }
 
     /**

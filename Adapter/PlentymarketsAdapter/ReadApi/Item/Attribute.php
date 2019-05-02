@@ -4,11 +4,16 @@ namespace PlentymarketsAdapter\ReadApi\Item;
 
 use PlentymarketsAdapter\ReadApi\ApiAbstract;
 
-/**
- * Class Attribute
- */
 class Attribute extends ApiAbstract
 {
+    /**
+     * @var array
+     */
+    private $includes = [
+        'names',
+        'values.valueNames',
+    ];
+
     /**
      * @param int $attributeId
      *
@@ -17,7 +22,7 @@ class Attribute extends ApiAbstract
     public function findOne($attributeId)
     {
         return $this->client->request('GET', 'items/attributes/' . $attributeId, [
-            'with' => 'names',
+            'with' => implode(',', $this->includes),
         ]);
     }
 
@@ -27,7 +32,7 @@ class Attribute extends ApiAbstract
     public function findAll()
     {
         return iterator_to_array($this->client->getIterator('items/attributes/', [
-            'with' => 'names',
+            'with' => implode(',', $this->includes),
         ]));
     }
 }

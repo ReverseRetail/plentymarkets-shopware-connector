@@ -1,13 +1,10 @@
 <?php
 
-namespace PlentyConnector\Connector\ServiceBus\QueryHandlerMiddleware\Exception;
+namespace SystemConnector\ServiceBus\QueryHandlerMiddleware\Exception;
 
 use Exception;
-use PlentyConnector\Connector\ServiceBus\Query\QueryInterface;
+use SystemConnector\ServiceBus\Query\QueryInterface;
 
-/**
- * Class NotFoundException.
- */
 class NotFoundException extends Exception
 {
     /**

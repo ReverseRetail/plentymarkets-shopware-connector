@@ -2,9 +2,6 @@
 
 namespace PlentymarketsAdapter\Helper;
 
-/**
- * Interface VariationHelperInterface
- */
 interface VariationHelperInterface
 {
     /**
@@ -18,4 +15,19 @@ interface VariationHelperInterface
      * @return array
      */
     public function getMappedPlentyClientIds();
+
+    /**
+     * @param array $variations
+     *
+     * @return array
+     */
+    public function getMainVariation(array $variations);
+
+    /**
+     * @param array $mainVariation
+     * @param array $variations
+     *
+     * @return string
+     */
+    public function getMainVariationNumber(array $mainVariation, array $variations = []);
 }

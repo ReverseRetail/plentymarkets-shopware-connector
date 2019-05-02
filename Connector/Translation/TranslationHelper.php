@@ -1,14 +1,11 @@
 <?php
 
-namespace PlentyConnector\Connector\Translation;
+namespace SystemConnector\Translation;
 
 use DeepCopy\DeepCopy;
-use PlentyConnector\Connector\TransferObject\TranslateableInterface;
-use PlentyConnector\Connector\ValueObject\Translation\Translation;
+use SystemConnector\TransferObject\TranslateableInterface;
+use SystemConnector\ValueObject\Translation\Translation;
 
-/**
- * Class TranslationHelper
- */
 class TranslationHelper implements TranslationHelperInterface
 {
     /**

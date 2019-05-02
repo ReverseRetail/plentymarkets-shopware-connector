@@ -2,14 +2,11 @@
 
 namespace PlentyConnector\tests\Unit\Adapter\PlentymarketsAdapter\RequestGenerator\Payment;
 
-use PlentyConnector\Connector\TransferObject\Payment\Payment;
 use PlentyConnector\tests\Unit\Adapter\PlentymarketsAdapter\RequestGenerator\RequestGeneratorTest;
 use PlentymarketsAdapter\RequestGenerator\Payment\PaymentRequestGenerator;
 use Ramsey\Uuid\Uuid;
+use SystemConnector\TransferObject\Payment\Payment;
 
-/**
- * Class PaymentRequestGeneratorTest
- */
 class PaymentRequestGeneratorTest extends RequestGeneratorTest
 {
     /**

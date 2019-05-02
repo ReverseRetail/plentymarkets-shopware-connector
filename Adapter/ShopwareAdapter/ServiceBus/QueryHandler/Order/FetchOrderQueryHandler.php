@@ -2,19 +2,16 @@
 
 namespace ShopwareAdapter\ServiceBus\QueryHandler\Order;
 
-use PlentyConnector\Connector\IdentityService\IdentityServiceInterface;
-use PlentyConnector\Connector\ServiceBus\Query\FetchTransferObjectQuery;
-use PlentyConnector\Connector\ServiceBus\Query\QueryInterface;
-use PlentyConnector\Connector\ServiceBus\QueryHandler\QueryHandlerInterface;
-use PlentyConnector\Connector\ServiceBus\QueryType;
-use PlentyConnector\Connector\TransferObject\Order\Order;
 use ShopwareAdapter\DataProvider\Order\OrderDataProviderInterface;
 use ShopwareAdapter\ResponseParser\Order\OrderResponseParserInterface;
 use ShopwareAdapter\ShopwareAdapter;
+use SystemConnector\IdentityService\IdentityServiceInterface;
+use SystemConnector\ServiceBus\Query\FetchTransferObjectQuery;
+use SystemConnector\ServiceBus\Query\QueryInterface;
+use SystemConnector\ServiceBus\QueryHandler\QueryHandlerInterface;
+use SystemConnector\ServiceBus\QueryType;
+use SystemConnector\TransferObject\Order\Order;
 
-/**
- * Class FetchOrderQueryHandler
- */
 class FetchOrderQueryHandler implements QueryHandlerInterface
 {
     /**
@@ -32,13 +29,6 @@ class FetchOrderQueryHandler implements QueryHandlerInterface
      */
     private $dataProvider;
 
-    /**
-     * FetchOrderQueryHandler constructor.
-     *
-     * @param OrderResponseParserInterface $responseParser
-     * @param IdentityServiceInterface     $identityService
-     * @param OrderDataProviderInterface   $dataProvider
-     */
     public function __construct(
         OrderResponseParserInterface $responseParser,
         IdentityServiceInterface $identityService,

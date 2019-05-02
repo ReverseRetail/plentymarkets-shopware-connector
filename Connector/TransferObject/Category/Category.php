@@ -1,16 +1,13 @@
 <?php
 
-namespace PlentyConnector\Connector\TransferObject\Category;
+namespace SystemConnector\TransferObject\Category;
 
-use PlentyConnector\Connector\TransferObject\AbstractTransferObject;
-use PlentyConnector\Connector\TransferObject\AttributableInterface;
-use PlentyConnector\Connector\TransferObject\TranslateableInterface;
-use PlentyConnector\Connector\ValueObject\Attribute\Attribute;
-use PlentyConnector\Connector\ValueObject\Translation\Translation;
+use SystemConnector\TransferObject\AbstractTransferObject;
+use SystemConnector\TransferObject\AttributableInterface;
+use SystemConnector\TransferObject\TranslateableInterface;
+use SystemConnector\ValueObject\Attribute\Attribute;
+use SystemConnector\ValueObject\Translation\Translation;
 
-/**
- * Class Category
- */
 class Category extends AbstractTransferObject implements TranslateableInterface, AttributableInterface
 {
     const TYPE = 'Category';
@@ -107,7 +104,7 @@ class Category extends AbstractTransferObject implements TranslateableInterface,
     }
 
     /**
-     * @param string $identifier
+     * {@inheritdoc}
      */
     public function setIdentifier($identifier)
     {
@@ -340,5 +337,29 @@ class Category extends AbstractTransferObject implements TranslateableInterface,
     public function setAttributes(array $attributes)
     {
         $this->attributes = $attributes;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getClassProperties()
+    {
+        return [
+            'identifier' => $this->getIdentifier(),
+            'name' => $this->getName(),
+            'active' => $this->getActive(),
+            'parentIdentifiers' => $this->getParentIdentifier(),
+            'shopIdentifiers' => $this->getShopIdentifiers(),
+            'imageIdentifiers' => $this->getImageIdentifiers(),
+            'position' => $this->getPosition(),
+            'description' => $this->getDescription(),
+            'longDescription' => $this->getLongDescription(),
+            'metaTitle' => $this->getMetaTitle(),
+            'metaDescription' => $this->getMetaDescription(),
+            'metaKeywords' => $this->getMetaKeywords(),
+            'metaRobots' => $this->getMetaRobots(),
+            'translations' => $this->getTranslations(),
+            'attributes' => $this->getAttributes(),
+        ];
     }
 }

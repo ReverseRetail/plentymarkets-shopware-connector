@@ -3,26 +3,23 @@
 namespace ShopwareAdapter\ServiceBus\CommandHandler\Order;
 
 use DateTime;
-use PlentyConnector\Connector\IdentityService\IdentityServiceInterface;
-use PlentyConnector\Connector\ServiceBus\Command\CommandInterface;
-use PlentyConnector\Connector\ServiceBus\Command\TransferObjectCommand;
-use PlentyConnector\Connector\ServiceBus\CommandHandler\CommandHandlerInterface;
-use PlentyConnector\Connector\ServiceBus\CommandType;
-use PlentyConnector\Connector\TransferObject\Order\Order;
-use PlentyConnector\Connector\TransferObject\Order\Package\Package;
-use PlentyConnector\Connector\TransferObject\OrderStatus\OrderStatus;
-use PlentyConnector\Connector\TransferObject\PaymentStatus\PaymentStatus;
-use PlentyConnector\Connector\ValueObject\Attribute\Attribute;
 use Psr\Log\LoggerInterface;
 use Shopware\Components\Api\Manager;
 use Shopware\Components\Api\Resource\Order as OrderResource;
 use Shopware\Models\Order\Status;
 use ShopwareAdapter\DataPersister\Attribute\AttributeDataPersisterInterface;
 use ShopwareAdapter\ShopwareAdapter;
+use SystemConnector\IdentityService\IdentityServiceInterface;
+use SystemConnector\ServiceBus\Command\CommandInterface;
+use SystemConnector\ServiceBus\Command\TransferObjectCommand;
+use SystemConnector\ServiceBus\CommandHandler\CommandHandlerInterface;
+use SystemConnector\ServiceBus\CommandType;
+use SystemConnector\TransferObject\Order\Order;
+use SystemConnector\TransferObject\Order\Package\Package;
+use SystemConnector\TransferObject\OrderStatus\OrderStatus;
+use SystemConnector\TransferObject\PaymentStatus\PaymentStatus;
+use SystemConnector\ValueObject\Attribute\Attribute;
 
-/**
- * Class HandleOrderCommandHandler.
- */
 class HandleOrderCommandHandler implements CommandHandlerInterface
 {
     /**
@@ -40,13 +37,6 @@ class HandleOrderCommandHandler implements CommandHandlerInterface
      */
     private $attributePersister;
 
-    /**
-     * HandleOrderCommandHandler constructor.
-     *
-     * @param IdentityServiceInterface        $identityService
-     * @param LoggerInterface                 $logger
-     * @param AttributeDataPersisterInterface $attributePersister
-     */
     public function __construct(
         IdentityServiceInterface $identityService,
         LoggerInterface $logger,

@@ -1,14 +1,11 @@
 <?php
 
-namespace PlentyConnector\Connector\Validator\ShippingProfile;
+namespace SystemConnector\Validator\ShippingProfile;
 
 use Assert\Assertion;
-use PlentyConnector\Connector\TransferObject\ShippingProfile\ShippingProfile;
-use PlentyConnector\Connector\Validator\ValidatorInterface;
+use SystemConnector\TransferObject\ShippingProfile\ShippingProfile;
+use SystemConnector\Validator\ValidatorInterface;
 
-/**
- * Class ShippingProfileValidator
- */
 class ShippingProfileValidator implements ValidatorInterface
 {
     /**

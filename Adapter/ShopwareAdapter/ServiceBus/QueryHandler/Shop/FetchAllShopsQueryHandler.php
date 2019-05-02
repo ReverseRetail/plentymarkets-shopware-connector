@@ -3,19 +3,16 @@
 namespace ShopwareAdapter\ServiceBus\QueryHandler\Shop;
 
 use Doctrine\ORM\EntityManagerInterface;
-use PlentyConnector\Connector\ServiceBus\Query\FetchTransferObjectQuery;
-use PlentyConnector\Connector\ServiceBus\Query\QueryInterface;
-use PlentyConnector\Connector\ServiceBus\QueryHandler\QueryHandlerInterface;
-use PlentyConnector\Connector\ServiceBus\QueryType;
-use PlentyConnector\Connector\TransferObject\Shop\Shop;
-use Shopware\Models\Dispatch\Repository;
+use Shopware\Models\Shop\Repository;
 use Shopware\Models\Shop\Shop as ShopModel;
 use ShopwareAdapter\ResponseParser\Shop\ShopResponseParserInterface;
 use ShopwareAdapter\ShopwareAdapter;
+use SystemConnector\ServiceBus\Query\FetchTransferObjectQuery;
+use SystemConnector\ServiceBus\Query\QueryInterface;
+use SystemConnector\ServiceBus\QueryHandler\QueryHandlerInterface;
+use SystemConnector\ServiceBus\QueryType;
+use SystemConnector\TransferObject\Shop\Shop;
 
-/**
- * Class FetchAllShopsQueryHandler
- */
 class FetchAllShopsQueryHandler implements QueryHandlerInterface
 {
     /**
@@ -28,12 +25,6 @@ class FetchAllShopsQueryHandler implements QueryHandlerInterface
      */
     private $responseParser;
 
-    /**
-     * FetchAllShopsQueryHandler constructor.
-     *
-     * @param EntityManagerInterface      $entityManager
-     * @param ShopResponseParserInterface $responseParser
-     */
     public function __construct(
         EntityManagerInterface $entityManager,
         ShopResponseParserInterface $responseParser

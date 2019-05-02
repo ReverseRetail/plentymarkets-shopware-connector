@@ -1,29 +1,27 @@
 <?php
 
-namespace PlentyConnector\Connector\ValidatorService;
+namespace SystemConnector\ValidatorService;
 
 use Assert\InvalidArgumentException;
-use PlentyConnector\Connector\TransferObject\TransferObjectInterface;
-use PlentyConnector\Connector\Validator\ValidatorInterface;
-use PlentyConnector\Connector\ValidatorService\Exception\InvalidDataException;
-use PlentyConnector\Connector\ValueObject\ValueObjectInterface;
+use DateTimeZone;
+use SystemConnector\Validator\ValidatorInterface;
+use SystemConnector\ValidatorService\Exception\InvalidDataException;
+use Traversable;
+use function is_array;
 
-/**
- * Class ValidatorService
- */
 class ValidatorService implements ValidatorServiceInterface
 {
     /**
-     * @var ValidatorInterface[]
+     * @var Traversable|ValidatorInterface[]
      */
     public $validators = [];
 
     /**
-     * @param ValidatorInterface $validator
+     * @param Traversable|ValidatorInterface[] $validators
      */
-    public function addValidator(ValidatorInterface $validator)
+    public function __construct(Traversable $validators)
     {
-        $this->validators[] = $validator;
+        $this->validators = iterator_to_array($validators);
     }
 
     /**
@@ -31,10 +29,6 @@ class ValidatorService implements ValidatorServiceInterface
      */
     public function validate($object, array $parents = [])
     {
-        if (!$this->canBeValidated($object)) {
-            return;
-        }
-
         $validators = array_filter($this->validators, function (ValidatorInterface $validator) use ($object) {
             return $validator->supports($object);
         });
@@ -47,49 +41,31 @@ class ValidatorService implements ValidatorServiceInterface
             $parents[] = $object;
             $methods = get_class_methods($object);
 
+            if (empty($methods)) {
+                return;
+            }
+
             $methods = array_filter($methods, function ($method) {
                 return 0 === stripos($method, 'get');
             });
 
             foreach ($methods as $method) {
+                if ($object instanceof DateTimeZone) {
+                    continue;
+                }
+
                 $result = $object->$method();
 
                 if (is_array($result)) {
                     foreach ($result as $item) {
-                        if (!$this->canBeValidated($item)) {
-                            continue;
-                        }
-
                         $this->validate($item, $parents);
                     }
                 } else {
-                    if (!$this->canBeValidated($result)) {
-                        continue;
-                    }
-
                     $this->validate($result, $parents);
                 }
             }
         } catch (InvalidArgumentException $exception) {
             throw InvalidDataException::fromObject($object, $exception->getMessage(), $exception->getPropertyPath(), $parents);
         }
-    }
-
-    /**
-     * @param mixed $value
-     *
-     * @return bool
-     */
-    private function canBeValidated($value)
-    {
-        if ($value instanceof TransferObjectInterface) {
-            return true;
-        }
-
-        if ($value instanceof ValueObjectInterface) {
-            return true;
-        }
-
-        return false;
     }
 }

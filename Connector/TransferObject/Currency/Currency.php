@@ -1,12 +1,9 @@
 <?php
 
-namespace PlentyConnector\Connector\TransferObject\Currency;
+namespace SystemConnector\TransferObject\Currency;
 
-use PlentyConnector\Connector\TransferObject\AbstractTransferObject;
+use SystemConnector\TransferObject\AbstractTransferObject;
 
-/**
- * Class Currency
- */
 class Currency extends AbstractTransferObject
 {
     const TYPE = 'Currency';
@@ -38,7 +35,7 @@ class Currency extends AbstractTransferObject
     }
 
     /**
-     * @param string $identifier
+     * {@inheritdoc}
      */
     public function setIdentifier($identifier)
     {
@@ -59,5 +56,16 @@ class Currency extends AbstractTransferObject
     public function setName($name)
     {
         $this->name = $name;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getClassProperties()
+    {
+        return [
+            'identifier' => $this->getIdentifier(),
+            'name' => $this->getName(),
+        ];
     }
 }

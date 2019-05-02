@@ -3,19 +3,16 @@
 namespace ShopwareAdapter\ServiceBus\QueryHandler\ShippingProfile;
 
 use Doctrine\ORM\EntityManagerInterface;
-use PlentyConnector\Connector\ServiceBus\Query\FetchTransferObjectQuery;
-use PlentyConnector\Connector\ServiceBus\Query\QueryInterface;
-use PlentyConnector\Connector\ServiceBus\QueryHandler\QueryHandlerInterface;
-use PlentyConnector\Connector\ServiceBus\QueryType;
-use PlentyConnector\Connector\TransferObject\ShippingProfile\ShippingProfile;
 use Shopware\Models\Dispatch\Dispatch;
 use Shopware\Models\Dispatch\Repository;
 use ShopwareAdapter\ResponseParser\ShippingProfile\ShippingProfileResponseParserInterface;
 use ShopwareAdapter\ShopwareAdapter;
+use SystemConnector\ServiceBus\Query\FetchTransferObjectQuery;
+use SystemConnector\ServiceBus\Query\QueryInterface;
+use SystemConnector\ServiceBus\QueryHandler\QueryHandlerInterface;
+use SystemConnector\ServiceBus\QueryType;
+use SystemConnector\TransferObject\ShippingProfile\ShippingProfile;
 
-/**
- * Class FetchAllShippingProfilesQueryHandler
- */
 class FetchAllShippingProfilesQueryHandler implements QueryHandlerInterface
 {
     /**
@@ -28,12 +25,6 @@ class FetchAllShippingProfilesQueryHandler implements QueryHandlerInterface
      */
     private $responseParser;
 
-    /**
-     * FetchAllShippingProfilesQueryHandler constructor.
-     *
-     * @param EntityManagerInterface                 $entityManager
-     * @param ShippingProfileResponseParserInterface $responseParser
-     */
     public function __construct(
         EntityManagerInterface $entityManager,
         ShippingProfileResponseParserInterface $responseParser

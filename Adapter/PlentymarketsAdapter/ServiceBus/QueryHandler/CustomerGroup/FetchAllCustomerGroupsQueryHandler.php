@@ -2,18 +2,15 @@
 
 namespace PlentymarketsAdapter\ServiceBus\QueryHandler\CustomerGroup;
 
-use PlentyConnector\Connector\ServiceBus\Query\FetchTransferObjectQuery;
-use PlentyConnector\Connector\ServiceBus\Query\QueryInterface;
-use PlentyConnector\Connector\ServiceBus\QueryHandler\QueryHandlerInterface;
-use PlentyConnector\Connector\ServiceBus\QueryType;
-use PlentyConnector\Connector\TransferObject\CustomerGroup\CustomerGroup;
 use PlentymarketsAdapter\Client\ClientInterface;
 use PlentymarketsAdapter\PlentymarketsAdapter;
 use PlentymarketsAdapter\ResponseParser\CustomerGroup\CustomerGroupResponseParserInterface;
+use SystemConnector\ServiceBus\Query\FetchTransferObjectQuery;
+use SystemConnector\ServiceBus\Query\QueryInterface;
+use SystemConnector\ServiceBus\QueryHandler\QueryHandlerInterface;
+use SystemConnector\ServiceBus\QueryType;
+use SystemConnector\TransferObject\CustomerGroup\CustomerGroup;
 
-/**
- * Class FetchAllCustomerGroupsQueryHandler
- */
 class FetchAllCustomerGroupsQueryHandler implements QueryHandlerInterface
 {
     /**
@@ -26,12 +23,6 @@ class FetchAllCustomerGroupsQueryHandler implements QueryHandlerInterface
      */
     private $responseParser;
 
-    /**
-     * FetchAllCustomerGroupsQueryHandler constructor.
-     *
-     * @param ClientInterface                      $client
-     * @param CustomerGroupResponseParserInterface $responseParser
-     */
     public function __construct(
         ClientInterface $client,
         CustomerGroupResponseParserInterface $responseParser

@@ -1,12 +1,9 @@
 <?php
 
-namespace PlentyConnector\Connector\TransferObject\MediaCategory;
+namespace SystemConnector\TransferObject\MediaCategory;
 
-use PlentyConnector\Connector\TransferObject\AbstractTransferObject;
+use SystemConnector\TransferObject\AbstractTransferObject;
 
-/**
- * Class MediaCategory
- */
 class MediaCategory extends AbstractTransferObject
 {
     const TYPE = 'MediaCategory';
@@ -38,7 +35,7 @@ class MediaCategory extends AbstractTransferObject
     }
 
     /**
-     * @param string $identifier
+     * {@inheritdoc}
      */
     public function setIdentifier($identifier)
     {
@@ -59,5 +56,16 @@ class MediaCategory extends AbstractTransferObject
     public function setName($name)
     {
         $this->name = $name;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getClassProperties()
+    {
+        return [
+            'identifier' => $this->getIdentifier(),
+            'name' => $this->getName(),
+        ];
     }
 }

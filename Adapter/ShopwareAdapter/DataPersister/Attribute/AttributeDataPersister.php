@@ -3,7 +3,6 @@
 namespace ShopwareAdapter\DataPersister\Attribute;
 
 use Assert\Assertion;
-use PlentyConnector\Connector\ValueObject\Attribute\Attribute;
 use Shopware\Bundle\AttributeBundle\Service\CrudService;
 use Shopware\Bundle\AttributeBundle\Service\DataPersister as ShopwareDataPersister;
 use Shopware\Bundle\AttributeBundle\Service\TypeMapping;
@@ -13,10 +12,8 @@ use Shopware\Models\Article\Supplier;
 use Shopware\Models\Category\Category;
 use Shopware\Models\Media\Media;
 use Shopware\Models\Order\Order;
+use SystemConnector\ValueObject\Attribute\Attribute;
 
-/**
- * Class AttributeDataPersister
- */
 class AttributeDataPersister implements AttributeDataPersisterInterface
 {
     /**
@@ -39,13 +36,6 @@ class AttributeDataPersister implements AttributeDataPersisterInterface
      */
     private $prefix = 'plenty_connector_';
 
-    /**
-     * AttributeDataPersister constructor.
-     *
-     * @param CrudService           $attributeService
-     * @param ModelManager          $entityManager
-     * @param ShopwareDataPersister $shopwareDataPersister
-     */
     public function __construct(
         CrudService $attributeService,
         ModelManager $entityManager,

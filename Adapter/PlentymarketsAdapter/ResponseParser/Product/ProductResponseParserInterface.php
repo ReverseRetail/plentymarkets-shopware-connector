@@ -2,11 +2,8 @@
 
 namespace PlentymarketsAdapter\ResponseParser\Product;
 
-use PlentyConnector\Connector\TransferObject\TransferObjectInterface;
+use SystemConnector\TransferObject\TransferObjectInterface;
 
-/**
- * Interface ProductResponseParserInterface.
- */
 interface ProductResponseParserInterface
 {
     /**

@@ -3,19 +3,16 @@
 namespace PlentymarketsAdapter\ResponseParser\Product\Image;
 
 use Exception;
-use PlentyConnector\Connector\IdentityService\IdentityServiceInterface;
-use PlentyConnector\Connector\TransferObject\Language\Language;
-use PlentyConnector\Connector\TransferObject\Product\Image\Image;
-use PlentyConnector\Connector\TransferObject\Shop\Shop;
-use PlentyConnector\Connector\ValueObject\Translation\Translation;
 use PlentymarketsAdapter\Helper\MediaCategoryHelper;
 use PlentymarketsAdapter\PlentymarketsAdapter;
 use PlentymarketsAdapter\ResponseParser\Media\MediaResponseParserInterface;
 use Psr\Log\LoggerInterface;
+use SystemConnector\IdentityService\IdentityServiceInterface;
+use SystemConnector\TransferObject\Language\Language;
+use SystemConnector\TransferObject\Product\Image\Image;
+use SystemConnector\TransferObject\Shop\Shop;
+use SystemConnector\ValueObject\Translation\Translation;
 
-/**
- * Class ImageResponseParser
- */
 class ImageResponseParser implements ImageResponseParserInterface
 {
     /**
@@ -33,13 +30,6 @@ class ImageResponseParser implements ImageResponseParserInterface
      */
     private $logger;
 
-    /**
-     * ImageResponseParser constructor.
-     *
-     * @param IdentityServiceInterface     $identityService
-     * @param MediaResponseParserInterface $mediaResponseParser
-     * @param LoggerInterface              $logger
-     */
     public function __construct(
         IdentityServiceInterface $identityService,
         MediaResponseParserInterface $mediaResponseParser,
@@ -106,6 +96,8 @@ class ImageResponseParser implements ImageResponseParserInterface
             $image->setMediaIdentifier($media->getIdentifier());
             $image->setShopIdentifiers(array_filter($shopIdentifiers));
             $image->setPosition((int) $entry['position']);
+            $image->setName($name);
+            $image->setTranslations($media->getTranslations());
 
             return $image;
         } catch (Exception $exception) {

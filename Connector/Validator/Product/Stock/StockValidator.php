@@ -1,14 +1,11 @@
 <?php
 
-namespace PlentyConnector\Connector\Validator\Product\Stock;
+namespace SystemConnector\Validator\Product\Stock;
 
 use Assert\Assertion;
-use PlentyConnector\Connector\TransferObject\Product\Stock\Stock;
-use PlentyConnector\Connector\Validator\ValidatorInterface;
+use SystemConnector\TransferObject\Product\Stock\Stock;
+use SystemConnector\Validator\ValidatorInterface;
 
-/**
- * Class StockValidator
- */
 class StockValidator implements ValidatorInterface
 {
     /**

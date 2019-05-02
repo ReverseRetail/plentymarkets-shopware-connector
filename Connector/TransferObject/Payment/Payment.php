@@ -1,15 +1,12 @@
 <?php
 
-namespace PlentyConnector\Connector\TransferObject\Payment;
+namespace SystemConnector\TransferObject\Payment;
 
-use PlentyConnector\Connector\TransferObject\AbstractTransferObject;
-use PlentyConnector\Connector\TransferObject\AttributableInterface;
-use PlentyConnector\Connector\TransferObject\Payment\PaymentData\PaymentDataInterface;
-use PlentyConnector\Connector\ValueObject\Attribute\Attribute;
+use SystemConnector\TransferObject\AbstractTransferObject;
+use SystemConnector\TransferObject\AttributableInterface;
+use SystemConnector\TransferObject\Payment\PaymentData\PaymentDataInterface;
+use SystemConnector\ValueObject\Attribute\Attribute;
 
-/**
- * Class Payment
- */
 class Payment extends AbstractTransferObject implements AttributableInterface
 {
     const TYPE = 'Payment';
@@ -75,9 +72,7 @@ class Payment extends AbstractTransferObject implements AttributableInterface
     }
 
     /**
-     * return a uuid.
-     *
-     * @return string
+     * {@inheritdoc}
      */
     public function getIdentifier()
     {
@@ -85,7 +80,7 @@ class Payment extends AbstractTransferObject implements AttributableInterface
     }
 
     /**
-     * @param string $identifier
+     * {@inheritdoc}
      */
     public function setIdentifier($identifier)
     {
@@ -234,5 +229,24 @@ class Payment extends AbstractTransferObject implements AttributableInterface
     public function setAttributes(array $attributes)
     {
         $this->attributes = $attributes;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getClassProperties()
+    {
+        return [
+            'identifier' => $this->getIdentifier(),
+            'orderIdentifier' => $this->getOrderIdentifer(),
+            'amount' => $this->getAmount(),
+            'shopIdentifier' => $this->getShopIdentifier(),
+            'currencyIdentifier' => $this->getCurrencyIdentifier(),
+            'paymentMethodIdentifier' => $this->getPaymentMethodIdentifier(),
+            'transactionReference' => $this->getTransactionReference(),
+            'accountHolder' => $this->getAccountHolder(),
+            'paymentData' => $this->getPaymentData(),
+            'attributes' => $this->getAttributes(),
+        ];
     }
 }

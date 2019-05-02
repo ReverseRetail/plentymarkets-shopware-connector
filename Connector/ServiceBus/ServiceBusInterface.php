@@ -1,10 +1,7 @@
 <?php
 
-namespace PlentyConnector\Connector\ServiceBus;
+namespace SystemConnector\ServiceBus;
 
-/**
- * Interface ServiceBusInterface.
- */
 interface ServiceBusInterface
 {
     /**

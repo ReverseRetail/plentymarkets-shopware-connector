@@ -3,32 +3,33 @@
 namespace PlentymarketsAdapter\ResponseParser\Product;
 
 use DateTimeImmutable;
-use PlentyConnector\Connector\ConfigService\ConfigServiceInterface;
-use PlentyConnector\Connector\IdentityService\Exception\NotFoundException;
-use PlentyConnector\Connector\IdentityService\IdentityServiceInterface;
-use PlentyConnector\Connector\TransferObject\Category\Category;
-use PlentyConnector\Connector\TransferObject\Language\Language;
-use PlentyConnector\Connector\TransferObject\Manufacturer\Manufacturer;
-use PlentyConnector\Connector\TransferObject\Product\Image\Image;
-use PlentyConnector\Connector\TransferObject\Product\LinkedProduct\LinkedProduct;
-use PlentyConnector\Connector\TransferObject\Product\Product;
-use PlentyConnector\Connector\TransferObject\Product\Property\Property;
-use PlentyConnector\Connector\TransferObject\Product\Property\Value\Value;
-use PlentyConnector\Connector\TransferObject\Product\Variation\Variation;
-use PlentyConnector\Connector\TransferObject\ShippingProfile\ShippingProfile;
-use PlentyConnector\Connector\TransferObject\TransferObjectInterface;
-use PlentyConnector\Connector\TransferObject\VatRate\VatRate;
-use PlentyConnector\Connector\ValueObject\Attribute\Attribute;
-use PlentyConnector\Connector\ValueObject\Translation\Translation;
+use PlentymarketsAdapter\Client\ClientInterface;
 use PlentymarketsAdapter\Helper\VariationHelperInterface;
 use PlentymarketsAdapter\PlentymarketsAdapter;
+use PlentymarketsAdapter\ReadApi\Item\Property\Group as PropertyGroupApi;
+use PlentymarketsAdapter\ReadApi\Item\Property\Name as PropertyNameApi;
 use PlentymarketsAdapter\ResponseParser\Product\Image\ImageResponseParserInterface;
 use PlentymarketsAdapter\ResponseParser\Product\Variation\VariationResponseParserInterface;
 use Psr\Log\LoggerInterface;
+use SystemConnector\ConfigService\ConfigServiceInterface;
+use SystemConnector\IdentityService\Exception\NotFoundException;
+use SystemConnector\IdentityService\IdentityServiceInterface;
+use SystemConnector\TransferObject\Category\Category;
+use SystemConnector\TransferObject\Language\Language;
+use SystemConnector\TransferObject\Manufacturer\Manufacturer;
+use SystemConnector\TransferObject\Product\Badge\Badge;
+use SystemConnector\TransferObject\Product\Image\Image;
+use SystemConnector\TransferObject\Product\LinkedProduct\LinkedProduct;
+use SystemConnector\TransferObject\Product\Product;
+use SystemConnector\TransferObject\Product\Property\Property;
+use SystemConnector\TransferObject\Product\Property\Value\Value;
+use SystemConnector\TransferObject\Product\Variation\Variation;
+use SystemConnector\TransferObject\ShippingProfile\ShippingProfile;
+use SystemConnector\TransferObject\TransferObjectInterface;
+use SystemConnector\TransferObject\VatRate\VatRate;
+use SystemConnector\ValueObject\Attribute\Attribute;
+use SystemConnector\ValueObject\Translation\Translation;
 
-/**
- * Class ProductResponseParser.
- */
 class ProductResponseParser implements ProductResponseParserInterface
 {
     /**
@@ -62,22 +63,23 @@ class ProductResponseParser implements ProductResponseParserInterface
     private $variationHelper;
 
     /**
-     * ProductResponseParser constructor.
-     *
-     * @param ConfigServiceInterface           $configService
-     * @param IdentityServiceInterface         $identityService
-     * @param LoggerInterface                  $logger
-     * @param ImageResponseParserInterface     $imageResponseParser
-     * @param VariationResponseParserInterface $variationResponseParser
-     * @param VariationHelperInterface         $variationHelper
+     * @var PropertyGroupApi
      */
+    private $itemsPropertiesGroupsNamesApi;
+
+    /**
+     * @var PropertyNameApi
+     */
+    private $itemsPropertiesNamesApi;
+
     public function __construct(
         ConfigServiceInterface $configService,
         IdentityServiceInterface $identityService,
         LoggerInterface $logger,
         ImageResponseParserInterface $imageResponseParser,
         VariationResponseParserInterface $variationResponseParser,
-        VariationHelperInterface $variationHelper
+        VariationHelperInterface $variationHelper,
+        ClientInterface $client
     ) {
         $this->configService = $configService;
         $this->identityService = $identityService;
@@ -85,6 +87,9 @@ class ProductResponseParser implements ProductResponseParserInterface
         $this->imageResponseParser = $imageResponseParser;
         $this->variationResponseParser = $variationResponseParser;
         $this->variationHelper = $variationHelper;
+
+        $this->itemsPropertiesGroupsNamesApi = new PropertyGroupApi($client);
+        $this->itemsPropertiesNamesApi = new PropertyNameApi($client);
     }
 
     /**
@@ -96,23 +101,18 @@ class ProductResponseParser implements ProductResponseParserInterface
     {
         $result = [];
 
-        $mainVariation = $this->getMainVariation($product['variations']);
+        if (empty($product['texts'])) {
+            $this->logger->notice('the product has no text fieds and will be skipped', [
+                'product id' => $product['id'],
+            ]);
+
+            return [];
+        }
+
+        $mainVariation = $this->variationHelper->getMainVariation($product['variations']);
 
         if (empty($mainVariation)) {
             return [];
-        }
-
-        $shopIdentifiers = $this->variationHelper->getShopIdentifiers($mainVariation);
-
-        if (empty($shopIdentifiers)) {
-            return [];
-        }
-
-        foreach ($product['variations'] as $val => $key) {
-            $variantShopIdentifiers = $this->variationHelper->getShopIdentifiers($key);
-            if (empty($variantShopIdentifiers)) {
-                unset($product['variations'][$val]);
-            }
         }
 
         $identity = $this->identityService->findOneOrCreate(
@@ -131,23 +131,26 @@ class ProductResponseParser implements ProductResponseParserInterface
             return $object instanceof Variation;
         });
 
+        if (empty($variations)) {
+            return [];
+        }
+
         $productObject = new Product();
         $productObject->setIdentifier($identity->getObjectIdentifier());
         # 2018-01-18 BVK change name1 to name3
         $productObject->setName((string) $product['texts'][0]['name3']);
         $productObject->setActive($this->getActive($variations, $mainVariation));
-        $productObject->setNumber($this->getProductNumber($variations));
-        $productObject->setShopIdentifiers($shopIdentifiers);
+        $productObject->setNumber($this->variationHelper->getMainVariationNumber($mainVariation, $variations));
+        $productObject->setBadges($this->getBadges($product));
+        $productObject->setShopIdentifiers($this->variationHelper->getShopIdentifiers($mainVariation));
         $productObject->setManufacturerIdentifier($this->getManufacturerIdentifier($product));
         $productObject->setCategoryIdentifiers($this->getCategories($mainVariation));
         $productObject->setDefaultCategoryIdentifiers($this->getDafaultCategories($mainVariation));
         $productObject->setShippingProfileIdentifiers($this->getShippingProfiles($product));
         $productObject->setImages($this->getImages($product, $product['texts'], $result));
         $productObject->setVatRateIdentifier($this->getVatRateIdentifier($mainVariation));
-        $productObject->setStockLimitation($this->getStockLimitation($product));
         $productObject->setDescription((string) $product['texts'][0]['shortDescription']);
         $productObject->setLongDescription((string) $product['texts'][0]['description']);
-        $productObject->setTechnicalDescription((string) $product['texts'][0]['technicalData']);
         $productObject->setMetaTitle((string) $product['texts'][0]['name1']);
         $productObject->setMetaDescription((string) $product['texts'][0]['metaDescription']);
         $productObject->setMetaKeywords((string) $product['texts'][0]['keywords']);
@@ -157,6 +160,7 @@ class ProductResponseParser implements ProductResponseParserInterface
         $productObject->setTranslations($this->getProductTranslations($product['texts']));
         $productObject->setAvailableFrom($this->getAvailableFrom($mainVariation));
         $productObject->setAvailableTo($this->getAvailableTo($mainVariation));
+        $productObject->setCreatedAt($this->getCreatedAt($mainVariation));
         $productObject->setAttributes($this->getAttributes($product));
         $productObject->setVariantConfiguration($this->getVariantConfiguration($variations));
 
@@ -184,40 +188,6 @@ class ProductResponseParser implements ProductResponseParserInterface
 
             return $object;
         }, $candidatesForProcessing);
-    }
-
-    /**
-     * @param array $product
-     *
-     * @return bool
-     */
-    private function getStockLimitation(array $product)
-    {
-        foreach ($product['variations'] as $variation) {
-            if ($variation['stockLimitation']) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    /**
-     * @param array $variations
-     *
-     * @return array
-     */
-    private function getMainVariation(array $variations)
-    {
-        $mainVariation = array_filter($variations, function ($varation) {
-            return $varation['isMain'] === true;
-        });
-
-        if (empty($mainVariation)) {
-            return [];
-        }
-
-        return array_shift($mainVariation);
     }
 
     /**
@@ -360,7 +330,7 @@ class ProductResponseParser implements ProductResponseParserInterface
             $translations[] = Translation::fromArray([
                 'languageIdentifier' => $languageIdentifier->getObjectIdentifier(),
                 'property' => 'description',
-                'value' => $text['shortDescription'],
+                'value' => $text['metaDescription'],
             ]);
 
             $translations[] = Translation::fromArray([
@@ -371,20 +341,8 @@ class ProductResponseParser implements ProductResponseParserInterface
 
             $translations[] = Translation::fromArray([
                 'languageIdentifier' => $languageIdentifier->getObjectIdentifier(),
-                'property' => 'technicalDescription',
-                'value' => $text['technicalData'],
-            ]);
-
-            $translations[] = Translation::fromArray([
-                'languageIdentifier' => $languageIdentifier->getObjectIdentifier(),
                 'property' => 'metaTitle',
                 'value' => $text['name1'],
-            ]);
-
-            $translations[] = Translation::fromArray([
-                'languageIdentifier' => $languageIdentifier->getObjectIdentifier(),
-                'property' => 'metaDescription',
-                'value' => $text['metaDescription'],
             ]);
 
             $translations[] = Translation::fromArray([
@@ -487,10 +445,64 @@ class ProductResponseParser implements ProductResponseParserInterface
                 continue;
             }
 
+            $backendName = $property['property']['backendName'];
+
             $values = [];
             $translations = [];
 
-            if ($property['property']['valueType'] === 'text') {
+            if ($property['property']['valueType'] === 'empty' && null !== $property['property']['propertyGroupId']) {
+                $propertyGroupNames = $this->itemsPropertiesGroupsNamesApi->findOne($property['property']['propertyGroupId']);
+
+                if (empty($propertyGroupNames[0]['name'])) {
+                    continue;
+                }
+
+                $backendName = $propertyGroupNames[0]['name'];
+
+                foreach ($propertyGroupNames as $name) {
+                    $languageIdentifier = $this->identityService->findOneBy([
+                        'adapterIdentifier' => $name['lang'],
+                        'adapterName' => PlentymarketsAdapter::NAME,
+                        'objectType' => Language::TYPE,
+                    ]);
+
+                    if (null === $languageIdentifier) {
+                        continue;
+                    }
+
+                    $translations[] = Translation::fromArray([
+                        'languageIdentifier' => $languageIdentifier->getObjectIdentifier(),
+                        'property' => 'name',
+                        'value' => $name['name'],
+                    ]);
+                }
+
+                $propertyNames = $this->itemsPropertiesNamesApi->findOne($property['property']['id']);
+                $valueTranslations = [];
+
+                foreach ($propertyNames as $name) {
+                    $languageIdentifier = $this->identityService->findOneBy([
+                        'adapterIdentifier' => $name['lang'],
+                        'adapterName' => PlentymarketsAdapter::NAME,
+                        'objectType' => Language::TYPE,
+                    ]);
+
+                    if (null === $languageIdentifier) {
+                        continue;
+                    }
+
+                    $valueTranslations[] = Translation::fromArray([
+                        'languageIdentifier' => $languageIdentifier->getObjectIdentifier(),
+                        'property' => 'value',
+                        'value' => $name['name'],
+                    ]);
+                }
+
+                $values[] = Value::fromArray([
+                    'value' => (string) $property['property']['backendName'],
+                    'translations' => $valueTranslations,
+                ]);
+            } elseif ($property['property']['valueType'] === 'text') {
                 if (empty($property['names'][0]['value'])) {
                     continue;
                 }
@@ -534,32 +546,32 @@ class ProductResponseParser implements ProductResponseParserInterface
 
                 foreach ($property['propertySelection'] as $selection) {
                     $languageIdentifier = $this->identityService->findOneBy([
-                            'adapterIdentifier' => $selection['lang'],
-                            'adapterName' => PlentymarketsAdapter::NAME,
-                            'objectType' => Language::TYPE,
-                        ]);
+                        'adapterIdentifier' => $selection['lang'],
+                        'adapterName' => PlentymarketsAdapter::NAME,
+                        'objectType' => Language::TYPE,
+                    ]);
 
                     if (null === $languageIdentifier) {
                         continue;
                     }
 
                     $translations[] = Translation::fromArray([
-                            'languageIdentifier' => $languageIdentifier->getObjectIdentifier(),
-                            'property' => 'name',
-                            'value' => $property['property']['backendName'],
-                        ]);
+                        'languageIdentifier' => $languageIdentifier->getObjectIdentifier(),
+                        'property' => 'name',
+                        'value' => $property['property']['backendName'],
+                    ]);
 
                     $valueTranslations[] = Translation::fromArray([
-                            'languageIdentifier' => $languageIdentifier->getObjectIdentifier(),
-                            'property' => 'value',
-                            'value' => $selection['name'],
-                        ]);
+                        'languageIdentifier' => $languageIdentifier->getObjectIdentifier(),
+                        'property' => 'value',
+                        'value' => $selection['name'],
+                    ]);
                 }
 
                 $values[] = Value::fromArray([
-                        'value' => (string) $property['propertySelection'][0]['name'],
-                        'translations' => $valueTranslations,
-                    ]);
+                    'value' => (string) $property['propertySelection'][0]['name'],
+                    'translations' => $valueTranslations,
+                ]);
             } elseif ($property['property']['valueType'] === 'int') {
                 if (null === $property['valueInt']) {
                     continue;
@@ -578,11 +590,12 @@ class ProductResponseParser implements ProductResponseParserInterface
                 ]);
             } elseif ($property['property']['valueType'] === 'file') {
                 $this->logger->notice('file properties are not supported', ['variation', $mainVariation['id']]);
+
                 continue;
             }
 
             $result[] = Property::fromArray([
-                'name' => $property['property']['backendName'],
+                'name' => $backendName,
                 'values' => $values,
                 'translations' => $translations,
             ]);
@@ -620,16 +633,30 @@ class ProductResponseParser implements ProductResponseParserInterface
     }
 
     /**
+     * @param array $mainVariation
+     *
+     * @return null|DateTimeImmutable
+     */
+    private function getCreatedAt(array $mainVariation)
+    {
+        if (!empty($mainVariation['createdAt'])) {
+            return new DateTimeImmutable($mainVariation['createdAt']);
+        }
+
+        return null;
+    }
+
+    /**
      * @param Variation[] $variations
      * @param array       $mainVariation
      *
      * @return bool
      */
-    private function getActive(array $variations = [], array $mainVariation)
+    private function getActive(array $variations, array $mainVariation)
     {
-        $checkInactiveMainVariation = json_decode($this->configService->get('check_active_main_variation'));
+        $checkActiveMainVariation = json_decode($this->configService->get('check_active_main_variation'));
 
-        if (!$mainVariation['isActive'] && !$checkInactiveMainVariation) {
+        if ($checkActiveMainVariation && !$mainVariation['isActive']) {
             return false;
         }
 
@@ -649,25 +676,13 @@ class ProductResponseParser implements ProductResponseParserInterface
      */
     private function getVariantConfiguration(array $variations = [])
     {
-        $properties = [];
+        $properties = [[]];
 
         foreach ($variations as $variation) {
-            $properties = array_merge($properties, $variation->getProperties());
+            $properties[] = $variation->getProperties();
         }
 
-        return $properties;
-    }
-
-    /**
-     * @param Variation[] $variations
-     *
-     * @return string
-     */
-    private function getProductNumber(array $variations = [])
-    {
-        $variation = array_shift($variations);
-
-        return $variation->getNumber();
+        return array_merge(...$properties);
     }
 
     /**
@@ -693,6 +708,11 @@ class ProductResponseParser implements ProductResponseParserInterface
         }
 
         $attributes[] = $this->getShortDescriptionAsAttribute($product);
+        $attributes[] = $this->getTechnicalDataAsAttribute($product);
+        $attributes[] = $this->getAgeRestrictionAsAttribute($product);
+        $attributes[] = $this->getSecondProductNameAsAttribute($product);
+        $attributes[] = $this->getThirdProductNameAsAttribute($product);
+        $attributes[] = $this->getItemIdAsAttribute($product);
 
         return $attributes;
     }
@@ -730,5 +750,155 @@ class ProductResponseParser implements ProductResponseParserInterface
         $attribute->setTranslations($translations);
 
         return $attribute;
+    }
+
+    /**
+     * @param array $product
+     *
+     * @return Attribute
+     */
+    private function getTechnicalDataAsAttribute(array $product)
+    {
+        $translations = [];
+
+        foreach ($product['texts'] as $text) {
+            $languageIdentifier = $this->identityService->findOneBy([
+                'adapterIdentifier' => $text['lang'],
+                'adapterName' => PlentymarketsAdapter::NAME,
+                'objectType' => Language::TYPE,
+            ]);
+
+            if (null === $languageIdentifier) {
+                continue;
+            }
+
+            $translations[] = Translation::fromArray([
+                'languageIdentifier' => $languageIdentifier->getObjectIdentifier(),
+                'property' => 'value',
+                'value' => $text['technicalData'],
+            ]);
+        }
+
+        $attribute = new Attribute();
+        $attribute->setKey('technicalDescription');
+        $attribute->setValue((string) $product['texts'][0]['technicalData']);
+        $attribute->setTranslations($translations);
+
+        return $attribute;
+    }
+
+    /**
+     * @param array $product
+     *
+     * @return Attribute
+     */
+    private function getSecondProductNameAsAttribute(array $product)
+    {
+        $translations = [];
+
+        foreach ($product['texts'] as $text) {
+            $languageIdentifier = $this->identityService->findOneBy([
+                'adapterIdentifier' => $text['lang'],
+                'adapterName' => PlentymarketsAdapter::NAME,
+                'objectType' => Language::TYPE,
+            ]);
+
+            if (null === $languageIdentifier) {
+                continue;
+            }
+
+            $translations[] = Translation::fromArray([
+                'languageIdentifier' => $languageIdentifier->getObjectIdentifier(),
+                'property' => 'value',
+                'value' => $text['name2'],
+            ]);
+        }
+
+        $attribute = new Attribute();
+        $attribute->setKey('secondProductName');
+        $attribute->setValue((string) $product['texts'][0]['name2']);
+        $attribute->setTranslations($translations);
+
+        return $attribute;
+    }
+
+    /**
+     * @param array $product
+     *
+     * @return Attribute
+     */
+    private function getThirdProductNameAsAttribute(array $product)
+    {
+        $translations = [];
+
+        foreach ($product['texts'] as $text) {
+            $languageIdentifier = $this->identityService->findOneBy([
+                'adapterIdentifier' => $text['lang'],
+                'adapterName' => PlentymarketsAdapter::NAME,
+                'objectType' => Language::TYPE,
+            ]);
+
+            if (null === $languageIdentifier) {
+                continue;
+            }
+
+            $translations[] = Translation::fromArray([
+                'languageIdentifier' => $languageIdentifier->getObjectIdentifier(),
+                'property' => 'value',
+                'value' => $text['name3'],
+            ]);
+        }
+
+        $attribute = new Attribute();
+        $attribute->setKey('thirdProductName');
+        $attribute->setValue((string) $product['texts'][0]['name3']);
+        $attribute->setTranslations($translations);
+
+        return $attribute;
+    }
+
+    /**
+     * @param array $product
+     *
+     * @return Attribute
+     */
+    private function getAgeRestrictionAsAttribute(array $product)
+    {
+        $attribute = new Attribute();
+        $attribute->setKey('ageRestriction');
+        $attribute->setValue((string) $product['ageRestriction']);
+
+        return $attribute;
+    }
+
+    /**
+     * @param array $product
+     *
+     * @return Attribute
+     */
+    private function getItemIdAsAttribute(array $product)
+    {
+        $attribute = new Attribute();
+        $attribute->setKey('itemId');
+        $attribute->setValue((string) $product['id']);
+
+        return $attribute;
+    }
+
+    /**
+     * @param array $product
+     *
+     * @return Badge[]
+     */
+    private function getBadges(array $product)
+    {
+        if ($product['storeSpecial'] === 3) {
+            $badge = new Badge();
+            $badge->setType(Badge::TYPE_HIGHLIGHT);
+
+            return [$badge];
+        }
+
+        return [];
     }
 }

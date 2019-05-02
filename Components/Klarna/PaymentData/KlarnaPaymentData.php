@@ -2,12 +2,9 @@
 
 namespace PlentyConnector\Components\Klarna\PaymentData;
 
-use PlentyConnector\Connector\TransferObject\Payment\PaymentData\PaymentDataInterface;
-use PlentyConnector\Connector\ValueObject\AbstractValueObject;
+use SystemConnector\TransferObject\Payment\PaymentData\PaymentDataInterface;
+use SystemConnector\ValueObject\AbstractValueObject;
 
-/**
- * Class KlarnaPaymentData
- */
 class KlarnaPaymentData extends AbstractValueObject implements PaymentDataInterface
 {
     /**
@@ -71,5 +68,17 @@ class KlarnaPaymentData extends AbstractValueObject implements PaymentDataInterf
     public function setTransactionId($transactionId)
     {
         $this->transactionId = $transactionId;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getClassProperties()
+    {
+        return [
+            'shopId' => $this->getShopId(),
+            'pclassId' => $this->getPclassId(),
+            'transactionId' => $this->getTransactionId(),
+        ];
     }
 }

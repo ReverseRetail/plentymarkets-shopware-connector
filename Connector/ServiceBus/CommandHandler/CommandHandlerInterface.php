@@ -1,12 +1,9 @@
 <?php
 
-namespace PlentyConnector\Connector\ServiceBus\CommandHandler;
+namespace SystemConnector\ServiceBus\CommandHandler;
 
-use PlentyConnector\Connector\ServiceBus\Command\CommandInterface;
+use SystemConnector\ServiceBus\Command\CommandInterface;
 
-/**
- * Interface CommandHandlerInterface.
- */
 interface CommandHandlerInterface
 {
     /**

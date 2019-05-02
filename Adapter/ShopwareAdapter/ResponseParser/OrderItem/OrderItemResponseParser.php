@@ -4,17 +4,15 @@ namespace ShopwareAdapter\ResponseParser\OrderItem;
 
 use Doctrine\ORM\EntityRepository;
 use InvalidArgumentException;
-use PlentyConnector\Connector\IdentityService\Exception\NotFoundException;
-use PlentyConnector\Connector\IdentityService\IdentityServiceInterface;
-use PlentyConnector\Connector\TransferObject\Order\OrderItem\OrderItem;
-use PlentyConnector\Connector\TransferObject\VatRate\VatRate;
 use Shopware\Models\Tax\Tax;
 use ShopwareAdapter\ResponseParser\GetAttributeTrait;
 use ShopwareAdapter\ShopwareAdapter;
+use SystemConnector\ConfigService\ConfigServiceInterface;
+use SystemConnector\IdentityService\Exception\NotFoundException;
+use SystemConnector\IdentityService\IdentityServiceInterface;
+use SystemConnector\TransferObject\Order\OrderItem\OrderItem;
+use SystemConnector\TransferObject\VatRate\VatRate;
 
-/**
- * Class OrderItemResponseParser
- */
 class OrderItemResponseParser implements OrderItemResponseParserInterface
 {
     use GetAttributeTrait;
@@ -29,20 +27,23 @@ class OrderItemResponseParser implements OrderItemResponseParserInterface
     private $taxRepository;
 
     /**
+     * @var ConfigServiceInterface
+     */
+    private $configService;
+
+    /**
      * @var IdentityServiceInterface
      */
     private $identityService;
 
-    /**
-     * OrderItemResponseParser constructor.
-     *
-     * @param IdentityServiceInterface $identityService
-     * @param EntityRepository         $taxRepository
-     */
-    public function __construct(IdentityServiceInterface $identityService, EntityRepository $taxRepository)
-    {
+    public function __construct(
+        IdentityServiceInterface $identityService,
+        EntityRepository $taxRepository,
+        ConfigServiceInterface $configService
+    ) {
         $this->identityService = $identityService;
         $this->taxRepository = $taxRepository;
+        $this->configService = $configService;
     }
 
     /**
@@ -57,29 +58,26 @@ class OrderItemResponseParser implements OrderItemResponseParserInterface
         /**
          * @var OrderItem $orderItem
          */
-        $orderItem = OrderItem::fromArray([
+        return OrderItem::fromArray([
             'type' => $this->getItemType($entry['mode']),
             'quantity' => (float) $entry['quantity'],
             'name' => $entry['articleName'],
             'number' => $entry['articleNumber'],
             'price' => $this->getPrice($entry, $taxFree),
-            'vatRateIdentifier' => $this->getVatRateIdentifier($entry, $taxFree),
+            'vatRateIdentifier' => $this->getVatRateIdentifier($entry),
             'attributes' => $this->getAttributes($entry['attribute']),
         ]);
-
-        return $orderItem;
     }
 
     /**
      * @param array $entry
-     * @param bool  $taxFree
      *
      * @return null|string
      */
-    private function getVatRateIdentifier(array $entry, $taxFree)
+    private function getVatRateIdentifier(array $entry)
     {
         /**
-         * @var Tax|null $taxModel
+         * @var null|Tax $taxModel
          */
         $taxModel = $this->taxRepository->findOneBy(['tax' => $entry['taxRate']]);
 
@@ -115,6 +113,10 @@ class OrderItemResponseParser implements OrderItemResponseParserInterface
             case self::ITEM_TYPE_ID_DISCOUNT:
                 return OrderItem::TYPE_DISCOUNT;
             case self::ITEM_TYPE_ID_SURCHARGE:
+                if (json_decode($this->configService->get('surcharge_as_product'), false)) {
+                    return OrderItem::TYPE_PRODUCT;
+                }
+
                 return OrderItem::TYPE_PAYMENT_SURCHARGE;
             default:
                 return OrderItem::TYPE_PRODUCT;

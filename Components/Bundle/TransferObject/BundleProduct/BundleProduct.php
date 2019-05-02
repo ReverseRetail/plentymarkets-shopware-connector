@@ -2,12 +2,9 @@
 
 namespace PlentyConnector\Components\Bundle\TransferObject\BundleProduct;
 
-use PlentyConnector\Connector\ValueObject\AbstractValueObject;
-use PlentyConnector\Connector\ValueObject\Attribute\Attribute;
+use SystemConnector\ValueObject\AbstractValueObject;
+use SystemConnector\ValueObject\Attribute\Attribute;
 
-/**
- * Class Product
- */
 class BundleProduct extends AbstractValueObject
 {
     /**
@@ -92,5 +89,18 @@ class BundleProduct extends AbstractValueObject
     public function setAttributes($attributes)
     {
         $this->attributes = $attributes;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getClassProperties()
+    {
+        return [
+            'number' => $this->getNumber(),
+            'amount' => $this->getAmount(),
+            'position' => $this->getPosition(),
+            'attributes' => $this->getAttributes(),
+        ];
     }
 }

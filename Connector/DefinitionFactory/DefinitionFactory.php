@@ -1,47 +1,32 @@
 <?php
 
-namespace PlentyConnector\Connector\DefinitionFactory;
+namespace SystemConnector\DefinitionFactory;
 
-use PlentyConnector\Connector\ValidatorService\ValidatorServiceInterface;
-use PlentyConnector\Connector\ValueObject\Definition\Definition;
-use PlentyConnector\Connector\ValueObject\ValueObjectInterface;
+use SystemConnector\DefinitionProvider\Struct\Definition;
+use SystemConnector\ValidatorService\ValidatorServiceInterface;
 
-/**
- * Class DefinitionFactory
- */
-class DefinitionFactory
+class DefinitionFactory implements DefinitionFactoryInterface
 {
     /**
      * @var ValidatorServiceInterface
      */
     private $validator;
 
-    /**
-     * DefinitionFactory constructor.
-     *
-     * @param ValidatorServiceInterface $validator
-     */
     public function __construct(ValidatorServiceInterface $validator)
     {
         $this->validator = $validator;
     }
 
     /**
-     * @param string   $originAdapterName
-     * @param string   $destinationAdapterName
-     * @param string   $objectType
-     * @param null|int $priority
-     *
-     * @return ValueObjectInterface
+     * {@inheritdoc}
      */
     public function factory($originAdapterName, $destinationAdapterName, $objectType, $priority = null)
     {
-        $definition = Definition::fromArray([
-            'originAdapterName' => $originAdapterName,
-            'destinationAdapterName' => $destinationAdapterName,
-            'objectType' => $objectType,
-            'priority' => $priority,
-        ]);
+        $definition = new Definition();
+        $definition->setOriginAdapterName($originAdapterName);
+        $definition->setDestinationAdapterName($destinationAdapterName);
+        $definition->setObjectType($objectType);
+        $definition->setPriority($priority);
 
         $this->validator->validate($definition);
 

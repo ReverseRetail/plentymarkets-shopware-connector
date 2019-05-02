@@ -2,19 +2,16 @@
 
 namespace PlentymarketsAdapter\ServiceBus\QueryHandler\Manufacturer;
 
-use PlentyConnector\Connector\IdentityService\IdentityServiceInterface;
-use PlentyConnector\Connector\ServiceBus\Query\FetchTransferObjectQuery;
-use PlentyConnector\Connector\ServiceBus\Query\QueryInterface;
-use PlentyConnector\Connector\ServiceBus\QueryHandler\QueryHandlerInterface;
-use PlentyConnector\Connector\ServiceBus\QueryType;
-use PlentyConnector\Connector\TransferObject\Manufacturer\Manufacturer;
 use PlentymarketsAdapter\Client\ClientInterface;
 use PlentymarketsAdapter\PlentymarketsAdapter;
 use PlentymarketsAdapter\ResponseParser\Manufacturer\ManufacturerResponseParserInterface;
+use SystemConnector\IdentityService\IdentityServiceInterface;
+use SystemConnector\ServiceBus\Query\FetchTransferObjectQuery;
+use SystemConnector\ServiceBus\Query\QueryInterface;
+use SystemConnector\ServiceBus\QueryHandler\QueryHandlerInterface;
+use SystemConnector\ServiceBus\QueryType;
+use SystemConnector\TransferObject\Manufacturer\Manufacturer;
 
-/**
- * Class FetchManufacturerQueryHandler
- */
 class FetchManufacturerQueryHandler implements QueryHandlerInterface
 {
     /**
@@ -32,13 +29,6 @@ class FetchManufacturerQueryHandler implements QueryHandlerInterface
      */
     private $identityService;
 
-    /**
-     * FetchManufacturerQueryHandler constructor.
-     *
-     * @param ClientInterface                     $client
-     * @param ManufacturerResponseParserInterface $manufacturerResponseParser
-     * @param IdentityServiceInterface            $identityService
-     */
     public function __construct(
         ClientInterface $client,
         ManufacturerResponseParserInterface $manufacturerResponseParser,

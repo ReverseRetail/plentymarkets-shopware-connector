@@ -1,20 +1,17 @@
 <?php
 
-namespace PlentyConnector\Connector\Validator\Product;
+namespace SystemConnector\Validator\Product;
 
 use Assert\Assertion;
 use DateTimeImmutable;
-use PlentyConnector\Connector\TransferObject\Product\Image\Image;
-use PlentyConnector\Connector\TransferObject\Product\LinkedProduct\LinkedProduct;
-use PlentyConnector\Connector\TransferObject\Product\Product;
-use PlentyConnector\Connector\TransferObject\Product\Property\Property;
-use PlentyConnector\Connector\Validator\ValidatorInterface;
-use PlentyConnector\Connector\ValueObject\Attribute\Attribute;
-use PlentyConnector\Connector\ValueObject\Translation\Translation;
+use SystemConnector\TransferObject\Product\Image\Image;
+use SystemConnector\TransferObject\Product\LinkedProduct\LinkedProduct;
+use SystemConnector\TransferObject\Product\Product;
+use SystemConnector\TransferObject\Product\Property\Property;
+use SystemConnector\Validator\ValidatorInterface;
+use SystemConnector\ValueObject\Attribute\Attribute;
+use SystemConnector\ValueObject\Translation\Translation;
 
-/**
- * Class ProductValidator
- */
 class ProductValidator implements ValidatorInterface
 {
     /**
@@ -55,11 +52,8 @@ class ProductValidator implements ValidatorInterface
 
         Assertion::uuid($object->getVatRateIdentifier(), null, 'product.vatRateIdentifier');
 
-        Assertion::boolean($object->hasStockLimitation(), null, 'product.stockLimitation');
-
         Assertion::string($object->getDescription(), null, 'product.description');
         Assertion::string($object->getLongDescription(), null, 'product.longDescription');
-        Assertion::string($object->getTechnicalDescription(), null, 'product.technicalDescription');
 
         Assertion::string($object->getMetaTitle(), null, 'product.metaTitle');
         Assertion::string($object->getMetaDescription(), null, 'product.metaDescription');

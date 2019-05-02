@@ -1,16 +1,15 @@
 <?php
 
-namespace PlentyConnector\Connector\TransferObject;
+namespace SystemConnector\TransferObject;
 
-/**
- * Class AbstractTransferObject
- */
-abstract class AbstractTransferObject implements TransferObjectInterface
+use JsonSerializable;
+
+abstract class AbstractTransferObject implements TransferObjectInterface, JsonSerializable
 {
     /**
      * @param array $params
      *
-     * @return TransferObjectInterface
+     * @return $this
      */
     public static function fromArray(array $params = [])
     {
@@ -25,5 +24,18 @@ abstract class AbstractTransferObject implements TransferObjectInterface
         }
 
         return $object;
+    }
+
+    abstract public function getClassProperties();
+
+    /**
+     * {@inheritdoc}
+     */
+    public function jsonSerialize()
+    {
+        return [
+            'class' => static::class,
+            'properties' => $this->getClassProperties(),
+        ];
     }
 }

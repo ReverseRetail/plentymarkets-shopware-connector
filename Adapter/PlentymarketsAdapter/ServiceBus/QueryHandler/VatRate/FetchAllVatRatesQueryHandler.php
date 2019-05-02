@@ -2,18 +2,15 @@
 
 namespace PlentymarketsAdapter\ServiceBus\QueryHandler\VatRate;
 
-use PlentyConnector\Connector\ServiceBus\Query\FetchTransferObjectQuery;
-use PlentyConnector\Connector\ServiceBus\Query\QueryInterface;
-use PlentyConnector\Connector\ServiceBus\QueryHandler\QueryHandlerInterface;
-use PlentyConnector\Connector\ServiceBus\QueryType;
-use PlentyConnector\Connector\TransferObject\VatRate\VatRate;
 use PlentymarketsAdapter\Client\ClientInterface;
 use PlentymarketsAdapter\PlentymarketsAdapter;
 use PlentymarketsAdapter\ResponseParser\VatRate\VatRateResponseParserInterface;
+use SystemConnector\ServiceBus\Query\FetchTransferObjectQuery;
+use SystemConnector\ServiceBus\Query\QueryInterface;
+use SystemConnector\ServiceBus\QueryHandler\QueryHandlerInterface;
+use SystemConnector\ServiceBus\QueryType;
+use SystemConnector\TransferObject\VatRate\VatRate;
 
-/**
- * Class FetchAllVatRatesQueryHandler
- */
 class FetchAllVatRatesQueryHandler implements QueryHandlerInterface
 {
     /**
@@ -26,12 +23,6 @@ class FetchAllVatRatesQueryHandler implements QueryHandlerInterface
      */
     private $responseParser;
 
-    /**
-     * FetchAllVatRatesQueryHandler constructor.
-     *
-     * @param ClientInterface                $client
-     * @param VatRateResponseParserInterface $responseParser
-     */
     public function __construct(
         ClientInterface $client,
         VatRateResponseParserInterface $responseParser

@@ -2,13 +2,10 @@
 
 namespace PlentymarketsAdapter\ResponseParser\PaymentStatus;
 
-use PlentyConnector\Connector\IdentityService\IdentityServiceInterface;
-use PlentyConnector\Connector\TransferObject\PaymentStatus\PaymentStatus;
 use PlentymarketsAdapter\PlentymarketsAdapter;
+use SystemConnector\IdentityService\IdentityServiceInterface;
+use SystemConnector\TransferObject\PaymentStatus\PaymentStatus;
 
-/**
- * Class PaymentStatusResponseParser
- */
 class PaymentStatusResponseParser implements PaymentStatusResponseParserInterface
 {
     /**
@@ -16,11 +13,6 @@ class PaymentStatusResponseParser implements PaymentStatusResponseParserInterfac
      */
     private $identityService;
 
-    /**
-     * PaymentStatusResponseParser constructor.
-     *
-     * @param IdentityServiceInterface $identityService
-     */
     public function __construct(IdentityServiceInterface $identityService)
     {
         $this->identityService = $identityService;

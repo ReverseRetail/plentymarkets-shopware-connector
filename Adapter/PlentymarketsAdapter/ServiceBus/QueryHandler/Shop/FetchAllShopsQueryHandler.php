@@ -2,18 +2,15 @@
 
 namespace PlentymarketsAdapter\ServiceBus\QueryHandler\Shop;
 
-use PlentyConnector\Connector\ServiceBus\Query\FetchTransferObjectQuery;
-use PlentyConnector\Connector\ServiceBus\Query\QueryInterface;
-use PlentyConnector\Connector\ServiceBus\QueryHandler\QueryHandlerInterface;
-use PlentyConnector\Connector\ServiceBus\QueryType;
-use PlentyConnector\Connector\TransferObject\Shop\Shop;
 use PlentymarketsAdapter\Client\ClientInterface;
 use PlentymarketsAdapter\PlentymarketsAdapter;
 use PlentymarketsAdapter\ResponseParser\Shop\ShopResponseParserInterface;
+use SystemConnector\ServiceBus\Query\FetchTransferObjectQuery;
+use SystemConnector\ServiceBus\Query\QueryInterface;
+use SystemConnector\ServiceBus\QueryHandler\QueryHandlerInterface;
+use SystemConnector\ServiceBus\QueryType;
+use SystemConnector\TransferObject\Shop\Shop;
 
-/**
- * Class FetchAllShopsQueryHandler
- */
 class FetchAllShopsQueryHandler implements QueryHandlerInterface
 {
     /**
@@ -26,12 +23,6 @@ class FetchAllShopsQueryHandler implements QueryHandlerInterface
      */
     private $responseParser;
 
-    /**
-     * FetchAllShopsQueryHandler constructor.
-     *
-     * @param ClientInterface             $client
-     * @param ShopResponseParserInterface $responseParser
-     */
     public function __construct(
         ClientInterface $client,
         ShopResponseParserInterface $responseParser

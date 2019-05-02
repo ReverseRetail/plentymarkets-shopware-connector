@@ -1,12 +1,9 @@
 <?php
 
-namespace PlentyConnector\Connector\ServiceBus\QueryFactory;
+namespace SystemConnector\ServiceBus\QueryFactory;
 
-use PlentyConnector\Connector\ServiceBus\Query\QueryInterface;
+use SystemConnector\ServiceBus\Query\QueryInterface;
 
-/**
- * Class QueryFactoryInterface.
- */
 interface QueryFactoryInterface
 {
     /**

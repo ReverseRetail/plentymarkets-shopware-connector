@@ -1,13 +1,10 @@
 <?php
 
-namespace PlentyConnector\Connector\ServiceBus\CommandHandlerMiddleware\Exception;
+namespace SystemConnector\ServiceBus\CommandHandlerMiddleware\Exception;
 
 use Exception;
-use PlentyConnector\Connector\ServiceBus\Command\CommandInterface;
+use SystemConnector\ServiceBus\Command\CommandInterface;
 
-/**
- * Class NotFoundException.
- */
 class NotFoundException extends Exception
 {
     /**

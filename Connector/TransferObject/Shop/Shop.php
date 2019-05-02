@@ -1,12 +1,9 @@
 <?php
 
-namespace PlentyConnector\Connector\TransferObject\Shop;
+namespace SystemConnector\TransferObject\Shop;
 
-use PlentyConnector\Connector\TransferObject\AbstractTransferObject;
+use SystemConnector\TransferObject\AbstractTransferObject;
 
-/**
- * Class Shop
- */
 class Shop extends AbstractTransferObject
 {
     const TYPE = 'Shop';
@@ -38,7 +35,7 @@ class Shop extends AbstractTransferObject
     }
 
     /**
-     * @param string $identifier
+     * {@inheritdoc}
      */
     public function setIdentifier($identifier)
     {
@@ -59,5 +56,16 @@ class Shop extends AbstractTransferObject
     public function setName($name)
     {
         $this->name = $name;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getClassProperties()
+    {
+        return [
+            'identifier' => $this->getIdentifier(),
+            'name' => $this->getName(),
+        ];
     }
 }

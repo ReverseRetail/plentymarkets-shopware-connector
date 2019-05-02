@@ -1,13 +1,10 @@
 <?php
 
-namespace PlentyConnector\Connector\TransferObject\Order\Package;
+namespace SystemConnector\TransferObject\Order\Package;
 
 use DateTimeImmutable;
-use PlentyConnector\Connector\ValueObject\AbstractValueObject;
+use SystemConnector\ValueObject\AbstractValueObject;
 
-/**
- * Class Package
- */
 class Package extends AbstractValueObject
 {
     /**
@@ -25,9 +22,6 @@ class Package extends AbstractValueObject
      */
     private $shippingProvider;
 
-    /**
-     * Package constructor.
-     */
     public function __construct()
     {
         $this->shippingTime = new DateTimeImmutable('now');
@@ -79,5 +73,17 @@ class Package extends AbstractValueObject
     public function setShippingProvider($shippingProvider = null)
     {
         $this->shippingProvider = $shippingProvider;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getClassProperties()
+    {
+        return [
+            'shippingTime' => $this->getShippingTime(),
+            'shippingCode' => $this->getShippingCode(),
+            'shippingProvider' => $this->getShippingProvider(),
+        ];
     }
 }

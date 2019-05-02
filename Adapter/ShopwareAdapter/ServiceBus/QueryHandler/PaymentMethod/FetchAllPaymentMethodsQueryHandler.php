@@ -3,19 +3,16 @@
 namespace ShopwareAdapter\ServiceBus\QueryHandler\PaymentMethod;
 
 use Doctrine\ORM\EntityManagerInterface;
-use PlentyConnector\Connector\ServiceBus\Query\FetchTransferObjectQuery;
-use PlentyConnector\Connector\ServiceBus\Query\QueryInterface;
-use PlentyConnector\Connector\ServiceBus\QueryHandler\QueryHandlerInterface;
-use PlentyConnector\Connector\ServiceBus\QueryType;
-use PlentyConnector\Connector\TransferObject\PaymentMethod\PaymentMethod;
 use Shopware\Models\Payment\Payment;
 use Shopware\Models\Payment\Repository;
 use ShopwareAdapter\ResponseParser\PaymentMethod\PaymentMethodResponseParserInterface;
 use ShopwareAdapter\ShopwareAdapter;
+use SystemConnector\ServiceBus\Query\FetchTransferObjectQuery;
+use SystemConnector\ServiceBus\Query\QueryInterface;
+use SystemConnector\ServiceBus\QueryHandler\QueryHandlerInterface;
+use SystemConnector\ServiceBus\QueryType;
+use SystemConnector\TransferObject\PaymentMethod\PaymentMethod;
 
-/**
- * Class FetchAllPaymentMethodsQueryHandler
- */
 class FetchAllPaymentMethodsQueryHandler implements QueryHandlerInterface
 {
     /**
@@ -28,12 +25,6 @@ class FetchAllPaymentMethodsQueryHandler implements QueryHandlerInterface
      */
     private $responseParser;
 
-    /**
-     * FetchAllPaymentMethodsQueryHandler constructor.
-     *
-     * @param EntityManagerInterface               $entityManager
-     * @param PaymentMethodResponseParserInterface $responseParser
-     */
     public function __construct(
         EntityManagerInterface $entityManager,
         PaymentMethodResponseParserInterface $responseParser

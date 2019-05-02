@@ -3,21 +3,18 @@
 namespace PlentyConnector\Components\Sepa\Plentymarkets;
 
 use PlentyConnector\Components\Sepa\PaymentData\SepaPaymentData;
-use PlentyConnector\Connector\IdentityService\Exception\NotFoundException;
-use PlentyConnector\Connector\IdentityService\IdentityServiceInterface;
-use PlentyConnector\Connector\ServiceBus\Command\CommandInterface;
-use PlentyConnector\Connector\ServiceBus\Command\TransferObjectCommand;
-use PlentyConnector\Connector\ServiceBus\CommandHandler\CommandHandlerInterface;
-use PlentyConnector\Connector\ServiceBus\CommandType;
-use PlentyConnector\Connector\TransferObject\Order\Order;
-use PlentyConnector\Connector\TransferObject\Payment\Payment;
-use PlentyConnector\Connector\ValueObject\Identity\Identity;
 use PlentymarketsAdapter\Client\ClientInterface;
 use PlentymarketsAdapter\PlentymarketsAdapter;
+use SystemConnector\IdentityService\Exception\NotFoundException;
+use SystemConnector\IdentityService\IdentityServiceInterface;
+use SystemConnector\IdentityService\Struct\Identity;
+use SystemConnector\ServiceBus\Command\CommandInterface;
+use SystemConnector\ServiceBus\Command\TransferObjectCommand;
+use SystemConnector\ServiceBus\CommandHandler\CommandHandlerInterface;
+use SystemConnector\ServiceBus\CommandType;
+use SystemConnector\TransferObject\Order\Order;
+use SystemConnector\TransferObject\Payment\Payment;
 
-/**
- * Class HandleSepaPaymentCommandHandler.
- */
 class HandleSepaPaymentCommandHandler implements CommandHandlerInterface
 {
     /**
@@ -35,13 +32,6 @@ class HandleSepaPaymentCommandHandler implements CommandHandlerInterface
      */
     private $identityService;
 
-    /**
-     * HandleSepaPaymentCommandHandler constructor.
-     *
-     * @param CommandHandlerInterface  $parentCommandHandler
-     * @param ClientInterface          $client
-     * @param IdentityServiceInterface $identityService
-     */
     public function __construct(
         CommandHandlerInterface $parentCommandHandler,
         ClientInterface $client,
@@ -119,7 +109,7 @@ class HandleSepaPaymentCommandHandler implements CommandHandlerInterface
         if (!empty($possibleBankAccounts)) {
             $possibleBankAccounts = array_shift($possibleBankAccounts);
 
-            $this->identityService->create(
+            $this->identityService->insert(
                 $payment->getIdentifier(),
                 Payment::TYPE,
                 (string) $possibleBankAccounts['id'],
@@ -140,7 +130,7 @@ class HandleSepaPaymentCommandHandler implements CommandHandlerInterface
 
         $paymentResult = $this->client->request('POST', 'accounts/contacts/banks', $sepaPaymentDataParams);
 
-        $this->identityService->create(
+        $this->identityService->insert(
             $payment->getIdentifier(),
             Payment::TYPE,
             (string) $paymentResult['id'],

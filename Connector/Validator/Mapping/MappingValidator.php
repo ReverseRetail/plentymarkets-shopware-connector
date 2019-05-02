@@ -1,15 +1,12 @@
 <?php
 
-namespace PlentyConnector\Connector\Validator\Mapping;
+namespace SystemConnector\Validator\Mapping;
 
 use Assert\Assertion;
-use PlentyConnector\Connector\TransferObject\TransferObjectInterface;
-use PlentyConnector\Connector\Validator\ValidatorInterface;
-use PlentyConnector\Connector\ValueObject\Mapping\Mapping;
+use SystemConnector\MappingService\Struct\Mapping;
+use SystemConnector\TransferObject\TransferObjectInterface;
+use SystemConnector\Validator\ValidatorInterface;
 
-/**
- * Class MappingValidator
- */
 class MappingValidator implements ValidatorInterface
 {
     /**

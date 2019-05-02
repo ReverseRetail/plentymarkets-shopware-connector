@@ -2,27 +2,19 @@
 
 namespace ShopwareAdapter\RequestGenerator\Product\ConfiguratorSet;
 
-use PlentyConnector\Connector\ConfigService\ConfigServiceInterface;
-use PlentyConnector\Connector\TransferObject\Product\Product;
+use SystemConnector\ConfigService\ConfigServiceInterface;
+use SystemConnector\TransferObject\Product\Product;
 
-/**
- * Class ConfiguratorSetRequestGenerator
- */
 class ConfiguratorSetRequestGenerator implements ConfiguratorSetRequestGeneratorInterface
 {
     /**
      * @var ConfigServiceInterface
      */
-    private $config;
+    private $configService;
 
-    /**
-     * ConfiguratorSetRequestGenerator constructor.
-     *
-     * @param ConfigServiceInterface $config
-     */
-    public function __construct(ConfigServiceInterface $config)
+    public function __construct(ConfigServiceInterface $configService)
     {
-        $this->config = $config;
+        $this->configService = $configService;
     }
 
     /**
@@ -35,11 +27,13 @@ class ConfiguratorSetRequestGenerator implements ConfiguratorSetRequestGenerator
             $propertyName = $property->getName();
 
             $groups[$propertyName]['name'] = $propertyName;
+            $groups[$propertyName]['position'] = $property->getPosition();
 
             foreach ($property->getValues() as $value) {
                 $propertyValue = $value->getValue();
 
                 $groups[$propertyName]['options'][$propertyValue]['name'] = $propertyValue;
+                $groups[$propertyName]['options'][$propertyValue]['position'] = $value->getPosition();
             }
         }
 
@@ -49,7 +43,7 @@ class ConfiguratorSetRequestGenerator implements ConfiguratorSetRequestGenerator
 
         return [
             'name' => $product->getName(),
-            'type' => (int) $this->config->get('product_configurator_type', 0),
+            'type' => (int) $this->configService->get('product_configurator_type', 0),
             'groups' => $groups,
         ];
     }

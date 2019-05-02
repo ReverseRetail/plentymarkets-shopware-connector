@@ -2,25 +2,15 @@
 
 namespace PlentyConnector;
 
+use DateTimeImmutable;
 use Doctrine\DBAL\Connection;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
-use PlentyConnector\Connector\BacklogService\Model\Backlog;
-use PlentyConnector\Connector\ConfigService\Model\Config;
-use PlentyConnector\Connector\IdentityService\IdentityServiceInterface;
-use PlentyConnector\Connector\IdentityService\Model\Identity;
-use PlentyConnector\Connector\TransferObject\Category\Category;
-use PlentyConnector\Connector\TransferObject\PaymentStatus\PaymentStatus;
-use PlentyConnector\DependencyInjection\CompilerPass\CleanupDefinitionCompilerPass;
-use PlentyConnector\DependencyInjection\CompilerPass\CommandGeneratorCompilerPass;
-use PlentyConnector\DependencyInjection\CompilerPass\CommandHandlerCompilerPass;
-use PlentyConnector\DependencyInjection\CompilerPass\ConnectorDefinitionCompilerPass;
-use PlentyConnector\DependencyInjection\CompilerPass\MappingDefinitionCompilerPass;
-use PlentyConnector\DependencyInjection\CompilerPass\QueryGeneratorCompilerPass;
-use PlentyConnector\DependencyInjection\CompilerPass\QueryHandlerCompilerPass;
-use PlentyConnector\DependencyInjection\CompilerPass\ValidatorServiceCompilerPass;
 use PlentyConnector\Installer\CronjobInstaller;
 use PlentyConnector\Installer\DatabaseInstaller;
+use PlentyConnector\Installer\Model\Backlog;
+use PlentyConnector\Installer\Model\Config;
+use PlentyConnector\Installer\Model\Identity;
 use PlentyConnector\Installer\PermissionInstaller;
 use Shopware\Components\Model\ModelManager;
 use Shopware\Components\Plugin;
@@ -32,12 +22,13 @@ use Shopware_Components_Acl;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
+use SystemConnector\BacklogService\BacklogService;
+use SystemConnector\IdentityService\IdentityServiceInterface;
+use SystemConnector\TransferObject\Category\Category;
+use SystemConnector\TransferObject\PaymentStatus\PaymentStatus;
 
 require __DIR__ . '/autoload.php';
 
-/**
- * Class PlentyConnector.
- */
 class PlentyConnector extends Plugin
 {
     const PERMISSION_READ = 'read';
@@ -85,14 +76,23 @@ class PlentyConnector extends Plugin
         $container->setParameter('plenty_connector.plugin_dir', $this->getPath());
 
         $this->loadFile($container, __DIR__ . '/DependencyInjection/services.xml');
+        $this->loadFile($container, __DIR__ . '/DependencyInjection/definitions.xml');
+
+        $this->loadFile($container, __DIR__ . '/Connector/DependencyInjection/services.xml');
+        $this->loadFile($container, __DIR__ . '/Connector/DependencyInjection/commands.xml');
+        $this->loadFile($container, __DIR__ . '/Connector/DependencyInjection/validators.xml');
 
         $this->loadFile($container, __DIR__ . '/Adapter/ShopwareAdapter/DependencyInjection/services.xml');
         $this->loadFile($container, __DIR__ . '/Adapter/PlentymarketsAdapter/DependencyInjection/services.xml');
 
         $this->loadFile($container, __DIR__ . '/Components/Sepa/DependencyInjection/services.xml');
 
-        if ($this->pluginExists($container, ['SwagPaymentPaypal', 'SwagPaymentPayPalInstallments', 'SwagPaymentPaypalPlus'])) {
+        if ($this->pluginExists($container, ['SwagPaymentPaypal', 'SwagPaymentPayPalInstallments', 'SwagPaymentPaypalPlus', 'SwagPaymentPayPalUnified'])) {
             $this->loadFile($container, __DIR__ . '/Components/PayPal/DependencyInjection/services.xml');
+        }
+
+        if ($this->pluginExists($container, ['BestitAmazonPay'])) {
+            $this->loadFile($container, __DIR__ . '/Components/AmazonPay/DependencyInjection/services.xml');
         }
 
         if ($this->pluginExists($container, ['SwagPaymentKlarnaKpm'])) {
@@ -103,14 +103,9 @@ class PlentyConnector extends Plugin
             $this->loadFile($container, __DIR__ . '/Components/Bundle/DependencyInjection/services.xml');
         }
 
-        $container->addCompilerPass(new CleanupDefinitionCompilerPass());
-        $container->addCompilerPass(new CommandGeneratorCompilerPass());
-        $container->addCompilerPass(new CommandHandlerCompilerPass());
-        $container->addCompilerPass(new ConnectorDefinitionCompilerPass());
-        $container->addCompilerPass(new MappingDefinitionCompilerPass());
-        $container->addCompilerPass(new QueryGeneratorCompilerPass());
-        $container->addCompilerPass(new QueryHandlerCompilerPass());
-        $container->addCompilerPass(new ValidatorServiceCompilerPass());
+        if ($this->pluginExists($container, ['SwagCustomProducts'])) {
+            $this->loadFile($container, __DIR__ . '/Components/CustomProducts/DependencyInjection/services.xml');
+        }
 
         parent::build($container);
     }
@@ -210,6 +205,12 @@ class PlentyConnector extends Plugin
 
         if ($this->updateNeeded($context, '4.0.4') && $this->updatePossible($context, '2.0.0')) {
             $this->updateBacklogTable();
+        }
+
+        if ($this->updateNeeded($context, '5.0.0') && $this->updatePossible($context, '4.0.0')) {
+            $this->modifyLastChangedConfigEntries('-1 week');
+            $this->clearBacklogTable();
+            $this->repairTranslationTable();
         }
 
         parent::update($context);
@@ -375,6 +376,47 @@ class PlentyConnector extends Plugin
         $entityManager->flush();
     }
 
+    /**
+     * @param string $diff
+     *
+     * @throws Exception
+     */
+    private function modifyLastChangedConfigEntries($diff)
+    {
+        /**
+         * @var EntityManagerInterface $entityManager
+         */
+        $entityManager = $this->container->get('models');
+        $repository = $entityManager->getRepository(Config::class);
+
+        /**
+         * @var Config $element
+         */
+        foreach ($repository->findAll() as $element) {
+            if (false === stripos($element->getName(), 'LastChangeDateTime')) {
+                continue;
+            }
+
+            $date = new DateTimeImmutable();
+            $element->setValue($date->modify($diff)->format(DATE_W3C));
+
+            $entityManager->persist($element);
+        }
+
+        $entityManager->flush();
+    }
+
+    private function clearBacklogTable()
+    {
+        /**
+         * @var Connection $connection
+         */
+        $connection = $this->container->get('dbal_connection');
+
+        $query = 'TRUNCATE plenty_backlog';
+        $connection->executeQuery($query);
+    }
+
     private function updateBacklogTable()
     {
         /**
@@ -384,9 +426,49 @@ class PlentyConnector extends Plugin
 
         $query = 'UPDATE plenty_backlog SET status = :statusNew WHERE status = :statusOld';
         $connection->executeQuery($query, [
-            ':statusNew' => Backlog::STATUS_OPEN,
+            ':statusNew' => BacklogService::STATUS_OPEN,
             ':statusOld' => '',
         ]);
+    }
+
+    private function repairTranslationTable()
+    {
+        /**
+         * @var Connection $connection
+         */
+        $connection = $this->container->get('dbal_connection');
+
+        $query = 'UPDATE s_core_translations SET objectdata = REPLACE(objectdata, :pathOld, :pathNew)';
+
+        $data = [
+            [
+                'pathOld' => 'O:55:"PlentyConnector\Connector\ValueObject\Identity\Identity',
+                'pathNew' => 'O:45:"SystemConnector\ValueObject\Identity\Identity',
+            ],
+            [
+                'pathOld' => 's:67:" PlentyConnector\Connector\ValueObject\Identity\Identity',
+                'pathNew' => 's:57:" SystemConnector\ValueObject\Identity\Identity',
+            ],
+            [
+                'pathOld' => 's:68:" PlentyConnector\Connector\ValueObject\Identity\Identity',
+                'pathNew' => 's:58:" SystemConnector\ValueObject\Identity\Identity',
+            ],
+            [
+                'pathOld' => 's:73:" PlentyConnector\Connector\ValueObject\Identity\Identity',
+                'pathNew' => 's:63:" SystemConnector\ValueObject\Identity\Identity',
+            ],
+            [
+                'pathOld' => 's:74:" PlentyConnector\Connector\ValueObject\Identity\Identity',
+                'pathNew' => 's:64:" SystemConnector\ValueObject\Identity\Identity',
+            ],
+        ];
+
+        foreach ($data as $datum) {
+            $connection->executeQuery($query, [
+                ':pathOld' => $datum['pathOld'],
+                ':pathNew' => $datum['pathNew'],
+            ]);
+        }
     }
 
     private function clearOldDatabaseTables()

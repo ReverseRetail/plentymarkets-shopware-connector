@@ -1,14 +1,11 @@
 <?php
 
-namespace PlentyConnector\Connector\Validator\Product\Image;
+namespace SystemConnector\Validator\Product\Image;
 
 use Assert\Assertion;
-use PlentyConnector\Connector\TransferObject\Product\Image\Image;
-use PlentyConnector\Connector\Validator\ValidatorInterface;
+use SystemConnector\TransferObject\Product\Image\Image;
+use SystemConnector\Validator\ValidatorInterface;
 
-/**
- * Class ImageValidator
- */
 class ImageValidator implements ValidatorInterface
 {
     /**

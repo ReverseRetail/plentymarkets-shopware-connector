@@ -2,21 +2,24 @@
 
 namespace ShopwareAdapter\DataPersister\Translation;
 
-use PlentyConnector\Connector\IdentityService\IdentityServiceInterface;
-use PlentyConnector\Connector\TransferObject\Language\Language;
-use PlentyConnector\Connector\TransferObject\Product\Product;
-use PlentyConnector\Connector\TransferObject\Product\Property\Property;
-use PlentyConnector\Connector\TransferObject\Product\Property\Value\Value;
-use PlentyConnector\Connector\Translation\TranslationHelperInterface;
-use PlentyConnector\Connector\ValueObject\Attribute\Attribute;
+use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
+use Shopware\Models\Article\Image as ArticleImage;
 use Shopware_Components_Translation;
 use ShopwareAdapter\DataProvider\Translation\TranslationDataProviderInterface;
 use ShopwareAdapter\ShopwareAdapter;
+use SystemConnector\IdentityService\IdentityServiceInterface;
+use SystemConnector\IdentityService\Struct\Identity;
+use SystemConnector\TransferObject\Category\Category;
+use SystemConnector\TransferObject\Language\Language;
+use SystemConnector\TransferObject\Media\Media;
+use SystemConnector\TransferObject\Product\Image\Image;
+use SystemConnector\TransferObject\Product\Product;
+use SystemConnector\TransferObject\Product\Property\Property;
+use SystemConnector\TransferObject\Product\Property\Value\Value;
+use SystemConnector\Translation\TranslationHelperInterface;
+use SystemConnector\ValueObject\Attribute\Attribute;
 
-/**
- * Class TranslationDataPersister
- */
 class TranslationDataPersister implements TranslationDataPersisterInterface
 {
     /**
@@ -45,26 +48,24 @@ class TranslationDataPersister implements TranslationDataPersisterInterface
     private $shopwareTranslationManager;
 
     /**
-     * TranslationHelper constructor.
-     *
-     * @param IdentityServiceInterface         $identityService
-     * @param LoggerInterface                  $logger
-     * @param TranslationDataProviderInterface $dataProvider
-     * @param TranslationHelperInterface       $translationHelper
-     * @param Shopware_Components_Translation  $shopwareTranslationManager
+     * @var EntityManagerInterface
      */
+    private $entityManager;
+
     public function __construct(
         IdentityServiceInterface $identityService,
         LoggerInterface $logger,
         TranslationDataProviderInterface $dataProvider,
         TranslationHelperInterface $translationHelper,
-        Shopware_Components_Translation $shopwareTranslationManager
+        Shopware_Components_Translation $shopwareTranslationManager,
+        EntityManagerInterface $entityManager
     ) {
         $this->identityService = $identityService;
         $this->logger = $logger;
         $this->dataProvider = $dataProvider;
         $this->translationHelper = $translationHelper;
         $this->shopwareTranslationManager = $shopwareTranslationManager;
+        $this->entityManager = $entityManager;
     }
 
     /**
@@ -101,10 +102,11 @@ class TranslationDataPersister implements TranslationDataPersisterInterface
             }
 
             $translation = [
-                'languageIdentity' => $languageIdentity,
                 'name' => $translatedProduct->getName(),
                 'description' => $translatedProduct->getDescription(),
                 'descriptionLong' => $translatedProduct->getLongDescription(),
+                'metaTitle' => $translatedProduct->getMetaTitle(),
+                'metaDescription' => $translatedProduct->getMetaDescription(),
                 'keywords' => $translatedProduct->getMetaKeywords(),
             ];
 
@@ -114,40 +116,60 @@ class TranslationDataPersister implements TranslationDataPersisterInterface
                  */
                 $translatedAttribute = $this->translationHelper->translate($languageIdentifier, $attribute);
 
-                $key = 'plentyConnector' . ucfirst($attribute->getKey());
-                $translation[$key] = $translatedAttribute->getValue();
+                $key = '__attribute_plenty_connector' . ucfirst($attribute->getKey());
+                $attribute_key = strtolower(preg_replace('/[A-Z]/', '_\\0', lcfirst($key)));
+                $translation[$attribute_key] = $translatedAttribute->getValue();
             }
 
-            $this->writeTranslations('article', (int) $productIdentity->getAdapterIdentifier(), $translation);
+            $this->writeTranslations(
+                'article',
+                (int) $productIdentity->getAdapterIdentifier(),
+                $translation,
+                $languageIdentity
+            );
         }
 
         foreach ($product->getProperties() as $property) {
-            $this->writePropertyGroupTranslations($property);
+            $this->writeGroupTranslations($property, 'propertyoption');
 
             foreach ($property->getValues() as $value) {
-                $this->writePropertyValueTranslations($value);
+                $this->writeValueTranslations($value, 'propertyvalue');
             }
+        }
+
+        foreach ($product->getVariantConfiguration() as $variantConfiguration) {
+            $this->writeGroupTranslations($variantConfiguration, 'configuratorgroup');
+
+            foreach ($variantConfiguration->getValues() as $value) {
+                $this->writeValueTranslations($value, 'configuratoroption');
+            }
+        }
+
+        foreach ($product->getImages() as $articleImage) {
+            $this->writeMediaTranslations($articleImage, $productIdentity->getAdapterIdentifier());
         }
     }
 
     /**
-     * @param Value $value
+     * @param Category $category
      */
-    private function writePropertyValueTranslations(Value $value)
+    public function writeCategoryTranslations(Category $category)
     {
-        $propertyValueModel = $this->dataProvider->getPropertyValueByValue($value);
+        $categoryIdentity = $this->identityService->findOneBy([
+            'objectIdentifier' => $category->getIdentifier(),
+            'objectType' => Category::TYPE,
+            'adapterName' => ShopwareAdapter::NAME,
+        ]);
 
-        if (null === $propertyValueModel) {
-            $this->logger->notice('property value not found - ' . $value->getValue());
-
+        if (null === $categoryIdentity) {
             return;
         }
 
-        foreach ($this->translationHelper->getLanguageIdentifiers($value) as $languageIdentifier) {
+        foreach ($this->translationHelper->getLanguageIdentifiers($category) as $languageIdentifier) {
             /**
-             * @var Value $translatedPropertyValue
+             * @var Category $translatedCategory
              */
-            $translatedPropertyValue = $this->translationHelper->translate($languageIdentifier, $value);
+            $translatedCategory = $this->translationHelper->translate($languageIdentifier, $category);
 
             $languageIdentity = $this->identityService->findOneBy([
                 'objectIdentifier' => $languageIdentifier,
@@ -162,22 +184,61 @@ class TranslationDataPersister implements TranslationDataPersisterInterface
             }
 
             $translation = [
-                'languageIdentity' => $languageIdentity,
-                'optionValue' => $translatedPropertyValue->getValue(),
+                'name' => $translatedCategory->getName(),
+                'metaTitle' => $translatedCategory->getMetaTitle(),
+                'metaKeywords' => $translatedCategory->getMetaKeywords(),
+                'metaDescription' => $translatedCategory->getMetaDescription(),
+                'cmsHeadline' => $translatedCategory->getDescription(),
+                'cmsText' => $translatedCategory->getLongDescription(),
             ];
 
-            $this->writeTranslations('propertyvalue', $propertyValueModel->getId(), $translation);
+            foreach ($category->getAttributes() as $attribute) {
+                /**
+                 * @var Attribute $translatedAttribute
+                 */
+                $translatedAttribute = $this->translationHelper->translate($languageIdentifier, $attribute);
+
+                $key = '__attribute_plenty_connector' . ucfirst($attribute->getKey());
+                $attribute_key = strtolower(preg_replace('/[A-Z]/', '_\\0', lcfirst($key)));
+                $translation[$attribute_key] = $translatedAttribute->getValue();
+            }
+
+            $this->writeTranslations(
+                'category',
+                (int) $categoryIdentity->getAdapterIdentifier(),
+                $translation,
+                $languageIdentity
+            );
         }
     }
 
     /**
-     * @param Property $property
+     * @param Image $image
      */
-    private function writePropertyGroupTranslations(Property $property)
+    public function removeMediaTranslation(ArticleImage $image)
     {
-        $propertyOptionModel = $this->dataProvider->getPropertyOptionByName($property);
+        $this->entityManager->getConnection()->delete(
+            's_core_translations',
+            ['objectkey' => $image->getId()],
+            ['objecttype' => 'articleimage']
+        );
+    }
 
-        if (null === $propertyOptionModel) {
+    /**
+     * @param Property $property
+     * @param string   $type
+     */
+    private function writeGroupTranslations(Property $property, $type)
+    {
+        $groupModel = null;
+
+        if ($type === 'propertyoption') {
+            $groupModel = $this->dataProvider->getPropertyOptionByName($property);
+        } elseif ($type === 'configuratorgroup') {
+            $groupModel = $this->dataProvider->getConfigurationGroupByName($property);
+        }
+
+        if (null === $groupModel) {
             $this->logger->notice('property option not found - ' . $property->getName());
 
             return;
@@ -201,26 +262,166 @@ class TranslationDataPersister implements TranslationDataPersisterInterface
                 continue;
             }
 
-            $translation = [
-                'languageIdentity' => $languageIdentity,
-                'optionName' => $translatedProperty->getName(),
-            ];
+            if ($type === 'propertyoption') {
+                $translation = [
+                    'optionName' => $translatedProperty->getName(),
+                ];
+            } elseif ($type === 'configuratorgroup') {
+                $translation = [
+                    'name' => $translatedProperty->getName(),
+                ];
+            }
 
-            $this->writeTranslations('propertyoption', $propertyOptionModel->getId(), $translation);
+            if (empty($translation)) {
+                continue;
+            }
+
+            $this->writeTranslations(
+                $type,
+                $groupModel->getId(),
+                $translation,
+                $languageIdentity
+            );
         }
     }
 
     /**
+     * @param Value  $value
      * @param string $type
-     * @param int    $primaryKey
-     * @param array  $translation
      */
-    private function writeTranslations($type, $primaryKey, array $translation)
+    private function writeValueTranslations(Value $value, $type)
     {
-        $shops = $this->dataProvider->getShopsByLocaleIdentitiy($translation['languageIdentity']);
+        $valueModel = null;
+
+        if ($type === 'propertyvalue') {
+            $valueModel = $this->dataProvider->getPropertyValueByValue($value);
+        } elseif ($type === 'configuratoroption') {
+            $valueModel = $this->dataProvider->getConfigurationOptionByName($value);
+        }
+
+        if (null === $valueModel) {
+            $this->logger->notice('property value not found - ' . $value->getValue());
+
+            return;
+        }
+
+        foreach ($this->translationHelper->getLanguageIdentifiers($value) as $languageIdentifier) {
+            /**
+             * @var Value $translatedPropertyValue
+             */
+            $translatedPropertyValue = $this->translationHelper->translate($languageIdentifier, $value);
+
+            $languageIdentity = $this->identityService->findOneBy([
+                'objectIdentifier' => $languageIdentifier,
+                'objectType' => Language::TYPE,
+                'adapterName' => ShopwareAdapter::NAME,
+            ]);
+
+            if (null === $languageIdentity) {
+                $this->logger->notice('language not mapped - ' . $languageIdentifier);
+
+                continue;
+            }
+
+            if ($type === 'propertyvalue') {
+                $translation = [
+                    'optionValue' => $translatedPropertyValue->getValue(),
+                ];
+            } elseif ($type === 'configuratoroption') {
+                $translation = [
+                    'name' => $translatedPropertyValue->getValue(),
+                ];
+            }
+
+            if (empty($translation)) {
+                continue;
+            }
+
+            $this->writeTranslations(
+                $type,
+                $valueModel->getId(),
+                $translation,
+                $languageIdentity
+            );
+        }
+    }
+
+    /**
+     * @param Image $imageTransferObject
+     * @param $articleId
+     */
+    private function writeMediaTranslations($imageTransferObject, $articleId)
+    {
+        $mediaIdentity = $this->identityService->findOneBy([
+            'objectIdentifier' => $imageTransferObject->getMediaIdentifier(),
+            'objectType' => Media::TYPE,
+            'adapterName' => ShopwareAdapter::NAME,
+        ]);
+
+        if (null === $mediaIdentity) {
+            $this->logger->notice('image not mapped - ' . $imageTransferObject->getMediaIdentifier());
+
+            return;
+        }
+
+        $articleImage = $this->dataProvider->getArticleImage($mediaIdentity, $articleId);
+
+        if (null === $articleImage) {
+            $this->logger->notice('image not found - ' . $mediaIdentity->getObjectIdentifier());
+
+            return;
+        }
+
+        foreach ($this->translationHelper->getLanguageIdentifiers($imageTransferObject) as $languageIdentifier) {
+            /**
+             * @var Image $translatedMedia
+             */
+            $translatedMedia = $this->translationHelper->translate($languageIdentifier, $imageTransferObject);
+
+            $languageIdentity = $this->identityService->findOneBy([
+                'objectIdentifier' => $languageIdentifier,
+                'objectType' => Language::TYPE,
+                'adapterName' => ShopwareAdapter::NAME,
+            ]);
+
+            if (null === $languageIdentity) {
+                $this->logger->notice('language not mapped - ' . $languageIdentifier);
+
+                continue;
+            }
+
+            $translation = ['description' => $translatedMedia->getName()];
+
+            if (empty($translation)) {
+                continue;
+            }
+
+            $this->writeTranslations(
+                'articleimage',
+                $articleImage->getId(),
+                $translation,
+                $languageIdentity
+            );
+        }
+    }
+
+    /**
+     * @param string   $type
+     * @param int      $primaryKey
+     * @param array    $translation
+     * @param Identity $languageIdentity
+     */
+    private function writeTranslations($type, $primaryKey, array $translation, Identity $languageIdentity)
+    {
+        $shops = $this->dataProvider->getShopsByLocaleIdentitiy($languageIdentity);
 
         foreach ($shops as $shop) {
-            $this->shopwareTranslationManager->write($shop->getId(), $type, $primaryKey, $translation);
+            $this->shopwareTranslationManager->write(
+                $shop->getId(),
+                $type,
+                $primaryKey,
+                $translation
+            );
         }
     }
 }

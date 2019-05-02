@@ -1,13 +1,10 @@
 <?php
 
-namespace PlentyConnector\Connector\ServiceBus\QueryHandler;
+namespace SystemConnector\ServiceBus\QueryHandler;
 
-use PlentyConnector\Connector\ServiceBus\Query\QueryInterface;
-use PlentyConnector\Connector\TransferObject\TransferObjectInterface;
+use SystemConnector\ServiceBus\Query\QueryInterface;
+use SystemConnector\TransferObject\TransferObjectInterface;
 
-/**
- * Interface QueryHandlerInterface.
- */
 interface QueryHandlerInterface
 {
     /**

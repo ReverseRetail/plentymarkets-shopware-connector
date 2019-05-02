@@ -3,12 +3,9 @@
 namespace PlentyConnector\Components\Klarna\Plentymarkets;
 
 use PlentyConnector\Components\Klarna\PaymentData\KlarnaPaymentData;
-use PlentyConnector\Connector\TransferObject\Payment\Payment;
 use PlentymarketsAdapter\RequestGenerator\Payment\PaymentRequestGeneratorInterface;
+use SystemConnector\TransferObject\Payment\Payment;
 
-/**
- * Class KlarnaRequestGenerator
- */
 class KlarnaRequestGenerator implements PaymentRequestGeneratorInterface
 {
     /**
@@ -16,11 +13,6 @@ class KlarnaRequestGenerator implements PaymentRequestGeneratorInterface
      */
     private $parentRequestGenerator;
 
-    /**
-     * KlarnaRequestGenerator constructor.
-     *
-     * @param PaymentRequestGeneratorInterface $parentRequestGenerator
-     */
     public function __construct(PaymentRequestGeneratorInterface $parentRequestGenerator)
     {
         $this->parentRequestGenerator = $parentRequestGenerator;

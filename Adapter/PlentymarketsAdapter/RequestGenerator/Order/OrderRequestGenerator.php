@@ -2,26 +2,22 @@
 
 namespace PlentymarketsAdapter\RequestGenerator\Order;
 
-use PlentyConnector\Connector\IdentityService\Exception\NotFoundException;
-use PlentyConnector\Connector\IdentityService\IdentityServiceInterface;
-use PlentyConnector\Connector\TransferObject\Language\Language;
-use PlentyConnector\Connector\TransferObject\Order\Address\Address;
-use PlentyConnector\Connector\TransferObject\Order\Customer\Customer;
-use PlentyConnector\Connector\TransferObject\Order\Order;
-use PlentyConnector\Connector\TransferObject\Order\OrderItem\OrderItem;
-use PlentyConnector\Connector\TransferObject\PaymentMethod\PaymentMethod;
-use PlentyConnector\Connector\TransferObject\ShippingProfile\ShippingProfile;
-use PlentyConnector\Connector\TransferObject\Shop\Shop;
 use PlentymarketsAdapter\Client\ClientInterface;
 use PlentymarketsAdapter\PlentymarketsAdapter;
 use PlentymarketsAdapter\RequestGenerator\Order\Address\AddressRequestGeneratorInterface;
 use PlentymarketsAdapter\RequestGenerator\Order\Customer\CustomerRequestGeneratorInterface;
 use PlentymarketsAdapter\RequestGenerator\Order\OrderItem\OrderItemRequestGeneratorInterface;
-use RuntimeException;
+use SystemConnector\IdentityService\Exception\NotFoundException;
+use SystemConnector\IdentityService\IdentityServiceInterface;
+use SystemConnector\TransferObject\Language\Language;
+use SystemConnector\TransferObject\Order\Address\Address;
+use SystemConnector\TransferObject\Order\Customer\Customer;
+use SystemConnector\TransferObject\Order\Order;
+use SystemConnector\TransferObject\Order\OrderItem\OrderItem;
+use SystemConnector\TransferObject\PaymentMethod\PaymentMethod;
+use SystemConnector\TransferObject\ShippingProfile\ShippingProfile;
+use SystemConnector\TransferObject\Shop\Shop;
 
-/**
- * Class OrderRequestGenerator
- */
 class OrderRequestGenerator implements OrderRequestGeneratorInterface
 {
     /**
@@ -49,15 +45,6 @@ class OrderRequestGenerator implements OrderRequestGeneratorInterface
      */
     private $addressReuqestGenerator;
 
-    /**
-     * OrderRequestGenerator constructor.
-     *
-     * @param IdentityServiceInterface           $identityService
-     * @param ClientInterface                    $client
-     * @param OrderItemRequestGeneratorInterface $orderItemRequestGenerator
-     * @param CustomerRequestGeneratorInterface  $customerRequestGenerator
-     * @param AddressRequestGeneratorInterface   $addressReuqestGenerator
-     */
     public function __construct(
         IdentityServiceInterface $identityService,
         ClientInterface $client,
@@ -77,10 +64,6 @@ class OrderRequestGenerator implements OrderRequestGeneratorInterface
      */
     public function generate(Order $order)
     {
-        if ($order->getOrderType() !== Order::TYPE_ORDER) {
-            throw new RuntimeException('Unsupported order type');
-        }
-
         $shopIdentity = $this->identityService->findOneBy([
             'objectIdentifier' => $order->getShopIdentifier(),
             'objectType' => Shop::TYPE,
@@ -118,7 +101,7 @@ class OrderRequestGenerator implements OrderRequestGeneratorInterface
 
         $params['addressRelations'] = [];
 
-        $billingAddress = $this->createAddress($order->getBillingAddress(), $order, $plentyCustomer, 1);
+        $billingAddress = $this->createAddress($order->getBillingAddress(), $order, $plentyCustomer);
         if (!empty($billingAddress)) {
             $params['addressRelations'][] = [
                 'typeId' => 1,

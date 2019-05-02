@@ -2,12 +2,9 @@
 
 namespace PlentyConnector\Components\Sepa\PaymentData;
 
-use PlentyConnector\Connector\TransferObject\Payment\PaymentData\PaymentDataInterface;
-use PlentyConnector\Connector\ValueObject\AbstractValueObject;
+use SystemConnector\TransferObject\Payment\PaymentData\PaymentDataInterface;
+use SystemConnector\ValueObject\AbstractValueObject;
 
-/**
- * Class SepaPaymentData
- */
 class SepaPaymentData extends AbstractValueObject implements PaymentDataInterface
 {
     /**
@@ -71,5 +68,17 @@ class SepaPaymentData extends AbstractValueObject implements PaymentDataInterfac
     public function setBic($bic = null)
     {
         $this->bic = $bic;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getClassProperties()
+    {
+        return [
+            'accountOwner' => $this->getAccountOwner(),
+            'iban' => $this->getIban(),
+            'bic' => $this->getBic(),
+        ];
     }
 }

@@ -1,12 +1,9 @@
 <?php
 
-namespace PlentyConnector\Connector\ServiceBus\CommandFactory\Exception;
+namespace SystemConnector\ServiceBus\CommandFactory\Exception;
 
 use InvalidArgumentException;
 
-/**
- * Class MissingCommandException
- */
 class MissingCommandException extends InvalidArgumentException
 {
     /**

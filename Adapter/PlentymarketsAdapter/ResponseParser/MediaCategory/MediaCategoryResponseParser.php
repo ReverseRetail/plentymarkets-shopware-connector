@@ -2,13 +2,10 @@
 
 namespace PlentymarketsAdapter\ResponseParser\MediaCategory;
 
-use PlentyConnector\Connector\IdentityService\IdentityServiceInterface;
-use PlentyConnector\Connector\TransferObject\MediaCategory\MediaCategory;
 use PlentymarketsAdapter\PlentymarketsAdapter;
+use SystemConnector\IdentityService\IdentityServiceInterface;
+use SystemConnector\TransferObject\MediaCategory\MediaCategory;
 
-/**
- * Class MediaCategoryResponseParser
- */
 class MediaCategoryResponseParser implements MediaCategoryResponseParserInterface
 {
     /**
@@ -16,11 +13,6 @@ class MediaCategoryResponseParser implements MediaCategoryResponseParserInterfac
      */
     private $identityService;
 
-    /**
-     * MediaCategoryResponseParser constructor.
-     *
-     * @param IdentityServiceInterface $identityService
-     */
     public function __construct(IdentityServiceInterface $identityService)
     {
         $this->identityService = $identityService;

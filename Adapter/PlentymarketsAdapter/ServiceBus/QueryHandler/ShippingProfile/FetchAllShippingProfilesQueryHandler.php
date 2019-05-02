@@ -2,18 +2,15 @@
 
 namespace PlentymarketsAdapter\ServiceBus\QueryHandler\ShippingProfile;
 
-use PlentyConnector\Connector\ServiceBus\Query\FetchTransferObjectQuery;
-use PlentyConnector\Connector\ServiceBus\Query\QueryInterface;
-use PlentyConnector\Connector\ServiceBus\QueryHandler\QueryHandlerInterface;
-use PlentyConnector\Connector\ServiceBus\QueryType;
-use PlentyConnector\Connector\TransferObject\ShippingProfile\ShippingProfile;
 use PlentymarketsAdapter\Client\ClientInterface;
 use PlentymarketsAdapter\PlentymarketsAdapter;
 use PlentymarketsAdapter\ResponseParser\ShippingProfile\ShippingProfileResponseParserInterface;
+use SystemConnector\ServiceBus\Query\FetchTransferObjectQuery;
+use SystemConnector\ServiceBus\Query\QueryInterface;
+use SystemConnector\ServiceBus\QueryHandler\QueryHandlerInterface;
+use SystemConnector\ServiceBus\QueryType;
+use SystemConnector\TransferObject\ShippingProfile\ShippingProfile;
 
-/**
- * Class FetchAllShippingProfilesQueryHandler
- */
 class FetchAllShippingProfilesQueryHandler implements QueryHandlerInterface
 {
     /**
@@ -26,12 +23,6 @@ class FetchAllShippingProfilesQueryHandler implements QueryHandlerInterface
      */
     private $responseParser;
 
-    /**
-     * FetchAllShippingProfilesQueryHandler constructor.
-     *
-     * @param ClientInterface                        $client
-     * @param ShippingProfileResponseParserInterface $responseParser
-     */
     public function __construct(
         ClientInterface $client,
         ShippingProfileResponseParserInterface $responseParser

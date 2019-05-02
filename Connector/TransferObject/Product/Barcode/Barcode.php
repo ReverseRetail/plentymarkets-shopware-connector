@@ -1,13 +1,10 @@
 <?php
 
-namespace PlentyConnector\Connector\TransferObject\Product\Barcode;
+namespace SystemConnector\TransferObject\Product\Barcode;
 
-use PlentyConnector\Connector\ValueObject\AbstractValueObject;
 use ReflectionClass;
+use SystemConnector\ValueObject\AbstractValueObject;
 
-/**
- * Class Barcode
- */
 class Barcode extends AbstractValueObject
 {
     const TYPE_GTIN13 = 1;
@@ -65,5 +62,16 @@ class Barcode extends AbstractValueObject
     public function setCode($code)
     {
         $this->code = $code;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getClassProperties()
+    {
+        return [
+            'type' => $this->getType(),
+            'code' => $this->getCode(),
+        ];
     }
 }

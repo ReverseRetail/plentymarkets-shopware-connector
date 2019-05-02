@@ -1,12 +1,9 @@
 <?php
 
-namespace PlentyConnector\Connector\ServiceBus;
+namespace SystemConnector\ServiceBus;
 
 use League\Tactician\Middleware;
 
-/**
- * Class ServiceBusFactory.
- */
 class ServiceBusFactory
 {
     /**

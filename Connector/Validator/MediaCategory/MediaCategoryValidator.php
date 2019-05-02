@@ -1,14 +1,11 @@
 <?php
 
-namespace PlentyConnector\Connector\Validator\MediaCategory;
+namespace SystemConnector\Validator\MediaCategory;
 
 use Assert\Assertion;
-use PlentyConnector\Connector\TransferObject\MediaCategory\MediaCategory;
-use PlentyConnector\Connector\Validator\ValidatorInterface;
+use SystemConnector\TransferObject\MediaCategory\MediaCategory;
+use SystemConnector\Validator\ValidatorInterface;
 
-/**
- * Class MediaCategoryValidator
- */
 class MediaCategoryValidator implements ValidatorInterface
 {
     public function supports($object)

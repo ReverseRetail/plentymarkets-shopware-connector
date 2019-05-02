@@ -1,23 +1,21 @@
 <?php
 
-namespace PlentyConnector\Connector\CleanupService;
+namespace SystemConnector\CleanupService;
 
-use PlentyConnector\Connector\CleanupService\CallbackLogHandler\CallbackLogHandler;
-use PlentyConnector\Connector\IdentityService\IdentityServiceInterface;
-use PlentyConnector\Connector\ServiceBus\CommandFactory\CommandFactoryInterface;
-use PlentyConnector\Connector\ServiceBus\CommandType;
-use PlentyConnector\Connector\ServiceBus\QueryFactory\QueryFactoryInterface;
-use PlentyConnector\Connector\ServiceBus\QueryType;
-use PlentyConnector\Connector\ServiceBus\ServiceBusInterface;
-use PlentyConnector\Connector\TransferObject\TransferObjectInterface;
-use PlentyConnector\Connector\ValueObject\Definition\Definition;
-use PlentyConnector\Connector\ValueObject\Identity\Identity;
-use PlentyConnector\Console\OutputHandler\OutputHandlerInterface;
 use Psr\Log\LoggerInterface;
+use SystemConnector\CleanupService\CallbackLogHandler\CallbackLogHandler;
+use SystemConnector\Console\OutputHandler\OutputHandlerInterface;
+use SystemConnector\DefinitionProvider\DefinitionProviderInterface;
+use SystemConnector\DefinitionProvider\Struct\Definition;
+use SystemConnector\IdentityService\IdentityServiceInterface;
+use SystemConnector\IdentityService\Struct\Identity;
+use SystemConnector\ServiceBus\CommandFactory\CommandFactoryInterface;
+use SystemConnector\ServiceBus\CommandType;
+use SystemConnector\ServiceBus\QueryFactory\QueryFactoryInterface;
+use SystemConnector\ServiceBus\QueryType;
+use SystemConnector\ServiceBus\ServiceBusInterface;
+use SystemConnector\TransferObject\TransferObjectInterface;
 
-/**
- * Class CleanupService.
- */
 class CleanupService implements CleanupServiceInterface
 {
     /**
@@ -46,14 +44,14 @@ class CleanupService implements CleanupServiceInterface
     private $outputHandler;
 
     /**
+     * @var DefinitionProviderInterface
+     */
+    private $definitionProvider;
+
+    /**
      * @var LoggerInterface
      */
     private $logger;
-
-    /**
-     * @var Definition[]
-     */
-    private $definitions;
 
     /**
      * Array of all the found elements
@@ -69,22 +67,13 @@ class CleanupService implements CleanupServiceInterface
      */
     private $error = false;
 
-    /**
-     * CleanupService constructor.
-     *
-     * @param ServiceBusInterface      $serviceBus
-     * @param QueryFactoryInterface    $queryFactory
-     * @param CommandFactoryInterface  $commandFactory
-     * @param IdentityServiceInterface $identityService
-     * @param OutputHandlerInterface   $outputHandler
-     * @param LoggerInterface          $logger
-     */
     public function __construct(
         ServiceBusInterface $serviceBus,
         QueryFactoryInterface $queryFactory,
         CommandFactoryInterface $commandFactory,
         IdentityServiceInterface $identityService,
         OutputHandlerInterface $outputHandler,
+        DefinitionProviderInterface $definitionProvider,
         LoggerInterface $logger
     ) {
         $this->serviceBus = $serviceBus;
@@ -92,26 +81,23 @@ class CleanupService implements CleanupServiceInterface
         $this->commandFactory = $commandFactory;
         $this->identityService = $identityService;
         $this->outputHandler = $outputHandler;
+        $this->definitionProvider = $definitionProvider;
         $this->logger = $logger;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function addDefinition(Definition $definition)
-    {
-        $this->definitions[] = $definition;
     }
 
     public function cleanup()
     {
         if (method_exists($this->logger, 'pushHandler')) {
-            $this->logger->pushHandler(new CallbackLogHandler(function (array $record) {
+            $this->logger->pushHandler(new CallbackLogHandler(function () {
                 $this->error = true;
             }));
         }
 
-        $definitions = $this->getDefinitions();
+        $definitions = $this->definitionProvider->getCleanupDefinitions();
+
+        if (empty($definitions)) {
+            $this->logger->notice('No cleanup definition found');
+        }
 
         foreach ($definitions as $definition) {
             if ($this->hasErrors()) {
@@ -129,18 +115,6 @@ class CleanupService implements CleanupServiceInterface
     }
 
     /**
-     * @return null|Definition[]
-     */
-    private function getDefinitions()
-    {
-        if (null === count($this->definitions)) {
-            return [];
-        }
-
-        return $this->definitions;
-    }
-
-    /**
      * @param Definition $definition
      *
      * @return bool
@@ -150,8 +124,8 @@ class CleanupService implements CleanupServiceInterface
         $this->outputHandler->writeLine(sprintf(
             'checking transfer objects for existence: Type: %s, %s -> %s',
             $definition->getObjectType(),
-            $definition->getDestinationAdapterName(),
-            $definition->getOriginAdapterName()
+            $definition->getOriginAdapterName(),
+            $definition->getDestinationAdapterName()
         ));
 
         /**
@@ -181,11 +155,7 @@ class CleanupService implements CleanupServiceInterface
             ];
         }
 
-        if (false === $found) {
-            return false;
-        }
-
-        return true;
+        return !(false === $found);
     }
 
     /**
@@ -216,6 +186,7 @@ class CleanupService implements CleanupServiceInterface
                 $definition->getDestinationAdapterName(),
                 $definition->getObjectType(),
                 CommandType::REMOVE,
+                -100,
                 $identity->getObjectIdentifier()
             ));
 
@@ -286,6 +257,7 @@ class CleanupService implements CleanupServiceInterface
                     $group[0]['adapterName'],
                     $group[0]['type'],
                     CommandType::REMOVE,
+                    -100,
                     $identity->getObjectIdentifier()
                 ));
 

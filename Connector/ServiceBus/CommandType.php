@@ -1,12 +1,9 @@
 <?php
 
-namespace PlentyConnector\Connector\ServiceBus;
+namespace SystemConnector\ServiceBus;
 
 use ReflectionClass;
 
-/**
- * Class CommandType
- */
 final class CommandType
 {
     const HANDLE = 'handle';

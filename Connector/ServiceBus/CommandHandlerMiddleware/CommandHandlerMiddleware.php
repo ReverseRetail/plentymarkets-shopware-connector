@@ -1,28 +1,26 @@
 <?php
 
-namespace PlentyConnector\Connector\ServiceBus\CommandHandlerMiddleware;
+namespace SystemConnector\ServiceBus\CommandHandlerMiddleware;
 
 use League\Tactician\Middleware;
-use PlentyConnector\Connector\ServiceBus\Command\CommandInterface;
-use PlentyConnector\Connector\ServiceBus\CommandHandler\CommandHandlerInterface;
-use PlentyConnector\Connector\ServiceBus\CommandHandlerMiddleware\Exception\NotFoundException;
+use SystemConnector\ServiceBus\Command\CommandInterface;
+use SystemConnector\ServiceBus\CommandHandler\CommandHandlerInterface;
+use SystemConnector\ServiceBus\CommandHandlerMiddleware\Exception\NotFoundException;
+use Traversable;
 
-/**
- * Class CommandHandlerMiddleware.
- */
 class CommandHandlerMiddleware implements Middleware
 {
     /**
-     * @var CommandHandlerInterface[]
+     * @var CommandHandlerInterface[]|Traversable
      */
     private $handlers;
 
     /**
-     * @param CommandHandlerInterface $handler
+     * @param CommandHandlerInterface[]|Traversable $handlers
      */
-    public function addHandler(CommandHandlerInterface $handler)
+    public function __construct(Traversable $handlers)
     {
-        $this->handlers[] = $handler;
+        $this->handlers = iterator_to_array($handlers);
     }
 
     /**

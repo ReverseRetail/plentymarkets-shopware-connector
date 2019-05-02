@@ -1,44 +1,20 @@
 <?php
 
-namespace PlentyConnector\Connector\ConfigService;
+namespace SystemConnector\ConfigService;
 
-use DateTime;
-use DateTimeImmutable;
-use Exception;
-use PlentyConnector\Connector\ConfigService\Model\Config;
-use PlentyConnector\Connector\ConfigService\Model\ConfigRepository;
-use Shopware\Components\Model\ModelManager;
-use Symfony\Component\DependencyInjection\ContainerInterface;
+use SystemConnector\ConfigService\Storage\ConfigServiceStorageInterface;
+use Traversable;
 
-/**
- * Class ConfigService.
- */
 class ConfigService implements ConfigServiceInterface
 {
     /**
-     * @var ModelManager
+     * @var ConfigServiceStorageInterface[]
      */
-    private $entityManager;
+    private $storages;
 
-    /**
-     * @var ConfigRepository
-     */
-    private $repository;
-
-    /**
-     * @var ContainerInterface
-     */
-    private $container;
-
-    /**
-     * @param ModelManager       $entityManager
-     * @param ContainerInterface $container
-     */
-    public function __construct(ModelManager $entityManager, ContainerInterface $container)
+    public function __construct(Traversable $storage)
     {
-        $this->entityManager = $entityManager;
-        $this->repository = $entityManager->getRepository(Config::class);
-        $this->container = $container;
+        $this->storages = iterator_to_array($storage);
     }
 
     /**
@@ -46,24 +22,9 @@ class ConfigService implements ConfigServiceInterface
      */
     public function getAll()
     {
-        $containerParameters = [];
+        $storage = reset($this->storages);
 
-        if ($this->container->hasParameter('shopware.plenty_connector')) {
-            $containerParameters = $this->container->getParameter('shopware.plenty_connector');
-        }
-
-        /**
-         * @var Config[] $configElements
-         */
-        $configElements = $this->repository->findAll();
-
-        $result = [];
-
-        foreach ($configElements as $element) {
-            $result[$element->getName()] = $element->getValue();
-        }
-
-        return array_merge($result, $containerParameters);
+        return $storage->getAll();
     }
 
     /**
@@ -71,26 +32,15 @@ class ConfigService implements ConfigServiceInterface
      */
     public function get($key, $default = null)
     {
-        if ($this->container->hasParameter('shopware.plenty_connector.' . $key)) {
-            try {
-                return $this->container->getParameter('shopware.plenty_connector.' . $key);
-            } catch (Exception $exception) {
-                // fail silently
-            }
+        $storage = reset($this->storages);
+
+        $result = $storage->get($key);
+
+        if ($result !== null) {
+            return $result;
         }
 
-        /**
-         * @var Config|null $element
-         */
-        $element = $this->repository->findOneBy([
-            'name' => $key,
-        ]);
-
-        if (null === $element) {
-            return $default;
-        }
-
-        return $element->getValue();
+        return $default;
     }
 
     /**
@@ -98,30 +48,8 @@ class ConfigService implements ConfigServiceInterface
      */
     public function set($key, $value)
     {
-        /**
-         * @var Config|null $element
-         */
-        $element = $this->repository->findOneBy([
-            'name' => $key,
-        ]);
+        $storage = reset($this->storages);
 
-        if (null === $element) {
-            $element = new Config();
-            $element->setName($key);
-        }
-
-        if ($value instanceof DateTime || $value instanceof DateTimeImmutable) {
-            $value = $value->format(DATE_W3C);
-        }
-
-        if ($element->getValue() === $value) {
-            return;
-        }
-
-        $element->setValue($value);
-
-        $this->entityManager->persist($element);
-        $this->entityManager->flush($element);
-        $this->entityManager->clear();
+        $storage->set($key, $value);
     }
 }

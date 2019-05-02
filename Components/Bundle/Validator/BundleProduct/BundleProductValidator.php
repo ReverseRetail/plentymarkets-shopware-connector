@@ -4,12 +4,9 @@ namespace PlentyConnector\Components\Bundle\Validator\BundleProduct;
 
 use Assert\Assertion;
 use PlentyConnector\Components\Bundle\TransferObject\BundleProduct\BundleProduct;
-use PlentyConnector\Connector\Validator\ValidatorInterface;
-use PlentyConnector\Connector\ValueObject\Attribute\Attribute;
+use SystemConnector\Validator\ValidatorInterface;
+use SystemConnector\ValueObject\Attribute\Attribute;
 
-/**
- * Class BundleProductValidator
- */
 class BundleProductValidator implements ValidatorInterface
 {
     /**

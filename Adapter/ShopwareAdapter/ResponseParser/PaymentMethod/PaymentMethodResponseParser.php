@@ -2,13 +2,10 @@
 
 namespace ShopwareAdapter\ResponseParser\PaymentMethod;
 
-use PlentyConnector\Connector\IdentityService\IdentityServiceInterface;
-use PlentyConnector\Connector\TransferObject\PaymentMethod\PaymentMethod;
 use ShopwareAdapter\ShopwareAdapter;
+use SystemConnector\IdentityService\IdentityServiceInterface;
+use SystemConnector\TransferObject\PaymentMethod\PaymentMethod;
 
-/**
- * Class PaymentMethodResponseParser
- */
 class PaymentMethodResponseParser implements PaymentMethodResponseParserInterface
 {
     /**
@@ -16,11 +13,6 @@ class PaymentMethodResponseParser implements PaymentMethodResponseParserInterfac
      */
     private $identityService;
 
-    /**
-     * PaymentMethodResponseParser constructor.
-     *
-     * @param IdentityServiceInterface $identityService
-     */
     public function __construct(IdentityServiceInterface $identityService)
     {
         $this->identityService = $identityService;

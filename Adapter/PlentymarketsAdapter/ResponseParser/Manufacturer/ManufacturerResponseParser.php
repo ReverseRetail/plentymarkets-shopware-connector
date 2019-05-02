@@ -3,16 +3,13 @@
 namespace PlentymarketsAdapter\ResponseParser\Manufacturer;
 
 use Exception;
-use PlentyConnector\Connector\IdentityService\IdentityServiceInterface;
-use PlentyConnector\Connector\TransferObject\Manufacturer\Manufacturer;
 use PlentymarketsAdapter\Helper\MediaCategoryHelper;
 use PlentymarketsAdapter\PlentymarketsAdapter;
 use PlentymarketsAdapter\ResponseParser\Media\MediaResponseParserInterface;
 use Psr\Log\LoggerInterface;
+use SystemConnector\IdentityService\IdentityServiceInterface;
+use SystemConnector\TransferObject\Manufacturer\Manufacturer;
 
-/**
- * Class ManufacturerResponseParser
- */
 class ManufacturerResponseParser implements ManufacturerResponseParserInterface
 {
     /**
@@ -30,13 +27,6 @@ class ManufacturerResponseParser implements ManufacturerResponseParserInterface
      */
     private $logger;
 
-    /**
-     * ManufacturerResponseParser constructor.
-     *
-     * @param IdentityServiceInterface     $identityService
-     * @param MediaResponseParserInterface $mediaResponseParser
-     * @param LoggerInterface              $logger
-     */
     public function __construct(
         IdentityServiceInterface $identityService,
         MediaResponseParserInterface $mediaResponseParser,

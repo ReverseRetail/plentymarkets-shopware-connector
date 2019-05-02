@@ -1,14 +1,11 @@
 <?php
 
-namespace PlentyConnector\Connector\ServiceBus\Command;
+namespace SystemConnector\ServiceBus\Command;
 
 use Assert\Assertion;
-use PlentyConnector\Connector\ServiceBus\CommandType;
-use PlentyConnector\Connector\TransferObject\TransferObjectInterface;
+use SystemConnector\ServiceBus\CommandType;
+use SystemConnector\TransferObject\TransferObjectInterface;
 
-/**
- * Class TransferObjectCommand
- */
 class TransferObjectCommand implements CommandInterface
 {
     /**
@@ -27,23 +24,28 @@ class TransferObjectCommand implements CommandInterface
     private $commandType;
 
     /**
-     * @var TransferObjectInterface|string
+     * @var int
+     */
+    private $priority;
+
+    /**
+     * @var string|TransferObjectInterface
      */
     private $payload;
 
     /**
-     * TransferObjectCommand constructor.
-     *
      * @param string                         $adapterName
      * @param string                         $objectType
      * @param string                         $commandType
-     * @param TransferObjectInterface|string $payload
+     * @param int                            $priority
+     * @param string|TransferObjectInterface $payload
      */
-    public function __construct($adapterName, $objectType, $commandType, $payload)
+    public function __construct($adapterName, $objectType, $commandType, $priority, $payload)
     {
         Assertion::string($adapterName);
         Assertion::string($objectType);
         Assertion::inArray($commandType, CommandType::getAllTypes());
+        Assertion::integer($priority);
 
         if ($commandType === CommandType::HANDLE) {
             Assertion::isInstanceOf($payload, TransferObjectInterface::class);
@@ -56,6 +58,7 @@ class TransferObjectCommand implements CommandInterface
         $this->adapterName = $adapterName;
         $this->objectType = $objectType;
         $this->commandType = $commandType;
+        $this->priority = $priority;
         $this->payload = $payload;
     }
 
@@ -84,7 +87,15 @@ class TransferObjectCommand implements CommandInterface
     }
 
     /**
-     * @return TransferObjectInterface|string
+     * {@inheritdoc}
+     */
+    public function getPriority()
+    {
+        return $this->priority;
+    }
+
+    /**
+     * {@inheritdoc}
      */
     public function getPayload()
     {
@@ -92,7 +103,7 @@ class TransferObjectCommand implements CommandInterface
     }
 
     /**
-     * @return array
+     * {@inheritdoc}
      */
     public function toArray()
     {
@@ -100,6 +111,7 @@ class TransferObjectCommand implements CommandInterface
             'adapterName' => $this->adapterName,
             'objectType' => $this->objectType,
             'commandType' => $this->commandType,
+            'priority' => $this->priority,
             'payload' => $this->payload,
         ];
     }

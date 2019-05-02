@@ -2,16 +2,13 @@
 
 namespace PlentymarketsAdapter\RequestGenerator\Payment;
 
-use PlentyConnector\Connector\IdentityService\Exception\NotFoundException;
-use PlentyConnector\Connector\IdentityService\IdentityServiceInterface;
-use PlentyConnector\Connector\TransferObject\Currency\Currency;
-use PlentyConnector\Connector\TransferObject\Payment\Payment;
-use PlentyConnector\Connector\TransferObject\PaymentMethod\PaymentMethod;
 use PlentymarketsAdapter\PlentymarketsAdapter;
+use SystemConnector\IdentityService\Exception\NotFoundException;
+use SystemConnector\IdentityService\IdentityServiceInterface;
+use SystemConnector\TransferObject\Currency\Currency;
+use SystemConnector\TransferObject\Payment\Payment;
+use SystemConnector\TransferObject\PaymentMethod\PaymentMethod;
 
-/**
- * Class PaymentRequestGenerator
- */
 class PaymentRequestGenerator implements PaymentRequestGeneratorInterface
 {
     /**
@@ -19,11 +16,6 @@ class PaymentRequestGenerator implements PaymentRequestGeneratorInterface
      */
     private $identityService;
 
-    /**
-     * PaymentRequestGenerator constructor.
-     *
-     * @param IdentityServiceInterface $identityService
-     */
     public function __construct(IdentityServiceInterface $identityService)
     {
         $this->identityService = $identityService;

@@ -3,12 +3,9 @@
 namespace PlentyConnector\Components\PayPal\Plentymarkets;
 
 use PlentyConnector\Components\PayPal\PaymentData\PayPalInstallmentPaymentData;
-use PlentyConnector\Connector\TransferObject\Payment\Payment;
 use PlentymarketsAdapter\RequestGenerator\Payment\PaymentRequestGeneratorInterface;
+use SystemConnector\TransferObject\Payment\Payment;
 
-/**
- * Class PayPalInstallmentRequestGenerator
- */
 class PayPalInstallmentRequestGenerator implements PaymentRequestGeneratorInterface
 {
     /**
@@ -16,11 +13,6 @@ class PayPalInstallmentRequestGenerator implements PaymentRequestGeneratorInterf
      */
     private $parentRequestGenerator;
 
-    /**
-     * PayPalInstallmentRequestGenerator constructor.
-     *
-     * @param PaymentRequestGeneratorInterface $parentRequestGenerator
-     */
     public function __construct(PaymentRequestGeneratorInterface $parentRequestGenerator)
     {
         $this->parentRequestGenerator = $parentRequestGenerator;

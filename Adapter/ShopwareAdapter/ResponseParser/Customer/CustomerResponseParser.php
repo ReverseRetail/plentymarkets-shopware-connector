@@ -6,11 +6,6 @@ use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
 use InvalidArgumentException;
-use PlentyConnector\Connector\IdentityService\IdentityServiceInterface;
-use PlentyConnector\Connector\TransferObject\CustomerGroup\CustomerGroup;
-use PlentyConnector\Connector\TransferObject\Language\Language;
-use PlentyConnector\Connector\TransferObject\Order\Customer\Customer;
-use PlentyConnector\Connector\TransferObject\Shop\Shop;
 use Psr\Log\LoggerInterface;
 use Shopware\Models\Customer\Customer as CustomerModel;
 use Shopware\Models\Customer\Group as GroupModel;
@@ -18,10 +13,12 @@ use Shopware\Models\Newsletter\Address;
 use Shopware\Models\Shop\Repository;
 use Shopware\Models\Shop\Shop as ShopModel;
 use ShopwareAdapter\ShopwareAdapter;
+use SystemConnector\IdentityService\IdentityServiceInterface;
+use SystemConnector\TransferObject\CustomerGroup\CustomerGroup;
+use SystemConnector\TransferObject\Language\Language;
+use SystemConnector\TransferObject\Order\Customer\Customer;
+use SystemConnector\TransferObject\Shop\Shop;
 
-/**
- * Class CustomerResponseParser
- */
 class CustomerResponseParser implements CustomerResponseParserInterface
 {
     /**
@@ -39,13 +36,6 @@ class CustomerResponseParser implements CustomerResponseParserInterface
      */
     private $logger;
 
-    /**
-     * CustomerResponseParser constructor.
-     *
-     * @param IdentityServiceInterface $identityService
-     * @param EntityManagerInterface   $entityManager
-     * @param LoggerInterface          $logger
-     */
     public function __construct(
         IdentityServiceInterface $identityService,
         EntityManagerInterface $entityManager,
@@ -122,7 +112,7 @@ class CustomerResponseParser implements CustomerResponseParserInterface
         $newsletterRepository = $this->entityManager->getRepository(Address::class);
 
         /**
-         * @var Address|null $newsletter
+         * @var null|Address $newsletter
          */
         $newsletter = $newsletterRepository->findOneBy(['email' => $entry['email']]);
 
@@ -152,9 +142,7 @@ class CustomerResponseParser implements CustomerResponseParserInterface
         /**
          * @var GroupModel $customerGroup
          */
-        $customerGroup = $customerGroupRepository->findOneBy(['key' => $entry['groupKey']]);
-
-        return $customerGroup;
+        return $customerGroupRepository->findOneBy(['key' => $entry['groupKey']]);
     }
 
     /**
@@ -170,7 +158,7 @@ class CustomerResponseParser implements CustomerResponseParserInterface
         $shopRepository = $this->entityManager->getRepository(ShopModel::class);
 
         /**
-         * @var ShopModel|null $customerShop
+         * @var null|ShopModel $customerShop
          */
         $customerShop = $shopRepository->find($entry['languageId']);
 

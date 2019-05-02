@@ -1,12 +1,9 @@
 <?php
 
-namespace PlentyConnector\Connector\ServiceBus;
+namespace SystemConnector\ServiceBus;
 
 use ReflectionClass;
 
-/**
- * Class QueryType
- */
 final class QueryType
 {
     const ALL = 'all';

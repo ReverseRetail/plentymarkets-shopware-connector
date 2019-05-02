@@ -1,14 +1,11 @@
 <?php
 
-namespace PlentyConnector\Connector\ValueObject\Attribute;
+namespace SystemConnector\ValueObject\Attribute;
 
-use PlentyConnector\Connector\TransferObject\TranslateableInterface;
-use PlentyConnector\Connector\ValueObject\AbstractValueObject;
-use PlentyConnector\Connector\ValueObject\Translation\Translation;
+use SystemConnector\TransferObject\TranslateableInterface;
+use SystemConnector\ValueObject\AbstractValueObject;
+use SystemConnector\ValueObject\Translation\Translation;
 
-/**
- * Class Attribute
- */
 class Attribute extends AbstractValueObject implements TranslateableInterface
 {
     /**
@@ -72,5 +69,17 @@ class Attribute extends AbstractValueObject implements TranslateableInterface
     public function setTranslations($translations)
     {
         $this->translations = $translations;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getClassProperties()
+    {
+        return [
+            'key' => $this->getKey(),
+            'value' => $this->getValue(),
+            'translations' => $this->getTranslations(),
+        ];
     }
 }

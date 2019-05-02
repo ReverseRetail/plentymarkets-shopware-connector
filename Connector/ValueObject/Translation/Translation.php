@@ -1,12 +1,9 @@
 <?php
 
-namespace PlentyConnector\Connector\ValueObject\Translation;
+namespace SystemConnector\ValueObject\Translation;
 
-use PlentyConnector\Connector\ValueObject\AbstractValueObject;
+use SystemConnector\ValueObject\AbstractValueObject;
 
-/**
- * Class Translation
- */
 class Translation extends AbstractValueObject
 {
     /**
@@ -70,5 +67,17 @@ class Translation extends AbstractValueObject
     public function setValue($value)
     {
         $this->value = $value;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getClassProperties()
+    {
+        return [
+            'languageIdentifier' => $this->getLanguageIdentifier(),
+            'property' => $this->getProperty(),
+            'value' => $this->getValue(),
+        ];
     }
 }

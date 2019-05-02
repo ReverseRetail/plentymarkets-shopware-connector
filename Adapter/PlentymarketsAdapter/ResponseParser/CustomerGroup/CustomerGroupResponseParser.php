@@ -2,13 +2,10 @@
 
 namespace PlentymarketsAdapter\ResponseParser\CustomerGroup;
 
-use PlentyConnector\Connector\IdentityService\IdentityServiceInterface;
-use PlentyConnector\Connector\TransferObject\CustomerGroup\CustomerGroup;
 use PlentymarketsAdapter\PlentymarketsAdapter;
+use SystemConnector\IdentityService\IdentityServiceInterface;
+use SystemConnector\TransferObject\CustomerGroup\CustomerGroup;
 
-/**
- * Class CustomerGroupResponseParser
- */
 class CustomerGroupResponseParser implements CustomerGroupResponseParserInterface
 {
     /**
@@ -16,11 +13,6 @@ class CustomerGroupResponseParser implements CustomerGroupResponseParserInterfac
      */
     private $identityService;
 
-    /**
-     * CustomerGroupResponseParser constructor.
-     *
-     * @param IdentityServiceInterface $identityService
-     */
     public function __construct(IdentityServiceInterface $identityService)
     {
         $this->identityService = $identityService;

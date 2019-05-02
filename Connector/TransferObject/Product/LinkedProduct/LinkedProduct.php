@@ -1,13 +1,10 @@
 <?php
 
-namespace PlentyConnector\Connector\TransferObject\Product\LinkedProduct;
+namespace SystemConnector\TransferObject\Product\LinkedProduct;
 
-use PlentyConnector\Connector\ValueObject\AbstractValueObject;
 use ReflectionClass;
+use SystemConnector\ValueObject\AbstractValueObject;
 
-/**
- * Class LinkedProduct
- */
 class LinkedProduct extends AbstractValueObject
 {
     const TYPE_ACCESSORY = 'accessory';
@@ -85,5 +82,17 @@ class LinkedProduct extends AbstractValueObject
     public function setProductIdentifier($productIdentifier)
     {
         $this->productIdentifier = $productIdentifier;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getClassProperties()
+    {
+        return [
+            'type' => $this->getType(),
+            'position' => $this->getPosition(),
+            'productIdentifier' => $this->getProductIdentifier(),
+        ];
     }
 }

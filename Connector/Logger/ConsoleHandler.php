@@ -1,6 +1,6 @@
 <?php
 
-namespace PlentyConnector\Connector\Logger;
+namespace SystemConnector\Logger;
 
 /**
  * This file is part of the Symfony package.
@@ -32,7 +32,7 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
  * - OutputInterface::VERBOSITY_VERY_VERBOSE (-vv) will show all INFO and higher logs
  * - OutputInterface::VERBOSITY_DEBUG (-vvv) will show all DEBUG and higher logs, i.e. all logs
  *
- * This mapping can be customized with the $verbosityLevelMap constructor parameter.
+ parameter.
  *
  * @author Tobias Schultze <http://tobion.de>
  */
@@ -55,8 +55,6 @@ class ConsoleHandler extends AbstractProcessingHandler implements EventSubscribe
     ];
 
     /**
-     * Constructor.
-     *
      * @param null|OutputInterface $output            The console output to use (the handler remains disabled when passing null
      *                                                until the output is set, e.g. by using console events)
      * @param bool                 $bubble            Whether the messages that are handled can bubble up the stack

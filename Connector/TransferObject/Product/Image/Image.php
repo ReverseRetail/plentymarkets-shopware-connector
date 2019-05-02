@@ -1,13 +1,12 @@
 <?php
 
-namespace PlentyConnector\Connector\TransferObject\Product\Image;
+namespace SystemConnector\TransferObject\Product\Image;
 
-use PlentyConnector\Connector\ValueObject\AbstractValueObject;
+use SystemConnector\TransferObject\TranslateableInterface;
+use SystemConnector\ValueObject\AbstractValueObject;
+use SystemConnector\ValueObject\Translation\Translation;
 
-/**
- * Class Image
- */
-class Image extends AbstractValueObject
+class Image extends AbstractValueObject implements TranslateableInterface
 {
     /**
      * @var string
@@ -23,6 +22,16 @@ class Image extends AbstractValueObject
      * @var int
      */
     private $position = 0;
+
+    /**
+     * @var string
+     */
+    private $name;
+
+    /**
+     * @var Translation[]
+     */
+    private $translations = [];
 
     /**
      * @return mixed
@@ -70,5 +79,49 @@ class Image extends AbstractValueObject
     public function setPosition($position)
     {
         $this->position = $position;
+    }
+
+    /**
+     * @return string
+     */
+    public function getName()
+    {
+        return $this->name;
+    }
+
+    /**
+     * @param string $name
+     */
+    public function setName($name)
+    {
+        $this->name = $name;
+    }
+
+    /**
+     * @return Translation[]
+     */
+    public function getTranslations()
+    {
+        return $this->translations;
+    }
+
+    /**
+     * @param Translation[] $translations
+     */
+    public function setTranslations(array $translations)
+    {
+        $this->translations = $translations;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getClassProperties()
+    {
+        return [
+            'mediaIdentifier' => $this->getMediaIdentifier(),
+            'shopIdentifiers' => $this->getShopIdentifiers(),
+            'position' => $this->getPosition(),
+        ];
     }
 }

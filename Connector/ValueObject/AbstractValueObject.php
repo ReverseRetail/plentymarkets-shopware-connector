@@ -1,16 +1,15 @@
 <?php
 
-namespace PlentyConnector\Connector\ValueObject;
+namespace SystemConnector\ValueObject;
 
-/**
- * Class AbstractValueObject
- */
-abstract class AbstractValueObject implements ValueObjectInterface
+use JsonSerializable;
+
+abstract class AbstractValueObject implements ValueObjectInterface, JsonSerializable
 {
     /**
      * @param array $params
      *
-     * @return ValueObjectInterface
+     * @return $this
      */
     public static function fromArray(array $params = [])
     {
@@ -25,5 +24,18 @@ abstract class AbstractValueObject implements ValueObjectInterface
         }
 
         return $object;
+    }
+
+    abstract public function getClassProperties();
+
+    /**
+     * {@inheritdoc}
+     */
+    public function jsonSerialize()
+    {
+        return [
+            'class' => static::class,
+            'properties' => $this->getClassProperties(),
+        ];
     }
 }

@@ -2,16 +2,13 @@
 
 namespace PlentymarketsAdapter\ResponseParser\Product\Stock;
 
-use PlentyConnector\Connector\ConfigService\ConfigServiceInterface;
-use PlentyConnector\Connector\IdentityService\IdentityServiceInterface;
-use PlentyConnector\Connector\TransferObject\Product\Stock\Stock;
-use PlentyConnector\Connector\TransferObject\Product\Variation\Variation;
 use PlentymarketsAdapter\Client\ClientInterface;
 use PlentymarketsAdapter\PlentymarketsAdapter;
+use SystemConnector\ConfigService\ConfigServiceInterface;
+use SystemConnector\IdentityService\IdentityServiceInterface;
+use SystemConnector\TransferObject\Product\Stock\Stock;
+use SystemConnector\TransferObject\Product\Variation\Variation;
 
-/**
- * Class StockResponseParser
- */
 class StockResponseParser implements StockResponseParserInterface
 {
     const SALES_WAREHOUSE = 0;
@@ -24,27 +21,20 @@ class StockResponseParser implements StockResponseParserInterface
     /**
      * @var ConfigServiceInterface
      */
-    private $config;
+    private $configService;
 
     /**
      * @var ClientInterface
      */
     private $client;
 
-    /**
-     * StockResponseParser constructor.
-     *
-     * @param IdentityServiceInterface $identityService
-     * @param ConfigServiceInterface   $config
-     * @param ClientInterface          $client
-     */
     public function __construct(
         IdentityServiceInterface $identityService,
-        ConfigServiceInterface $config,
+        ConfigServiceInterface $configService,
         ClientInterface $client
     ) {
         $this->identityService = $identityService;
-        $this->config = $config;
+        $this->configService = $configService;
         $this->client = $client;
     }
 
@@ -60,7 +50,7 @@ class StockResponseParser implements StockResponseParserInterface
         ]);
 
         if (null === $variationIdentity) {
-            return [];
+            return null;
         }
 
         $stockIdentity = $this->identityService->findOneOrCreate(
@@ -74,7 +64,7 @@ class StockResponseParser implements StockResponseParserInterface
         $stock->setVariationIdentifier($variationIdentity->getObjectIdentifier());
         $stock->setStock($this->getStock($variation));
 
-        return [$stock];
+        return $stock;
     }
 
     /**
@@ -85,7 +75,7 @@ class StockResponseParser implements StockResponseParserInterface
     private function getStock($variation)
     {
         $arrayStocks = [];
-        $itemWarehouse = (int) $this->config->get('item_warehouse', 0);
+        $itemWarehouse = (int) $this->configService->get('item_warehouse', 0);
 
         static $warehouses;
 

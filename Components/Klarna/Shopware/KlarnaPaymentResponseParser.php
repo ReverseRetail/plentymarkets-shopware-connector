@@ -5,13 +5,10 @@ namespace PlentyConnector\Components\Klarna\Shopware;
 use Doctrine\DBAL\Connection;
 use Exception;
 use PlentyConnector\Components\Klarna\PaymentData\KlarnaPaymentData;
-use PlentyConnector\Connector\TransferObject\Payment\Payment;
 use Shopware\Components\Plugin\CachedConfigReader;
 use ShopwareAdapter\ResponseParser\Payment\PaymentResponseParserInterface;
+use SystemConnector\TransferObject\Payment\Payment;
 
-/**
- * Class KlarnaPaymentResponseParser
- */
 class KlarnaPaymentResponseParser implements PaymentResponseParserInterface
 {
     /**
@@ -78,13 +75,6 @@ class KlarnaPaymentResponseParser implements PaymentResponseParserInterface
      */
     private $configReader;
 
-    /**
-     * KlarnaPaymentResponseParser constructor.
-     *
-     * @param PaymentResponseParserInterface $parentResponseParser
-     * @param Connection                     $connection
-     * @param CachedConfigReader             $configReader
-     */
     public function __construct(
         PaymentResponseParserInterface $parentResponseParser,
         Connection $connection,
@@ -140,8 +130,8 @@ class KlarnaPaymentResponseParser implements PaymentResponseParserInterface
     }
 
     /**
-     * @param $klarnaShopId
-     * @param $countryIso
+     * @param string $klarnaShopId
+     * @param string $countryIso
      *
      * @return string
      */
@@ -162,7 +152,7 @@ class KlarnaPaymentResponseParser implements PaymentResponseParserInterface
     }
 
     /**
-     * @param $country
+     * @param string $country
      *
      * @return int
      */

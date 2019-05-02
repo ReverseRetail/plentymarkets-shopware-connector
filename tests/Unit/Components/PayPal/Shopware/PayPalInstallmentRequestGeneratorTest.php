@@ -5,12 +5,9 @@ namespace PlentyConnector\tests\Unit\Components\PayPal\Shopware;
 use PHPUnit\Framework\TestCase;
 use PlentyConnector\Components\PayPal\PaymentData\PayPalInstallmentPaymentData;
 use PlentyConnector\Components\PayPal\Plentymarkets\PayPalInstallmentRequestGenerator;
-use PlentyConnector\Connector\TransferObject\Payment\Payment;
 use PlentymarketsAdapter\RequestGenerator\Payment\PaymentRequestGenerator;
+use SystemConnector\TransferObject\Payment\Payment;
 
-/**
- * Class PayPalPlusInstallmentRequestGeneratorTest
- */
 class PayPalInstallmentRequestGeneratorTest extends TestCase
 {
     /**

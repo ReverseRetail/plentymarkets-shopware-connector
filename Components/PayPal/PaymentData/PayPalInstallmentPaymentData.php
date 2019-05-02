@@ -2,12 +2,9 @@
 
 namespace PlentyConnector\Components\PayPal\PaymentData;
 
-use PlentyConnector\Connector\TransferObject\Payment\PaymentData\PaymentDataInterface;
-use PlentyConnector\Connector\ValueObject\AbstractValueObject;
+use SystemConnector\TransferObject\Payment\PaymentData\PaymentDataInterface;
+use SystemConnector\ValueObject\AbstractValueObject;
 
-/**
- * Class PayPalInstallmentPaymentData
- */
 class PayPalInstallmentPaymentData extends AbstractValueObject implements PaymentDataInterface
 {
     /**
@@ -71,5 +68,17 @@ class PayPalInstallmentPaymentData extends AbstractValueObject implements Paymen
     public function setTotalCostsIncludeFinancing($totalCostsIncludeFinancing)
     {
         $this->totalCostsIncludeFinancing = $totalCostsIncludeFinancing;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getClassProperties()
+    {
+        return [
+            'currency' => $this->getCurrency(),
+            'financingCosts' => $this->getFinancingCosts(),
+            'totalCostsIncludeFinancing' => $this->getTotalCostsIncludeFinancing(),
+        ];
     }
 }

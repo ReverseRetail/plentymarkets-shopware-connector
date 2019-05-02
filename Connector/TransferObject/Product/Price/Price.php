@@ -1,12 +1,9 @@
 <?php
 
-namespace PlentyConnector\Connector\TransferObject\Product\Price;
+namespace SystemConnector\TransferObject\Product\Price;
 
-use PlentyConnector\Connector\ValueObject\AbstractValueObject;
+use SystemConnector\ValueObject\AbstractValueObject;
 
-/**
- * Class Price.
- */
 class Price extends AbstractValueObject
 {
     /**
@@ -112,5 +109,19 @@ class Price extends AbstractValueObject
     public function setToAmount($toAmount = null)
     {
         $this->toAmount = $toAmount;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getClassProperties()
+    {
+        return [
+            'price' => $this->getPrice(),
+            'pseudoPrice' => $this->getPseudoPrice(),
+            'customerGroupIdentifier' => $this->getCustomerGroupIdentifier(),
+            'fromAmount' => $this->getFromAmount(),
+            'toAmount' => $this->getToAmount(),
+        ];
     }
 }

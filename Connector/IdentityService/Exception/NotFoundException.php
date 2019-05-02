@@ -1,12 +1,9 @@
 <?php
 
-namespace PlentyConnector\Connector\IdentityService\Exception;
+namespace SystemConnector\IdentityService\Exception;
 
 use Exception;
 
-/**
- * Class NotFoundException.
- */
 class NotFoundException extends Exception
 {
 }

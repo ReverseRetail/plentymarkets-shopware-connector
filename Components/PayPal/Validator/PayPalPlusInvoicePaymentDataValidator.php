@@ -5,11 +5,8 @@ namespace PlentyConnector\Components\PayPal\Validator;
 use Assert\Assertion;
 use DateTimeImmutable;
 use PlentyConnector\Components\PayPal\PaymentData\PayPalPlusInvoicePaymentData;
-use PlentyConnector\Connector\Validator\ValidatorInterface;
+use SystemConnector\Validator\ValidatorInterface;
 
-/**
- * Class PayPalPlusInvoicePaymentDataValidator
- */
 class PayPalPlusInvoicePaymentDataValidator implements ValidatorInterface
 {
     /**
@@ -49,6 +46,6 @@ class PayPalPlusInvoicePaymentDataValidator implements ValidatorInterface
         Assertion::string($object->getAmountCurrency(), null, 'components.paypal.invoice.amountCurrency');
         Assertion::notBlank($object->getAmountCurrency(), null, 'components.paypal.invoice.amountCurrency');
 
-        Assertion::isInstanceOf($object->getPaymentDueDate(), DateTimeImmutable::class, null, 'components.paypal.invoice.amountCurrency');
+        Assertion::isInstanceOf($object->getPaymentDueDate(), DateTimeImmutable::class, null, 'components.paypal.invoice.paymentDueDate');
     }
 }

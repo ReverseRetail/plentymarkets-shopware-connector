@@ -3,33 +3,28 @@
 namespace PlentymarketsAdapter\ResponseParser\Order;
 
 use DateTimeImmutable;
-use PlentyConnector\Connector\IdentityService\IdentityServiceInterface;
-use PlentyConnector\Connector\TransferObject\Country\Country;
-use PlentyConnector\Connector\TransferObject\Currency\Currency;
-use PlentyConnector\Connector\TransferObject\CustomerGroup\CustomerGroup;
-use PlentyConnector\Connector\TransferObject\Language\Language;
-use PlentyConnector\Connector\TransferObject\Order\Address\Address;
-use PlentyConnector\Connector\TransferObject\Order\Comment\Comment;
-use PlentyConnector\Connector\TransferObject\Order\Customer\Customer;
-use PlentyConnector\Connector\TransferObject\Order\Order;
-use PlentyConnector\Connector\TransferObject\Order\OrderItem\OrderItem;
-use PlentyConnector\Connector\TransferObject\Order\Package\Package;
-use PlentyConnector\Connector\TransferObject\OrderStatus\OrderStatus;
-use PlentyConnector\Connector\TransferObject\PaymentMethod\PaymentMethod;
-use PlentyConnector\Connector\TransferObject\PaymentStatus\PaymentStatus;
-use PlentyConnector\Connector\TransferObject\ShippingProfile\ShippingProfile;
-use PlentyConnector\Connector\TransferObject\Shop\Shop;
-use PlentyConnector\Connector\ValueObject\Identity\Identity;
 use PlentymarketsAdapter\Client\ClientInterface;
 use PlentymarketsAdapter\PlentymarketsAdapter;
-use PlentymarketsAdapter\ReadApi\Address\Address as AddressApi;
-use PlentymarketsAdapter\ReadApi\Comment\Comment as CommentApi;
 use PlentymarketsAdapter\ReadApi\Customer\Customer as CustomerApi;
 use Psr\Log\LoggerInterface;
+use SystemConnector\IdentityService\IdentityServiceInterface;
+use SystemConnector\IdentityService\Struct\Identity;
+use SystemConnector\TransferObject\Country\Country;
+use SystemConnector\TransferObject\Currency\Currency;
+use SystemConnector\TransferObject\CustomerGroup\CustomerGroup;
+use SystemConnector\TransferObject\Language\Language;
+use SystemConnector\TransferObject\Order\Address\Address;
+use SystemConnector\TransferObject\Order\Comment\Comment;
+use SystemConnector\TransferObject\Order\Customer\Customer;
+use SystemConnector\TransferObject\Order\Order;
+use SystemConnector\TransferObject\Order\OrderItem\OrderItem;
+use SystemConnector\TransferObject\Order\Package\Package;
+use SystemConnector\TransferObject\OrderStatus\OrderStatus;
+use SystemConnector\TransferObject\PaymentMethod\PaymentMethod;
+use SystemConnector\TransferObject\PaymentStatus\PaymentStatus;
+use SystemConnector\TransferObject\ShippingProfile\ShippingProfile;
+use SystemConnector\TransferObject\Shop\Shop;
 
-/**
- * Class OrderResponseParser
- */
 class OrderResponseParser implements OrderResponseParserInterface
 {
     /**
@@ -43,48 +38,24 @@ class OrderResponseParser implements OrderResponseParserInterface
     private $logger;
 
     /**
-     * @var AddressApi
-     */
-    private $addressApi;
-
-    /**
      * @var CustomerApi
      */
     private $customerApi;
-
-    /**
-     * @var CommentApi
-     */
-    private $commentApi;
 
     /**
      * @var ClientInterface
      */
     private $client;
 
-    /**
-     * OrderResponseParser constructor.
-     *
-     * @param IdentityServiceInterface $identityService
-     * @param LoggerInterface          $logger
-     * @param AddressApi               $addressApi
-     * @param CustomerApi              $customerApi
-     * @param CommentApi               $commentApi
-     * @param ClientInterface          $client
-     */
     public function __construct(
         IdentityServiceInterface $identityService,
         LoggerInterface $logger,
-        AddressApi $addressApi,
         CustomerApi $customerApi,
-        CommentApi $commentApi,
         ClientInterface $client
     ) {
         $this->identityService = $identityService;
         $this->logger = $logger;
-        $this->addressApi = $addressApi;
         $this->customerApi = $customerApi;
-        $this->commentApi = $commentApi;
         $this->client = $client;
     }
 
@@ -195,7 +166,6 @@ class OrderResponseParser implements OrderResponseParserInterface
 
         $order = new Order();
         $order->setIdentifier($identity->getObjectIdentifier());
-        $order->setOrderType($entry['typeId'] === 1 ? Order::TYPE_ORDER : Order::TYPE_OFFER);
         $order->setOrderNumber($orderNumber);
         $order->setOrderTime($this->getOrderTime($entry));
         $order->setCustomer($customer);
@@ -230,17 +200,15 @@ class OrderResponseParser implements OrderResponseParserInterface
      */
     private function getBillingAddressData(array $entry)
     {
-        $billingAddress = array_filter($entry['addressRelations'], function (array $address) {
-            return $address['typeId'] === 1;
+        $billingAddress = array_filter($entry['addresses'], function (array $address) {
+            return $address['pivot']['typeId'] === 1;
         });
 
         if (empty($billingAddress)) {
             return [];
         }
 
-        $billingAddress = array_shift($billingAddress);
-
-        return $this->addressApi->find((int) $billingAddress['addressId']);
+        return array_shift($billingAddress);
     }
 
     /**
@@ -250,17 +218,15 @@ class OrderResponseParser implements OrderResponseParserInterface
      */
     private function getShippingAddressData(array $entry)
     {
-        $shippingAddress = array_filter($entry['addressRelations'], function (array $address) {
-            return $address['typeId'] === 2;
+        $shippingAddress = array_filter($entry['addresses'], function (array $address) {
+            return $address['pivot']['typeId'] === 2;
         });
 
         if (empty($shippingAddress)) {
             return [];
         }
 
-        $shippingAddress = array_shift($shippingAddress);
-
-        return $this->addressApi->find((int) $shippingAddress['addressId']);
+        return array_shift($shippingAddress);
     }
 
     /**
@@ -317,13 +283,11 @@ class OrderResponseParser implements OrderResponseParserInterface
         if (!empty($property)) {
             $property = array_shift($property);
 
-            $identity = $this->identityService->findOneBy([
+            return $this->identityService->findOneBy([
                 'adapterIdentifier' => (string) $property['value'],
                 'adapterName' => PlentymarketsAdapter::NAME,
                 'objectType' => Language::TYPE,
             ]);
-
-            return $identity;
         }
 
         return null;
@@ -336,13 +300,8 @@ class OrderResponseParser implements OrderResponseParserInterface
      */
     private function getComments(array $entry)
     {
-        $comments = $this->commentApi->findBy([
-            'referenceType' => 'order',
-            'referenceValue' => $entry['id'],
-        ]);
-
         $result = [];
-        foreach ($comments as $data) {
+        foreach ($entry['comments'] as $data) {
             $comment = new Comment();
             $comment->setComment((string) $data['text']);
             $comment->setType($data['text'] ? Comment::TYPE_CUSTOMER : Comment::TYPE_INTERNAL);
@@ -356,7 +315,7 @@ class OrderResponseParser implements OrderResponseParserInterface
     /**
      * @param array $entry
      *
-     * @return Customer|null
+     * @return null|Customer
      */
     private function getCustomer(array $entry)
     {
@@ -447,13 +406,11 @@ class OrderResponseParser implements OrderResponseParserInterface
             }
 
             if (!empty($orderProperty['value'])) {
-                $identity = $this->identityService->findOneBy([
+                return $this->identityService->findOneBy([
                     'adapterIdentifier' => (string) $orderProperty['value'],
                     'adapterName' => PlentymarketsAdapter::NAME,
                     'objectType' => ShippingProfile::TYPE,
                 ]);
-
-                return $identity;
             }
         }
 
@@ -494,13 +451,11 @@ class OrderResponseParser implements OrderResponseParserInterface
         if (!empty($property)) {
             $property = array_shift($property);
 
-            $identity = $this->identityService->findOneBy([
+            return $this->identityService->findOneBy([
                 'adapterIdentifier' => (string) $property['value'],
                 'adapterName' => PlentymarketsAdapter::NAME,
                 'objectType' => PaymentMethod::TYPE,
             ]);
-
-            return $identity;
         }
 
         return null;
@@ -520,13 +475,11 @@ class OrderResponseParser implements OrderResponseParserInterface
         if (!empty($property)) {
             //$property = array_shift($property);
 
-            $identity = $this->identityService->findOneBy([
+            return $this->identityService->findOneBy([
                 'adapterIdentifier' => (string) $entry['statusId'],
                 'adapterName' => PlentymarketsAdapter::NAME,
                 'objectType' => PaymentStatus::TYPE,
             ]);
-
-            return $identity;
         }
 
         return null;
@@ -569,7 +522,7 @@ class OrderResponseParser implements OrderResponseParserInterface
     /**
      * @param array $entry
      *
-     * @return Address|null
+     * @return null|Address
      */
     private function getBillingAddress(array $entry)
     {

@@ -2,28 +2,26 @@
 
 namespace PlentymarketsAdapter\ServiceBus\QueryHandler\MediaCategory;
 
+use DateTime;
 use Exception;
-use PlentyConnector\Connector\ConfigService\ConfigServiceInterface;
-use PlentyConnector\Connector\ServiceBus\Query\FetchTransferObjectQuery;
-use PlentyConnector\Connector\ServiceBus\Query\QueryInterface;
-use PlentyConnector\Connector\ServiceBus\QueryHandler\QueryHandlerInterface;
-use PlentyConnector\Connector\ServiceBus\QueryType;
-use PlentyConnector\Connector\TransferObject\MediaCategory\MediaCategory;
-use PlentyConnector\Console\OutputHandler\OutputHandlerInterface;
 use PlentymarketsAdapter\Helper\MediaCategoryHelperInterface;
 use PlentymarketsAdapter\PlentymarketsAdapter;
 use PlentymarketsAdapter\ResponseParser\MediaCategory\MediaCategoryResponseParserInterface;
 use Psr\Log\LoggerInterface;
+use SystemConnector\ConfigService\ConfigServiceInterface;
+use SystemConnector\Console\OutputHandler\OutputHandlerInterface;
+use SystemConnector\ServiceBus\Query\FetchTransferObjectQuery;
+use SystemConnector\ServiceBus\Query\QueryInterface;
+use SystemConnector\ServiceBus\QueryHandler\QueryHandlerInterface;
+use SystemConnector\ServiceBus\QueryType;
+use SystemConnector\TransferObject\MediaCategory\MediaCategory;
 
-/**
- * Class FetchChangedMediaCategoriesQueryHandler.
- */
 class FetchChangedMediaCategoriesQueryHandler implements QueryHandlerInterface
 {
     /**
      * @var ConfigServiceInterface
      */
-    private $config;
+    private $configService;
 
     /**
      * @var MediaCategoryHelperInterface
@@ -45,23 +43,14 @@ class FetchChangedMediaCategoriesQueryHandler implements QueryHandlerInterface
      */
     private $outputHandler;
 
-    /**
-     * FetchChangedMediaCategoriesQueryHandler constructor.
-     *
-     * @param ConfigServiceInterface               $config
-     * @param MediaCategoryHelperInterface         $mediaCategoryHelper
-     * @param MediaCategoryResponseParserInterface $responseParser
-     * @param LoggerInterface                      $logger
-     * @param OutputHandlerInterface               $outputHandler
-     */
     public function __construct(
-        ConfigServiceInterface $config,
+        ConfigServiceInterface $configService,
         MediaCategoryHelperInterface $mediaCategoryHelper,
         MediaCategoryResponseParserInterface $responseParser,
         LoggerInterface $logger,
         OutputHandlerInterface $outputHandler
     ) {
-        $this->config = $config;
+        $this->configService = $configService;
         $this->mediaCategoryHelper = $mediaCategoryHelper;
         $this->responseParser = $responseParser;
         $this->logger = $logger;
@@ -85,10 +74,12 @@ class FetchChangedMediaCategoriesQueryHandler implements QueryHandlerInterface
     public function handle(QueryInterface $query)
     {
         $elements = [];
-        $synced = $this->config->get('PlentymarketsAdapter.MediaCategoriesSynched');
+        $synced = $this->configService->get('PlentymarketsAdapter.MediaCategoriesSynched');
 
         if (null === $synced) {
             $elements = $this->mediaCategoryHelper->getCategories();
+
+            $this->configService->set('PlentymarketsAdapter.MediaCategoriesSynched', new DateTime());
         }
 
         $this->outputHandler->startProgressBar(count($elements));

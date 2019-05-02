@@ -5,18 +5,15 @@ namespace ShopwareAdapter\ServiceBus\QueryHandler\Language;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\Query;
-use PlentyConnector\Connector\ServiceBus\Query\FetchTransferObjectQuery;
-use PlentyConnector\Connector\ServiceBus\Query\QueryInterface;
-use PlentyConnector\Connector\ServiceBus\QueryHandler\QueryHandlerInterface;
-use PlentyConnector\Connector\ServiceBus\QueryType;
-use PlentyConnector\Connector\TransferObject\Language\Language;
 use Shopware\Models\Shop\Locale;
 use ShopwareAdapter\ResponseParser\Language\LanguageResponseParserInterface;
 use ShopwareAdapter\ShopwareAdapter;
+use SystemConnector\ServiceBus\Query\FetchTransferObjectQuery;
+use SystemConnector\ServiceBus\Query\QueryInterface;
+use SystemConnector\ServiceBus\QueryHandler\QueryHandlerInterface;
+use SystemConnector\ServiceBus\QueryType;
+use SystemConnector\TransferObject\Language\Language;
 
-/**
- * Class FetchAllLanguagesQueryHandler
- */
 class FetchAllLanguagesQueryHandler implements QueryHandlerInterface
 {
     /**
@@ -29,12 +26,6 @@ class FetchAllLanguagesQueryHandler implements QueryHandlerInterface
      */
     private $responseParser;
 
-    /**
-     * FetchAllLanguagesQueryHandler constructor.
-     *
-     * @param EntityManagerInterface          $entityManager
-     * @param LanguageResponseParserInterface $responseParser
-     */
     public function __construct(
         EntityManagerInterface $entityManager,
         LanguageResponseParserInterface $responseParser

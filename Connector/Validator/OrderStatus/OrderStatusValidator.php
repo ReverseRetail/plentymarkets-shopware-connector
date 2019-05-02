@@ -1,14 +1,11 @@
 <?php
 
-namespace PlentyConnector\Connector\Validator\OrderStatus;
+namespace SystemConnector\Validator\OrderStatus;
 
 use Assert\Assertion;
-use PlentyConnector\Connector\TransferObject\OrderStatus\OrderStatus;
-use PlentyConnector\Connector\Validator\ValidatorInterface;
+use SystemConnector\TransferObject\OrderStatus\OrderStatus;
+use SystemConnector\Validator\ValidatorInterface;
 
-/**
- * Class OrderStatusValidator
- */
 class OrderStatusValidator implements ValidatorInterface
 {
     /**

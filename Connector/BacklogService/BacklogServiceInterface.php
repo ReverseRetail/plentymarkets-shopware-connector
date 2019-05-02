@@ -1,21 +1,26 @@
 <?php
 
-namespace PlentyConnector\Connector\BacklogService;
+namespace SystemConnector\BacklogService;
 
-use PlentyConnector\Connector\ServiceBus\Command\CommandInterface;
+use SystemConnector\BacklogService\Command\HandleBacklogElementCommand;
+use SystemConnector\ServiceBus\Command\CommandInterface;
 
-/**
- * Interface BacklogServiceInterface
- */
 interface BacklogServiceInterface
 {
+    const STATUS_OPEN = 'open';
+    const STATUS_PROCESSED = 'processed';
+
     /**
+     * enqueues a command to the backlog
+     *
      * @param CommandInterface $command
      */
     public function enqueue(CommandInterface $command);
 
     /**
-     * @return null|CommandInterface
+     * dequeue the next possible command
+     *
+     * @return null|HandleBacklogElementCommand
      */
     public function dequeue();
 

@@ -9,9 +9,6 @@ use PlentymarketsAdapter\Helper\LanguageHelperInterface;
 use PlentymarketsAdapter\Helper\VariationHelperInterface;
 use PlentymarketsAdapter\ReadApi\Item\Variation as VariationApi;
 
-/**
- * Class Item
- */
 class Item extends ApiAbstract
 {
     /**
@@ -30,18 +27,15 @@ class Item extends ApiAbstract
     private $variationHelper;
 
     /**
-     * @var string
+     * @var array
      */
-    private $includes = 'itemProperties.valueTexts,itemCrossSelling,itemImages,itemShippingProfiles';
+    private static $includes = [
+        'itemProperties.valueTexts',
+        'itemCrossSelling',
+        'itemImages',
+        'itemShippingProfiles',
+    ];
 
-    /**
-     * Item constructor.
-     *
-     * @param Client                   $client
-     * @param VariationApi             $itemsVariationsApi
-     * @param LanguageHelperInterface  $languageHelper
-     * @param VariationHelperInterface $variationHelper
-     */
     public function __construct(
         Client $client,
         VariationApi $itemsVariationsApi,
@@ -64,7 +58,7 @@ class Item extends ApiAbstract
     {
         $result = $this->client->request('GET', 'items/' . $productId, [
             'lang' => $this->languageHelper->getLanguagesQueryString(),
-            'with' => $this->includes,
+            'with' => implode(',', self::$includes),
         ]);
 
         if (empty($result)) {
@@ -86,7 +80,7 @@ class Item extends ApiAbstract
     {
         return $this->client->getIterator('items', [
             'lang' => $this->languageHelper->getLanguagesQueryString(),
-            'with' => $this->includes,
+            'with' => implode(',', self::$includes),
         ], function (array $elements) {
             $this->addAdditionalData($elements);
 
@@ -108,7 +102,29 @@ class Item extends ApiAbstract
         return $this->client->getIterator('items', [
             'lang' => $this->languageHelper->getLanguagesQueryString(),
             'updatedBetween' => $start . ',' . $end,
-            'with' => $this->includes,
+            'with' => implode(',', self::$includes),
+        ], function (array $elements) {
+            $this->addAdditionalData($elements);
+
+            return $elements;
+        });
+    }
+
+    /**
+     * @param DateTimeImmutable $startTimestamp
+     * @param DateTimeImmutable $endTimestamp
+     *
+     * @return Iterator
+     */
+    public function findChangedVariations(DateTimeImmutable $startTimestamp, DateTimeImmutable $endTimestamp)
+    {
+        $start = $startTimestamp->format(DATE_W3C);
+        $end = $endTimestamp->format(DATE_W3C);
+
+        return $this->client->getIterator('items', [
+            'lang' => $this->languageHelper->getLanguagesQueryString(),
+            'variationUpdatedBetween' => $start . ',' . $end,
+            'with' => implode(',', self::$includes),
         ], function (array $elements) {
             $this->addAdditionalData($elements);
 

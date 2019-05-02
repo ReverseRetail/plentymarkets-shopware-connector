@@ -1,15 +1,12 @@
 <?php
 
-namespace PlentyConnector\Connector\Validator\Order\Customer;
+namespace SystemConnector\Validator\Order\Customer;
 
 use Assert\Assertion;
 use DateTimeImmutable;
-use PlentyConnector\Connector\TransferObject\Order\Customer\Customer;
-use PlentyConnector\Connector\Validator\ValidatorInterface;
+use SystemConnector\TransferObject\Order\Customer\Customer;
+use SystemConnector\Validator\ValidatorInterface;
 
-/**
- * Class CustomerValidator
- */
 class CustomerValidator implements ValidatorInterface
 {
     /**

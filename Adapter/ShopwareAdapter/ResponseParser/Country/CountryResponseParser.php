@@ -2,13 +2,10 @@
 
 namespace ShopwareAdapter\ResponseParser\Country;
 
-use PlentyConnector\Connector\IdentityService\IdentityServiceInterface;
-use PlentyConnector\Connector\TransferObject\Country\Country;
 use ShopwareAdapter\ShopwareAdapter;
+use SystemConnector\IdentityService\IdentityServiceInterface;
+use SystemConnector\TransferObject\Country\Country;
 
-/**
- * Class CountryResponseParser
- */
 class CountryResponseParser implements CountryResponseParserInterface
 {
     /**
@@ -16,11 +13,6 @@ class CountryResponseParser implements CountryResponseParserInterface
      */
     private $identityService;
 
-    /**
-     * CountryResponseParser constructor.
-     *
-     * @param IdentityServiceInterface $identityService
-     */
     public function __construct(IdentityServiceInterface $identityService)
     {
         $this->identityService = $identityService;

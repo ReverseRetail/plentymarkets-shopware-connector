@@ -1,20 +1,22 @@
 <?php
 
-namespace PlentyConnector\Connector\TransferObject\Product\Property\Value;
+namespace SystemConnector\TransferObject\Product\Property\Value;
 
-use PlentyConnector\Connector\TransferObject\TranslateableInterface;
-use PlentyConnector\Connector\ValueObject\AbstractValueObject;
-use PlentyConnector\Connector\ValueObject\Translation\Translation;
+use SystemConnector\TransferObject\TranslateableInterface;
+use SystemConnector\ValueObject\AbstractValueObject;
+use SystemConnector\ValueObject\Translation\Translation;
 
-/**
- * Class Value
- */
 class Value extends AbstractValueObject implements TranslateableInterface
 {
     /**
      * @var string
      */
     private $value = '';
+
+    /**
+     * @var int
+     */
+    private $position = 0;
 
     /**
      * @var Translation[]
@@ -38,6 +40,22 @@ class Value extends AbstractValueObject implements TranslateableInterface
     }
 
     /**
+     * @return int
+     */
+    public function getPosition()
+    {
+        return $this->position;
+    }
+
+    /**
+     * @param int $position
+     */
+    public function setPosition($position)
+    {
+        $this->position = $position;
+    }
+
+    /**
      * @return Translation[]
      */
     public function getTranslations()
@@ -51,5 +69,17 @@ class Value extends AbstractValueObject implements TranslateableInterface
     public function setTranslations(array $translations)
     {
         $this->translations = $translations;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getClassProperties()
+    {
+        return [
+            'value' => $this->getValue(),
+            'position' => $this->getPosition(),
+            'translations' => $this->getTranslations(),
+        ];
     }
 }

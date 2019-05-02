@@ -2,21 +2,18 @@
 
 namespace ShopwareAdapter\ServiceBus\CommandHandler\Manufacturer;
 
-use PlentyConnector\Connector\IdentityService\IdentityServiceInterface;
-use PlentyConnector\Connector\ServiceBus\Command\CommandInterface;
-use PlentyConnector\Connector\ServiceBus\Command\TransferObjectCommand;
-use PlentyConnector\Connector\ServiceBus\CommandHandler\CommandHandlerInterface;
-use PlentyConnector\Connector\ServiceBus\CommandType;
-use PlentyConnector\Connector\TransferObject\Manufacturer\Manufacturer;
-use PlentyConnector\Connector\TransferObject\Media\Media;
 use Shopware\Components\Api\Exception\NotFoundException as ManufacturerNotFoundException;
 use Shopware\Components\Api\Resource\Manufacturer as ManufacturerResource;
 use ShopwareAdapter\DataPersister\Attribute\AttributeDataPersisterInterface;
 use ShopwareAdapter\ShopwareAdapter;
+use SystemConnector\IdentityService\IdentityServiceInterface;
+use SystemConnector\ServiceBus\Command\CommandInterface;
+use SystemConnector\ServiceBus\Command\TransferObjectCommand;
+use SystemConnector\ServiceBus\CommandHandler\CommandHandlerInterface;
+use SystemConnector\ServiceBus\CommandType;
+use SystemConnector\TransferObject\Manufacturer\Manufacturer;
+use SystemConnector\TransferObject\Media\Media;
 
-/**
- * Class HandleManufacturerCommandHandler.
- */
 class HandleManufacturerCommandHandler implements CommandHandlerInterface
 {
     /**
@@ -34,13 +31,6 @@ class HandleManufacturerCommandHandler implements CommandHandlerInterface
      */
     private $attributePersister;
 
-    /**
-     * HandleManufacturerCommandHandler constructor.
-     *
-     * @param ManufacturerResource            $resource
-     * @param IdentityServiceInterface        $identityService
-     * @param AttributeDataPersisterInterface $attributePersister
-     */
     public function __construct(
         ManufacturerResource $resource,
         IdentityServiceInterface $identityService,
@@ -106,7 +96,7 @@ class HandleManufacturerCommandHandler implements CommandHandlerInterface
             $existingManufacturer = $this->findExistingManufacturer($manufacturer);
 
             if (null !== $existingManufacturer) {
-                $identity = $this->identityService->create(
+                $identity = $this->identityService->insert(
                     (string) $manufacturer->getIdentifier(),
                     Manufacturer::TYPE,
                     (string) $existingManufacturer['id'],
@@ -128,7 +118,7 @@ class HandleManufacturerCommandHandler implements CommandHandlerInterface
         if (null === $identity) {
             $manufacturerModel = $this->resource->create($params);
 
-            $this->identityService->create(
+            $this->identityService->insert(
                 (string) $manufacturer->getIdentifier(),
                 Manufacturer::TYPE,
                 (string) $manufacturerModel->getId(),

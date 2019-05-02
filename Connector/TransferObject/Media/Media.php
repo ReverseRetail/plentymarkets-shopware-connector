@@ -1,16 +1,13 @@
 <?php
 
-namespace PlentyConnector\Connector\TransferObject\Media;
+namespace SystemConnector\TransferObject\Media;
 
-use PlentyConnector\Connector\TransferObject\AbstractTransferObject;
-use PlentyConnector\Connector\TransferObject\AttributableInterface;
-use PlentyConnector\Connector\TransferObject\TranslateableInterface;
-use PlentyConnector\Connector\ValueObject\Attribute\Attribute;
-use PlentyConnector\Connector\ValueObject\Translation\Translation;
+use SystemConnector\TransferObject\AbstractTransferObject;
+use SystemConnector\TransferObject\AttributableInterface;
+use SystemConnector\TransferObject\TranslateableInterface;
+use SystemConnector\ValueObject\Attribute\Attribute;
+use SystemConnector\ValueObject\Translation\Translation;
 
-/**
- * Class Media
- */
 class Media extends AbstractTransferObject implements TranslateableInterface, AttributableInterface
 {
     const TYPE = 'Media';
@@ -79,7 +76,7 @@ class Media extends AbstractTransferObject implements TranslateableInterface, At
     }
 
     /**
-     * @param string $identifier
+     * {@inheritdoc}
      */
     public function setIdentifier($identifier)
     {
@@ -212,5 +209,23 @@ class Media extends AbstractTransferObject implements TranslateableInterface, At
     public function setAttributes(array $attributes)
     {
         $this->attributes = $attributes;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getClassProperties()
+    {
+        return [
+            'identifier' => $this->getIdentifier(),
+            'mediaCategoryIdentifier' => $this->getMediaCategoryIdentifier(),
+            'link' => $this->getLink(),
+            'filename' => $this->getFilename(),
+            'hash' => $this->getHash(),
+            'name' => $this->getName(),
+            'alternateName' => $this->getAlternateName(),
+            'translations' => $this->getTranslations(),
+            'attributes' => $this->getAttributes(),
+        ];
     }
 }

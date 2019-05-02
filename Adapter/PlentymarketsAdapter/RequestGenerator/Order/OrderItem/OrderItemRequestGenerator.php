@@ -2,21 +2,18 @@
 
 namespace PlentymarketsAdapter\RequestGenerator\Order\OrderItem;
 
-use PlentyConnector\Connector\ConfigService\ConfigServiceInterface;
-use PlentyConnector\Connector\IdentityService\Exception\NotFoundException;
-use PlentyConnector\Connector\IdentityService\IdentityServiceInterface;
-use PlentyConnector\Connector\TransferObject\Currency\Currency;
-use PlentyConnector\Connector\TransferObject\Order\Order;
-use PlentyConnector\Connector\TransferObject\Order\OrderItem\OrderItem;
-use PlentyConnector\Connector\TransferObject\ShippingProfile\ShippingProfile;
-use PlentyConnector\Connector\TransferObject\VatRate\VatRate;
 use PlentymarketsAdapter\Client\ClientInterface;
 use PlentymarketsAdapter\PlentymarketsAdapter;
 use RuntimeException;
+use SystemConnector\ConfigService\ConfigServiceInterface;
+use SystemConnector\IdentityService\Exception\NotFoundException;
+use SystemConnector\IdentityService\IdentityServiceInterface;
+use SystemConnector\TransferObject\Currency\Currency;
+use SystemConnector\TransferObject\Order\Order;
+use SystemConnector\TransferObject\Order\OrderItem\OrderItem;
+use SystemConnector\TransferObject\ShippingProfile\ShippingProfile;
+use SystemConnector\TransferObject\VatRate\VatRate;
 
-/**
- * Class OrderItemRequestGenerator
- */
 class OrderItemRequestGenerator implements OrderItemRequestGeneratorInterface
 {
     /**
@@ -32,23 +29,16 @@ class OrderItemRequestGenerator implements OrderItemRequestGeneratorInterface
     /**
      * @var ConfigServiceInterface
      */
-    private $config;
+    private $configService;
 
-    /**
-     * OrderItemRequestGenerator constructor.
-     *
-     * @param IdentityServiceInterface $identityService
-     * @param ClientInterface          $client
-     * @param ConfigServiceInterface   $config
-     */
     public function __construct(
         IdentityServiceInterface $identityService,
         ClientInterface $client,
-        ConfigServiceInterface $config
+        ConfigServiceInterface $configService
     ) {
         $this->identityService = $identityService;
         $this->client = $client;
-        $this->config = $config;
+        $this->configService = $configService;
     }
 
     /**
@@ -148,7 +138,7 @@ class OrderItemRequestGenerator implements OrderItemRequestGeneratorInterface
             ];
         }
 
-        $itemParams['referrerId'] = $this->config->get('order_origin', '0.00');
+        $itemParams['referrerId'] = $this->configService->get('order_origin', '0.00');
 
         $itemParams['orderProperties'] = [];
 
@@ -162,7 +152,7 @@ class OrderItemRequestGenerator implements OrderItemRequestGeneratorInterface
      */
     private function getVariationIdentifier(OrderItem $orderItem)
     {
-        if ($this->config->get('variation_number_field', 'number') === 'number') {
+        if ($this->configService->get('variation_number_field', 'number') === 'number') {
             return $this->getVariationIdentifierFromNumber($orderItem->getNumber());
         }
 

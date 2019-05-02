@@ -1,13 +1,10 @@
 <?php
 
-namespace PlentyConnector\Connector\Logger;
+namespace SystemConnector\Logger;
 
 use Exception;
 use League\Tactician\Middleware;
 
-/**
- * Class LoggerMiddleware
- */
 class LoggerMiddleware implements Middleware
 {
     /**
@@ -35,7 +32,7 @@ class LoggerMiddleware implements Middleware
         try {
             $returnValue = $next($command);
 
-            $this->formatter->logCommandSucceeded($command, $returnValue);
+            $this->formatter->logCommandProcessed($command, $returnValue);
 
             return $returnValue;
         } catch (Exception $exception) {

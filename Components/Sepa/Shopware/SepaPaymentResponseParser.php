@@ -6,19 +6,16 @@ use Assert\Assertion;
 use Doctrine\ORM\EntityRepository;
 use InvalidArgumentException;
 use PlentyConnector\Components\Sepa\PaymentData\SepaPaymentData;
-use PlentyConnector\Connector\IdentityService\IdentityServiceInterface;
-use PlentyConnector\Connector\TransferObject\Currency\Currency;
-use PlentyConnector\Connector\TransferObject\Order\Order;
-use PlentyConnector\Connector\TransferObject\Payment\Payment;
-use PlentyConnector\Connector\TransferObject\PaymentMethod\PaymentMethod;
-use PlentyConnector\Connector\TransferObject\Shop\Shop;
 use Shopware\Models\Shop\Currency as CurrencyModel;
 use ShopwareAdapter\ResponseParser\Payment\PaymentResponseParserInterface;
 use ShopwareAdapter\ShopwareAdapter;
+use SystemConnector\IdentityService\IdentityServiceInterface;
+use SystemConnector\TransferObject\Currency\Currency;
+use SystemConnector\TransferObject\Order\Order;
+use SystemConnector\TransferObject\Payment\Payment;
+use SystemConnector\TransferObject\PaymentMethod\PaymentMethod;
+use SystemConnector\TransferObject\Shop\Shop;
 
-/**
- * Class SepaPaymentResponseParser
- */
 class SepaPaymentResponseParser implements PaymentResponseParserInterface
 {
     /**
@@ -31,12 +28,6 @@ class SepaPaymentResponseParser implements PaymentResponseParserInterface
      */
     private $identityService;
 
-    /**
-     * SepaPaymentResponseParser constructor.
-     *
-     * @param PaymentResponseParserInterface $parentResponseParser
-     * @param IdentityServiceInterface       $identityService
-     */
     public function __construct(
         PaymentResponseParserInterface $parentResponseParser,
         IdentityServiceInterface $identityService
@@ -111,7 +102,7 @@ class SepaPaymentResponseParser implements PaymentResponseParserInterface
         $currencyRepository = Shopware()->Models()->getRepository(CurrencyModel::class);
 
         /**
-         * @var CurrencyModel|null $model
+         * @var null|CurrencyModel $model
          */
         $model = $currencyRepository->findOneBy(['currency' => $currency]);
 
@@ -151,10 +142,6 @@ class SepaPaymentResponseParser implements PaymentResponseParserInterface
         }
 
         $paymentInstance = array_shift($element['paymentInstances']);
-
-        if (empty($paymentInstance['accountHolder'])) {
-            return false;
-        }
 
         if (empty($paymentInstance['iban'])) {
             return false;

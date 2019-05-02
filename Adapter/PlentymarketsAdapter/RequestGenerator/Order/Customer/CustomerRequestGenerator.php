@@ -2,18 +2,15 @@
 
 namespace PlentymarketsAdapter\RequestGenerator\Order\Customer;
 
-use PlentyConnector\Connector\IdentityService\Exception\NotFoundException;
-use PlentyConnector\Connector\IdentityService\IdentityServiceInterface;
-use PlentyConnector\Connector\TransferObject\CustomerGroup\CustomerGroup;
-use PlentyConnector\Connector\TransferObject\Language\Language;
-use PlentyConnector\Connector\TransferObject\Order\Customer\Customer;
-use PlentyConnector\Connector\TransferObject\Order\Order;
-use PlentyConnector\Connector\TransferObject\Shop\Shop;
 use PlentymarketsAdapter\PlentymarketsAdapter;
+use SystemConnector\IdentityService\Exception\NotFoundException;
+use SystemConnector\IdentityService\IdentityServiceInterface;
+use SystemConnector\TransferObject\CustomerGroup\CustomerGroup;
+use SystemConnector\TransferObject\Language\Language;
+use SystemConnector\TransferObject\Order\Customer\Customer;
+use SystemConnector\TransferObject\Order\Order;
+use SystemConnector\TransferObject\Shop\Shop;
 
-/**
- * Class CustomerRequestGenerator
- */
 class CustomerRequestGenerator implements CustomerRequestGeneratorInterface
 {
     /**
@@ -21,11 +18,6 @@ class CustomerRequestGenerator implements CustomerRequestGeneratorInterface
      */
     private $identityService;
 
-    /**
-     * CustomerRequestGenerator constructor.
-     *
-     * @param IdentityServiceInterface $identityService
-     */
     public function __construct(IdentityServiceInterface $identityService)
     {
         $this->identityService = $identityService;

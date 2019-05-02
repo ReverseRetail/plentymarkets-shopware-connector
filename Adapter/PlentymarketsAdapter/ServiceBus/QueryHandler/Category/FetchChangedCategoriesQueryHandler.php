@@ -3,21 +3,18 @@
 namespace PlentymarketsAdapter\ServiceBus\QueryHandler\Category;
 
 use Exception;
-use PlentyConnector\Connector\ServiceBus\Query\FetchTransferObjectQuery;
-use PlentyConnector\Connector\ServiceBus\Query\QueryInterface;
-use PlentyConnector\Connector\ServiceBus\QueryHandler\QueryHandlerInterface;
-use PlentyConnector\Connector\ServiceBus\QueryType;
-use PlentyConnector\Connector\TransferObject\Category\Category;
-use PlentyConnector\Console\OutputHandler\OutputHandlerInterface;
 use PlentymarketsAdapter\PlentymarketsAdapter;
 use PlentymarketsAdapter\ReadApi\Category\Category as CategoryApi;
 use PlentymarketsAdapter\ResponseParser\Category\CategoryResponseParserInterface;
 use PlentymarketsAdapter\ServiceBus\ChangedDateTimeTrait;
 use Psr\Log\LoggerInterface;
+use SystemConnector\Console\OutputHandler\OutputHandlerInterface;
+use SystemConnector\ServiceBus\Query\FetchTransferObjectQuery;
+use SystemConnector\ServiceBus\Query\QueryInterface;
+use SystemConnector\ServiceBus\QueryHandler\QueryHandlerInterface;
+use SystemConnector\ServiceBus\QueryType;
+use SystemConnector\TransferObject\Category\Category;
 
-/**
- * Class FetchChangedCategoriesQueryHandler.
- */
 class FetchChangedCategoriesQueryHandler implements QueryHandlerInterface
 {
     use ChangedDateTimeTrait;
@@ -42,14 +39,6 @@ class FetchChangedCategoriesQueryHandler implements QueryHandlerInterface
      */
     private $outputHandler;
 
-    /**
-     * FetchChangedCategoriesQueryHandler constructor.
-     *
-     * @param CategoryApi                     $categoryApi
-     * @param CategoryResponseParserInterface $responseParser
-     * @param LoggerInterface                 $logger
-     * @param OutputHandlerInterface          $outputHandler
-     */
     public function __construct(
         CategoryApi $categoryApi,
         CategoryResponseParserInterface $responseParser,
@@ -81,7 +70,7 @@ class FetchChangedCategoriesQueryHandler implements QueryHandlerInterface
         $lastCangedTime = $this->getChangedDateTime();
         $currentDateTime = $this->getCurrentDateTime();
 
-        $elements = $this->categoryApi->findChanged($lastCangedTime, $currentDateTime);
+        $elements = $this->categoryApi->findChanged($lastCangedTime);
 
         $this->outputHandler->startProgressBar(count($elements));
 

@@ -3,13 +3,10 @@
 namespace PlentymarketsAdapter\ServiceBus;
 
 use DateTimeImmutable;
-use PlentyConnector\Connector\ConfigService\ConfigServiceInterface;
 use PlentymarketsAdapter\PlentymarketsAdapter;
 use ReflectionClass;
+use SystemConnector\ConfigService\ConfigServiceInterface;
 
-/**
- * Class ChangedDateTimeTrait.
- */
 trait ChangedDateTimeTrait
 {
     /**
@@ -18,11 +15,11 @@ trait ChangedDateTimeTrait
     public function getChangedDateTime()
     {
         /**
-         * @var ConfigServiceInterface $config
+         * @var ConfigServiceInterface $configService
          */
-        $config = Shopware()->Container()->get('plenty_connector.config');
+        $configService = Shopware()->Container()->get('plenty_connector.config_service');
 
-        $lastRun = $config->get($this->getKey());
+        $lastRun = $configService->get($this->getKey());
 
         if (null === $lastRun) {
             $lastRun = '2000-01-01T00:00:00+01:00';
@@ -37,11 +34,11 @@ trait ChangedDateTimeTrait
     public function setChangedDateTime(DateTimeImmutable $dateTime)
     {
         /**
-         * @var ConfigServiceInterface $config
+         * @var ConfigServiceInterface $configService
          */
-        $config = Shopware()->Container()->get('plenty_connector.config');
+        $configService = Shopware()->Container()->get('plenty_connector.config_service');
 
-        $config->set($this->getKey(), $dateTime);
+        $configService->set($this->getKey(), $dateTime);
     }
 
     /**

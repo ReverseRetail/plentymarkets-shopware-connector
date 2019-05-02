@@ -2,21 +2,18 @@
 
 namespace PlentymarketsAdapter\ServiceBus\CommandHandler\Payment;
 
-use PlentyConnector\Connector\IdentityService\IdentityServiceInterface;
-use PlentyConnector\Connector\ServiceBus\Command\CommandInterface;
-use PlentyConnector\Connector\ServiceBus\Command\TransferObjectCommand;
-use PlentyConnector\Connector\ServiceBus\CommandHandler\CommandHandlerInterface;
-use PlentyConnector\Connector\ServiceBus\CommandType;
-use PlentyConnector\Connector\TransferObject\Order\Order;
-use PlentyConnector\Connector\TransferObject\Payment\Payment;
 use PlentymarketsAdapter\Client\ClientInterface;
 use PlentymarketsAdapter\PlentymarketsAdapter;
 use PlentymarketsAdapter\RequestGenerator\Payment\PaymentRequestGeneratorInterface;
 use Psr\Log\LoggerInterface;
+use SystemConnector\IdentityService\IdentityServiceInterface;
+use SystemConnector\ServiceBus\Command\CommandInterface;
+use SystemConnector\ServiceBus\Command\TransferObjectCommand;
+use SystemConnector\ServiceBus\CommandHandler\CommandHandlerInterface;
+use SystemConnector\ServiceBus\CommandType;
+use SystemConnector\TransferObject\Order\Order;
+use SystemConnector\TransferObject\Payment\Payment;
 
-/**
- * Class HandlePaymentCommandHandler.
- */
 class HandlePaymentCommandHandler implements CommandHandlerInterface
 {
     /**
@@ -39,14 +36,6 @@ class HandlePaymentCommandHandler implements CommandHandlerInterface
      */
     private $logger;
 
-    /**
-     * HandlePaymentCommandHandler constructor.
-     *
-     * @param ClientInterface                  $client
-     * @param IdentityServiceInterface         $identityService
-     * @param PaymentRequestGeneratorInterface $requestGenerator
-     * @param LoggerInterface                  $logger
-     */
     public function __construct(
         ClientInterface $client,
         IdentityServiceInterface $identityService,
@@ -126,15 +115,15 @@ class HandlePaymentCommandHandler implements CommandHandlerInterface
     private function findOrCreatePlentyPayment(Payment $payment)
     {
         $plentyPayments = $this->fetchPlentyPayments($payment);
-        $paymentResult = $plentyPayments[0];
 
         if ($plentyPayments) {
+            $paymentResult = $plentyPayments[0];
             $this->logger->debug('payment with the same transaction id "' . $paymentResult['id'] . '" already exists.');
         } else {
             $paymentResult = $this->createPlentyPayment($payment);
         }
 
-        $this->identityService->create(
+        $this->identityService->insert(
             $payment->getIdentifier(),
             Payment::TYPE,
             (string) $paymentResult['id'],

@@ -2,13 +2,10 @@
 
 namespace ShopwareAdapter\ResponseParser\Shop;
 
-use PlentyConnector\Connector\IdentityService\IdentityServiceInterface;
-use PlentyConnector\Connector\TransferObject\Shop\Shop;
 use ShopwareAdapter\ShopwareAdapter;
+use SystemConnector\IdentityService\IdentityServiceInterface;
+use SystemConnector\TransferObject\Shop\Shop;
 
-/**
- * Class ShopResponseParser
- */
 class ShopResponseParser implements ShopResponseParserInterface
 {
     /**
@@ -16,11 +13,6 @@ class ShopResponseParser implements ShopResponseParserInterface
      */
     private $identityService;
 
-    /**
-     * ShopResponseParser constructor.
-     *
-     * @param IdentityServiceInterface $identityService
-     */
     public function __construct(IdentityServiceInterface $identityService)
     {
         $this->identityService = $identityService;

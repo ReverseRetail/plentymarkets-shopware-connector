@@ -2,14 +2,12 @@
 
 namespace PlentymarketsAdapter\Helper;
 
-use PlentyConnector\Connector\IdentityService\IdentityServiceInterface;
-use PlentyConnector\Connector\TransferObject\Shop\Shop;
 use PlentymarketsAdapter\PlentymarketsAdapter;
 use Psr\Log\LoggerInterface;
+use SystemConnector\ConfigService\ConfigServiceInterface;
+use SystemConnector\IdentityService\IdentityServiceInterface;
+use SystemConnector\TransferObject\Shop\Shop;
 
-/**
- * Class VariationHelper
- */
 class VariationHelper implements VariationHelperInterface
 {
     /**
@@ -23,15 +21,18 @@ class VariationHelper implements VariationHelperInterface
     private $logger;
 
     /**
-     * VariationHelper constructor.
-     *
-     * @param IdentityServiceInterface $identityService
-     * @param LoggerInterface          $logger
+     * @var ConfigServiceInterface
      */
-    public function __construct(IdentityServiceInterface $identityService, LoggerInterface $logger)
-    {
+    private $configService;
+
+    public function __construct(
+        IdentityServiceInterface $identityService,
+        LoggerInterface $logger,
+        ConfigServiceInterface $configService
+    ) {
         $this->identityService = $identityService;
         $this->logger = $logger;
+        $this->configService = $configService;
     }
 
     /**
@@ -43,7 +44,7 @@ class VariationHelper implements VariationHelperInterface
     {
         $identifiers = [];
 
-        foreach ($variation['variationClients'] as $client) {
+        foreach ((array) $variation['variationClients'] as $client) {
             $identity = $this->identityService->findOneBy([
                 'adapterIdentifier' => $client['plentyId'],
                 'adapterName' => PlentymarketsAdapter::NAME,
@@ -82,7 +83,7 @@ class VariationHelper implements VariationHelperInterface
             'objectType' => Shop::TYPE,
         ]);
 
-        if (!isset($identities)) {
+        if (empty($identities)) {
             $this->logger->notice('no plentyIds found');
 
             return [];
@@ -105,5 +106,69 @@ class VariationHelper implements VariationHelperInterface
         }
 
         return $clientIds;
+    }
+
+    /**
+     * @param array $variations
+     *
+     * @return array
+     */
+    public function getMainVariation(array $variations)
+    {
+        $mainVariation = array_filter($variations, function ($variation) {
+            return $variation['isMain'] === true;
+        });
+
+        if (empty($mainVariation)) {
+            return [];
+        }
+
+        return reset($mainVariation);
+    }
+
+    /**
+     * @param array $mainVariation
+     * @param array $variations
+     *
+     * @return string
+     */
+    public function getMainVariationNumber(array $mainVariation, array $variations = [])
+    {
+        $found = false;
+
+        $mainVariationNumber = (string) $mainVariation['id'];
+
+        if ($this->configService->get('variation_number_field', 'number') === 'number') {
+            $mainVariationNumber = (string) $mainVariation['number'];
+        }
+
+        foreach ($variations as $variation) {
+            if ($variation->getNumber() === $mainVariationNumber) {
+                $found = true;
+                break;
+            }
+        }
+
+        if ($found) {
+            $checkActiveMainVariation = json_decode($this->configService->get('check_active_main_variation'));
+
+            if (!$checkActiveMainVariation && !$mainVariation['isActive']) {
+                foreach ($variations as $variation) {
+                    if ($variation->getActive()) {
+                        return $variation->getNumber();
+                    }
+                }
+            }
+
+            return $mainVariationNumber;
+        }
+
+        foreach ($variations as $variation) {
+            if ($variation->getActive()) {
+                return $variation->getNumber();
+            }
+        }
+
+        return $mainVariationNumber;
     }
 }

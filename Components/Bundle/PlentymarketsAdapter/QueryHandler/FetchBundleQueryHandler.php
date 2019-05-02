@@ -4,18 +4,15 @@ namespace PlentyConnector\Components\Bundle\PlentymarketsAdapter\QueryHandler;
 
 use PlentyConnector\Components\Bundle\PlentymarketsAdapter\ResponseParser\BundleResponseParserInterface;
 use PlentyConnector\Components\Bundle\TransferObject\Bundle;
-use PlentyConnector\Connector\IdentityService\IdentityServiceInterface;
-use PlentyConnector\Connector\ServiceBus\Query\FetchTransferObjectQuery;
-use PlentyConnector\Connector\ServiceBus\Query\QueryInterface;
-use PlentyConnector\Connector\ServiceBus\QueryHandler\QueryHandlerInterface;
-use PlentyConnector\Connector\ServiceBus\QueryType;
 use PlentymarketsAdapter\PlentymarketsAdapter;
 use PlentymarketsAdapter\ReadApi\Item;
 use PlentymarketsAdapter\ReadApi\Item\Variation;
+use SystemConnector\IdentityService\IdentityServiceInterface;
+use SystemConnector\ServiceBus\Query\FetchTransferObjectQuery;
+use SystemConnector\ServiceBus\Query\QueryInterface;
+use SystemConnector\ServiceBus\QueryHandler\QueryHandlerInterface;
+use SystemConnector\ServiceBus\QueryType;
 
-/**
- * Class FetchBundleQueryHandler.
- */
 class FetchBundleQueryHandler implements QueryHandlerInterface
 {
     /**
@@ -38,14 +35,6 @@ class FetchBundleQueryHandler implements QueryHandlerInterface
      */
     private $responseParser;
 
-    /**
-     * FetchBundleQueryHandler constructor.
-     *
-     * @param Item                          $itemApi
-     * @param Variation                     $variationApi
-     * @param IdentityServiceInterface      $identityService
-     * @param BundleResponseParserInterface $responseParser
-     */
     public function __construct(
         Item $itemApi,
         Variation $variationApi,

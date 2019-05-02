@@ -1,23 +1,22 @@
 <?php
 
-namespace PlentyConnector\Connector\TransferObject\Product;
+namespace SystemConnector\TransferObject\Product;
 
 use DateTimeImmutable;
-use PlentyConnector\Connector\TransferObject\AbstractTransferObject;
-use PlentyConnector\Connector\TransferObject\AttributableInterface;
-use PlentyConnector\Connector\TransferObject\Product\Image\Image;
-use PlentyConnector\Connector\TransferObject\Product\LinkedProduct\LinkedProduct;
-use PlentyConnector\Connector\TransferObject\Product\Property\Property;
-use PlentyConnector\Connector\TransferObject\TranslateableInterface;
-use PlentyConnector\Connector\ValueObject\Attribute\Attribute;
-use PlentyConnector\Connector\ValueObject\Translation\Translation;
+use SystemConnector\TransferObject\AbstractTransferObject;
+use SystemConnector\TransferObject\AttributableInterface;
+use SystemConnector\TransferObject\Product\Badge\Badge;
+use SystemConnector\TransferObject\Product\Image\Image;
+use SystemConnector\TransferObject\Product\LinkedProduct\LinkedProduct;
+use SystemConnector\TransferObject\Product\Property\Property;
+use SystemConnector\TransferObject\TranslateableInterface;
+use SystemConnector\ValueObject\Attribute\Attribute;
+use SystemConnector\ValueObject\Translation\Translation;
 
-/**
- * Class Product.
- */
 class Product extends AbstractTransferObject implements TranslateableInterface, AttributableInterface
 {
     const TYPE = 'Product';
+    const MULTIPACK = 'multiPack';
 
     /**
      * Identifier of the object.
@@ -77,11 +76,6 @@ class Product extends AbstractTransferObject implements TranslateableInterface, 
     private $vatRateIdentifier = '';
 
     /**
-     * @var bool
-     */
-    private $stockLimitation = false;
-
-    /**
      * @var string
      */
     private $description = '';
@@ -90,11 +84,6 @@ class Product extends AbstractTransferObject implements TranslateableInterface, 
      * @var string
      */
     private $longDescription = '';
-
-    /**
-     * @var string
-     */
-    private $technicalDescription = '';
 
     /**
      * @var string
@@ -147,6 +136,11 @@ class Product extends AbstractTransferObject implements TranslateableInterface, 
     private $availableTo;
 
     /**
+     * @var null|DateTimeImmutable
+     */
+    private $createdAt;
+
+    /**
      * @var Attribute[]
      */
     private $attributes = [];
@@ -155,6 +149,11 @@ class Product extends AbstractTransferObject implements TranslateableInterface, 
      * @var Property[]
      */
     private $variantConfiguration;
+
+    /**
+     * @var Badge[]
+     */
+    private $badges = [];
 
     /**
      * {@inheritdoc}
@@ -173,7 +172,7 @@ class Product extends AbstractTransferObject implements TranslateableInterface, 
     }
 
     /**
-     * @param string $identifier
+     * {@inheritdoc}
      */
     public function setIdentifier($identifier)
     {
@@ -341,22 +340,6 @@ class Product extends AbstractTransferObject implements TranslateableInterface, 
     }
 
     /**
-     * @return bool
-     */
-    public function hasStockLimitation()
-    {
-        return $this->stockLimitation;
-    }
-
-    /**
-     * @param bool $stockLimitation
-     */
-    public function setStockLimitation($stockLimitation)
-    {
-        $this->stockLimitation = $stockLimitation;
-    }
-
-    /**
      * @return string
      */
     public function getDescription()
@@ -386,22 +369,6 @@ class Product extends AbstractTransferObject implements TranslateableInterface, 
     public function setLongDescription($longDescription)
     {
         $this->longDescription = $longDescription;
-    }
-
-    /**
-     * @return string
-     */
-    public function getTechnicalDescription()
-    {
-        return $this->technicalDescription;
-    }
-
-    /**
-     * @param string $technicalDescription
-     */
-    public function setTechnicalDescription($technicalDescription)
-    {
-        $this->technicalDescription = $technicalDescription;
     }
 
     /**
@@ -565,6 +532,22 @@ class Product extends AbstractTransferObject implements TranslateableInterface, 
     }
 
     /**
+     * @return null|DateTimeImmutable
+     */
+    public function getCreatedAt()
+    {
+        return $this->createdAt;
+    }
+
+    /**
+     * @param null|DateTimeImmutable $createdAt
+     */
+    public function setCreatedAt(DateTimeImmutable $createdAt = null)
+    {
+        $this->createdAt = $createdAt;
+    }
+
+    /**
      * @return Attribute[]
      */
     public function getAttributes()
@@ -594,5 +577,54 @@ class Product extends AbstractTransferObject implements TranslateableInterface, 
     public function setVariantConfiguration(array $variantConfiguration = [])
     {
         $this->variantConfiguration = $variantConfiguration;
+    }
+
+    /**
+     * @return Badge[]
+     */
+    public function getBadges()
+    {
+        return $this->badges;
+    }
+
+    /**
+     * @param Badge[] $badges
+     */
+    public function setBadges(array $badges = [])
+    {
+        $this->badges = $badges;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getClassProperties()
+    {
+        return [
+            'identifier' => $this->getIdentifier(),
+            'name' => $this->getName(),
+            'active' => $this->isActive(),
+            'shopIdentifiers' => $this->getShopIdentifiers(),
+            'manufacturerIdentifier' => $this->getManufacturerIdentifier(),
+            'categoryIdentifiers' => $this->getCategoryIdentifiers(),
+            'defaultCategoryIdentifiers' => $this->getDefaultCategoryIdentifiers(),
+            'shippingProfileIdentifiers' => $this->getShippingProfileIdentifiers(),
+            'vatRateIdentifier' => $this->getVatRateIdentifier(),
+            'description' => $this->getDescription(),
+            'longDescription' => $this->getLongDescription(),
+            'metaTitle' => $this->getMetaTitle(),
+            'metaDescription' => $this->getMetaDescription(),
+            'metaKeywords' => $this->getMetaKeywords(),
+            'metaRobots' => $this->getMetaRobots(),
+            'linkedProducts' => $this->getLinkedProducts(),
+            'documents' => $this->getDocuments(),
+            'properties' => $this->getProperties(),
+            'availableFrom' => $this->getAvailableFrom(),
+            'availableTo' => $this->getAvailableTo(),
+            'variantConfiguration' => $this->getVariantConfiguration(),
+            'badges' => $this->getBadges(),
+            'translations' => $this->getTranslations(),
+            'attributes' => $this->getAttributes(),
+        ];
     }
 }

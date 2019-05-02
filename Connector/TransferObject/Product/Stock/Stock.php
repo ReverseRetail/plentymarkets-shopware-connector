@@ -1,12 +1,9 @@
 <?php
 
-namespace PlentyConnector\Connector\TransferObject\Product\Stock;
+namespace SystemConnector\TransferObject\Product\Stock;
 
-use PlentyConnector\Connector\TransferObject\AbstractTransferObject;
+use SystemConnector\TransferObject\AbstractTransferObject;
 
-/**
- * Class Product.
- */
 class Stock extends AbstractTransferObject
 {
     const TYPE = 'Stock';
@@ -45,7 +42,7 @@ class Stock extends AbstractTransferObject
     }
 
     /**
-     * @param string $identifier
+     * {@inheritdoc}
      */
     public function setIdentifier($identifier)
     {
@@ -82,5 +79,17 @@ class Stock extends AbstractTransferObject
     public function setStock($stock)
     {
         $this->stock = $stock;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getClassProperties()
+    {
+        return [
+            'identifier' => $this->getIdentifier(),
+            'variationIdentifier' => $this->getVariationIdentifier(),
+            'stock' => $this->getStock(),
+        ];
     }
 }

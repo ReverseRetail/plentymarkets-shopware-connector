@@ -4,11 +4,8 @@ namespace PlentyConnector\Components\Klarna\Validator;
 
 use Assert\Assertion;
 use PlentyConnector\Components\Klarna\PaymentData\KlarnaPaymentData;
-use PlentyConnector\Connector\Validator\ValidatorInterface;
+use SystemConnector\Validator\ValidatorInterface;
 
-/**
- * Class KlarnaPaymentDataValidator
- */
 class KlarnaPaymentDataValidator implements ValidatorInterface
 {
     /**

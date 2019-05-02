@@ -3,20 +3,17 @@
 namespace ShopwareAdapter\ServiceBus\CommandHandler\Stock;
 
 use Doctrine\ORM\EntityManagerInterface;
-use PlentyConnector\Connector\IdentityService\IdentityServiceInterface;
-use PlentyConnector\Connector\ServiceBus\Command\CommandInterface;
-use PlentyConnector\Connector\ServiceBus\Command\TransferObjectCommand;
-use PlentyConnector\Connector\ServiceBus\CommandHandler\CommandHandlerInterface;
-use PlentyConnector\Connector\ServiceBus\CommandType;
-use PlentyConnector\Connector\TransferObject\Product\Stock\Stock;
-use PlentyConnector\Connector\TransferObject\Product\Variation\Variation;
 use Psr\Log\LoggerInterface;
 use Shopware\Models\Article\Detail;
 use ShopwareAdapter\ShopwareAdapter;
+use SystemConnector\IdentityService\IdentityServiceInterface;
+use SystemConnector\ServiceBus\Command\CommandInterface;
+use SystemConnector\ServiceBus\Command\TransferObjectCommand;
+use SystemConnector\ServiceBus\CommandHandler\CommandHandlerInterface;
+use SystemConnector\ServiceBus\CommandType;
+use SystemConnector\TransferObject\Product\Stock\Stock;
+use SystemConnector\TransferObject\Product\Variation\Variation;
 
-/**
- * Class HandleStockCommandHandler.
- */
 class HandleStockCommandHandler implements CommandHandlerInterface
 {
     /**
@@ -34,13 +31,6 @@ class HandleStockCommandHandler implements CommandHandlerInterface
      */
     private $logger;
 
-    /**
-     * HandleStockCommandHandler constructor.
-     *
-     * @param IdentityServiceInterface $identityService
-     * @param EntityManagerInterface   $entityManager
-     * @param LoggerInterface          $logger
-     */
     public function __construct(
         IdentityServiceInterface $identityService,
         EntityManagerInterface $entityManager,
@@ -95,7 +85,7 @@ class HandleStockCommandHandler implements CommandHandlerInterface
         $variationRespository = $this->entityManager->getRepository(Detail::class);
 
         /**
-         * @var Detail|null $variation
+         * @var null|Detail $variation
          */
         $variation = $variationRespository->find($variationIdentity->getAdapterIdentifier());
 

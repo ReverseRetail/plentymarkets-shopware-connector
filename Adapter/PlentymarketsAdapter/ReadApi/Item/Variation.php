@@ -4,12 +4,24 @@ namespace PlentymarketsAdapter\ReadApi\Item;
 
 use PlentymarketsAdapter\ReadApi\ApiAbstract;
 
-/**
- * Class Variation
- */
 class Variation extends ApiAbstract
 {
-    private $includes = 'variationClients,variationSalesPrices,variationCategories,variationDefaultCategory,unit,variationAttributeValues,variationBarcodes,images,stock,variationProperties';
+    /**
+     * @var array
+     */
+    private static $includes = [
+        'variationClients',
+        'variationSalesPrices',
+        'variationCategories',
+        'variationDefaultCategory',
+        'unit',
+        'variationAttributeValues',
+        'variationBarcodes',
+        'images',
+        'stock',
+        'variationProperties',
+        'properties',
+    ];
 
     /**
      * @param array $criteria
@@ -19,7 +31,7 @@ class Variation extends ApiAbstract
     public function findBy(array $criteria)
     {
         $params = array_merge($criteria, [
-            'with' => $this->includes,
+            'with' => implode(',', self::$includes),
         ]);
 
         return iterator_to_array($this->client->getIterator('items/variations', $params));

@@ -4,20 +4,17 @@ namespace PlentyConnector\Components\Bundle\PlentymarketsAdapter\RequestGenerato
 
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
-use PlentyConnector\Connector\IdentityService\IdentityServiceInterface;
-use PlentyConnector\Connector\TransferObject\CustomerGroup\CustomerGroup;
-use PlentyConnector\Connector\TransferObject\Order\Order;
-use PlentyConnector\Connector\TransferObject\Order\OrderItem\OrderItem;
-use PlentyConnector\Connector\TransferObject\VatRate\VatRate;
 use PlentymarketsAdapter\RequestGenerator\Order\OrderItem\OrderItemRequestGeneratorInterface;
 use RuntimeException;
 use Shopware\Models\Tax\Repository;
 use Shopware\Models\Tax\Tax;
 use ShopwareAdapter\ShopwareAdapter;
+use SystemConnector\IdentityService\IdentityServiceInterface;
+use SystemConnector\TransferObject\CustomerGroup\CustomerGroup;
+use SystemConnector\TransferObject\Order\Order;
+use SystemConnector\TransferObject\Order\OrderItem\OrderItem;
+use SystemConnector\TransferObject\VatRate\VatRate;
 
-/**
- * Class OrderItemRequestGenerator
- */
 class OrderItemRequestGenerator implements OrderItemRequestGeneratorInterface
 {
     /**
@@ -35,13 +32,6 @@ class OrderItemRequestGenerator implements OrderItemRequestGeneratorInterface
      */
     private $parentOrderItemRequestGenerator;
 
-    /**
-     * OrderItemRequestGenerator constructor.
-     *
-     * @param EntityManagerInterface             $entityManager
-     * @param IdentityServiceInterface           $identityService
-     * @param OrderItemRequestGeneratorInterface $parentOrderItemRequestGenerator
-     */
     public function __construct(
         EntityManagerInterface $entityManager,
         IdentityServiceInterface $identityService,
@@ -94,7 +84,7 @@ class OrderItemRequestGenerator implements OrderItemRequestGeneratorInterface
         $taxRepository = $this->entityManager->getRepository(Tax::class);
 
         /**
-         * @var Tax|null $taxModel
+         * @var null|Tax $taxModel
          */
         $taxModel = $taxRepository->find($vatIdentity->getAdapterIdentifier());
 

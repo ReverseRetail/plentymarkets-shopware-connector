@@ -2,18 +2,15 @@
 
 namespace PlentymarketsAdapter\ServiceBus\QueryHandler\Unit;
 
-use PlentyConnector\Connector\ServiceBus\Query\FetchTransferObjectQuery;
-use PlentyConnector\Connector\ServiceBus\Query\QueryInterface;
-use PlentyConnector\Connector\ServiceBus\QueryHandler\QueryHandlerInterface;
-use PlentyConnector\Connector\ServiceBus\QueryType;
-use PlentyConnector\Connector\TransferObject\Unit\Unit;
 use PlentymarketsAdapter\PlentymarketsAdapter;
 use PlentymarketsAdapter\ReadApi\Item\Unit as UnitApi;
 use PlentymarketsAdapter\ResponseParser\Unit\UnitResponseParserInterface;
+use SystemConnector\ServiceBus\Query\FetchTransferObjectQuery;
+use SystemConnector\ServiceBus\Query\QueryInterface;
+use SystemConnector\ServiceBus\QueryHandler\QueryHandlerInterface;
+use SystemConnector\ServiceBus\QueryType;
+use SystemConnector\TransferObject\Unit\Unit;
 
-/**
- * Class FetchAllUnitsQueryHandler
- */
 class FetchAllUnitsQueryHandler implements QueryHandlerInterface
 {
     /**
@@ -26,12 +23,6 @@ class FetchAllUnitsQueryHandler implements QueryHandlerInterface
      */
     private $responseParser;
 
-    /**
-     * FetchAllUnitsQueryHandler constructor.
-     *
-     * @param UnitApi                     $unitApi
-     * @param UnitResponseParserInterface $responseParser
-     */
     public function __construct(UnitApi $unitApi, UnitResponseParserInterface $responseParser)
     {
         $this->unitApi = $unitApi;

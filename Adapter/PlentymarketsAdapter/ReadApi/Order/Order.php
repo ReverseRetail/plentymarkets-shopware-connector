@@ -5,15 +5,17 @@ namespace PlentymarketsAdapter\ReadApi\Order;
 use PlentymarketsAdapter\Client\Iterator\Iterator;
 use PlentymarketsAdapter\ReadApi\ApiAbstract;
 
-/**
- * Class Order
- */
 class Order extends ApiAbstract
 {
     /**
      * @var array
      */
-    private $includes = ['addresses', 'relations'];
+    private static $includes = [
+        'addresses',
+        'relations',
+        'addresses',
+        'comments',
+    ];
 
     /**
      * @param int $id
@@ -23,7 +25,7 @@ class Order extends ApiAbstract
     public function find($id)
     {
         $criteria = [
-            'with' => $this->includes,
+            'with' => self::$includes,
         ];
 
         return $this->client->request('GET', 'orders/' . $id, $criteria);
@@ -37,7 +39,7 @@ class Order extends ApiAbstract
     public function findAll(array $criteria = [])
     {
         $criteria = array_merge($criteria, [
-            'with' => $this->includes,
+            'with' => self::$includes,
         ]);
 
         return $this->client->getIterator('orders', $criteria);
@@ -51,7 +53,7 @@ class Order extends ApiAbstract
     public function findBy(array $criteria = [])
     {
         $criteria = array_merge($criteria, [
-            'with' => $this->includes,
+            'with' => self::$includes,
         ]);
 
         return $this->client->getIterator('orders', $criteria);

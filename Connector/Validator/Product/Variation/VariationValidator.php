@@ -1,20 +1,17 @@
 <?php
 
-namespace PlentyConnector\Connector\Validator\Product\Variation;
+namespace SystemConnector\Validator\Product\Variation;
 
 use Assert\Assertion;
 use DateTimeImmutable;
-use PlentyConnector\Connector\TransferObject\Product\Barcode\Barcode;
-use PlentyConnector\Connector\TransferObject\Product\Image\Image;
-use PlentyConnector\Connector\TransferObject\Product\Price\Price;
-use PlentyConnector\Connector\TransferObject\Product\Property\Property;
-use PlentyConnector\Connector\TransferObject\Product\Variation\Variation;
-use PlentyConnector\Connector\Validator\ValidatorInterface;
-use PlentyConnector\Connector\ValueObject\Attribute\Attribute;
+use SystemConnector\TransferObject\Product\Barcode\Barcode;
+use SystemConnector\TransferObject\Product\Image\Image;
+use SystemConnector\TransferObject\Product\Price\Price;
+use SystemConnector\TransferObject\Product\Property\Property;
+use SystemConnector\TransferObject\Product\Variation\Variation;
+use SystemConnector\Validator\ValidatorInterface;
+use SystemConnector\ValueObject\Attribute\Attribute;
 
-/**
- * Class VariationValidator
- */
 class VariationValidator implements ValidatorInterface
 {
     /**
@@ -48,6 +45,7 @@ class VariationValidator implements ValidatorInterface
         Assertion::float($object->getContent(), null, 'product.variation.content');
         Assertion::nullOrUuid($object->getUnitIdentifier(), null, 'product.variation.unitIdentifier');
         Assertion::float($object->getReferenceAmount(), null, 'product.variation.referenceAmount');
+        Assertion::boolean($object->hasStockLimitation(), null, 'product.variation.stockLimitation');
         Assertion::float($object->getMaximumOrderQuantity(), null, 'product.variation.maximumOrderQuantity');
         Assertion::float($object->getMinimumOrderQuantity(), null, 'product.variation.minimumOrderQuantity');
         Assertion::float($object->getIntervalOrderQuantity(), null, 'product.variation.intervalOrderQuantity');

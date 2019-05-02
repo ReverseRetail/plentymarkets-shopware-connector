@@ -2,23 +2,20 @@
 
 namespace PlentymarketsAdapter\ServiceBus\CommandHandler\Order;
 
-use PlentyConnector\Connector\IdentityService\Exception\NotFoundException;
-use PlentyConnector\Connector\IdentityService\IdentityServiceInterface;
-use PlentyConnector\Connector\ServiceBus\Command\CommandInterface;
-use PlentyConnector\Connector\ServiceBus\Command\TransferObjectCommand;
-use PlentyConnector\Connector\ServiceBus\CommandHandler\CommandHandlerInterface;
-use PlentyConnector\Connector\ServiceBus\CommandType;
-use PlentyConnector\Connector\TransferObject\Order\Comment\Comment;
-use PlentyConnector\Connector\TransferObject\Order\Order;
-use PlentyConnector\Connector\TransferObject\Shop\Shop;
 use PlentymarketsAdapter\Client\ClientInterface;
 use PlentymarketsAdapter\PlentymarketsAdapter;
 use PlentymarketsAdapter\RequestGenerator\Order\OrderRequestGeneratorInterface;
 use RuntimeException;
+use SystemConnector\IdentityService\Exception\NotFoundException;
+use SystemConnector\IdentityService\IdentityServiceInterface;
+use SystemConnector\ServiceBus\Command\CommandInterface;
+use SystemConnector\ServiceBus\Command\TransferObjectCommand;
+use SystemConnector\ServiceBus\CommandHandler\CommandHandlerInterface;
+use SystemConnector\ServiceBus\CommandType;
+use SystemConnector\TransferObject\Order\Comment\Comment;
+use SystemConnector\TransferObject\Order\Order;
+use SystemConnector\TransferObject\Shop\Shop;
 
-/**
- * Class HandleOrderCommandHandler.
- */
 class HandleOrderCommandHandler implements CommandHandlerInterface
 {
     /**
@@ -36,13 +33,6 @@ class HandleOrderCommandHandler implements CommandHandlerInterface
      */
     private $orderRequestGenerator;
 
-    /**
-     * HandleOrderCommandHandler constructor.
-     *
-     * @param ClientInterface                $client
-     * @param IdentityServiceInterface       $identityService
-     * @param OrderRequestGeneratorInterface $orderRequestGeneretor
-     */
     public function __construct(
         ClientInterface $client,
         IdentityServiceInterface $identityService,
@@ -109,7 +99,7 @@ class HandleOrderCommandHandler implements CommandHandlerInterface
         $params = $this->orderRequestGenerator->generate($order);
         $result = $this->client->request('post', 'orders', $params);
 
-        $this->identityService->create(
+        $this->identityService->insert(
             $order->getIdentifier(),
             Order::TYPE,
             (string) $result['id'],

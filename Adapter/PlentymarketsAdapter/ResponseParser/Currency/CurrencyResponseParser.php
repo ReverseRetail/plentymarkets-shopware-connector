@@ -2,13 +2,10 @@
 
 namespace PlentymarketsAdapter\ResponseParser\Currency;
 
-use PlentyConnector\Connector\IdentityService\IdentityServiceInterface;
-use PlentyConnector\Connector\TransferObject\Currency\Currency;
 use PlentymarketsAdapter\PlentymarketsAdapter;
+use SystemConnector\IdentityService\IdentityServiceInterface;
+use SystemConnector\TransferObject\Currency\Currency;
 
-/**
- * Class CurrencyResponseParser
- */
 class CurrencyResponseParser implements CurrencyResponseParserInterface
 {
     /**
@@ -16,11 +13,6 @@ class CurrencyResponseParser implements CurrencyResponseParserInterface
      */
     private $identityService;
 
-    /**
-     * CurrencyResponseParser constructor.
-     *
-     * @param IdentityServiceInterface $identityService
-     */
     public function __construct(IdentityServiceInterface $identityService)
     {
         $this->identityService = $identityService;

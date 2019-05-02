@@ -1,10 +1,7 @@
 <?php
 
-namespace PlentyConnector\Connector\ConfigService;
+namespace SystemConnector\ConfigService;
 
-/**
- * Interface ConfigServiceInterface.
- */
 interface ConfigServiceInterface
 {
     /**

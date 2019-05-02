@@ -1,28 +1,26 @@
 <?php
 
-namespace PlentyConnector\Connector\ServiceBus\QueryHandlerMiddleware;
+namespace SystemConnector\ServiceBus\QueryHandlerMiddleware;
 
 use League\Tactician\Middleware;
-use PlentyConnector\Connector\ServiceBus\Query\QueryInterface;
-use PlentyConnector\Connector\ServiceBus\QueryHandler\QueryHandlerInterface;
-use PlentyConnector\Connector\ServiceBus\QueryHandlerMiddleware\Exception\NotFoundException;
+use SystemConnector\ServiceBus\Query\QueryInterface;
+use SystemConnector\ServiceBus\QueryHandler\QueryHandlerInterface;
+use SystemConnector\ServiceBus\QueryHandlerMiddleware\Exception\NotFoundException;
+use Traversable;
 
-/**
- * Class QueryHandlerMiddleware.
- */
 class QueryHandlerMiddleware implements Middleware
 {
     /**
-     * @var QueryHandlerInterface[]
+     * @var QueryHandlerInterface[]|Traversable
      */
     private $handlers;
 
     /**
-     * @param QueryHandlerInterface $handler
+     * @param QueryHandlerInterface[]|Traversable $handlers
      */
-    public function addHandler(QueryHandlerInterface $handler)
+    public function __construct(Traversable $handlers)
     {
-        $this->handlers[] = $handler;
+        $this->handlers = iterator_to_array($handlers);
     }
 
     /**

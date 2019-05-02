@@ -2,13 +2,10 @@
 
 namespace PlentymarketsAdapter\ResponseParser\Unit;
 
-use PlentyConnector\Connector\IdentityService\IdentityServiceInterface;
-use PlentyConnector\Connector\TransferObject\Unit\Unit;
 use PlentymarketsAdapter\PlentymarketsAdapter;
+use SystemConnector\IdentityService\IdentityServiceInterface;
+use SystemConnector\TransferObject\Unit\Unit;
 
-/**
- * Class UnitResponseParser
- */
 class UnitResponseParser implements UnitResponseParserInterface
 {
     /**
@@ -16,11 +13,6 @@ class UnitResponseParser implements UnitResponseParserInterface
      */
     private $identityService;
 
-    /**
-     * UnitResponseParser constructor.
-     *
-     * @param IdentityServiceInterface $identityService
-     */
     public function __construct(IdentityServiceInterface $identityService)
     {
         $this->identityService = $identityService;

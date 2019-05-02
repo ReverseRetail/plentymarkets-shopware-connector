@@ -1,14 +1,11 @@
 <?php
 
-namespace PlentyConnector\Connector\Validator\Product\Price;
+namespace SystemConnector\Validator\Product\Price;
 
 use Assert\Assertion;
-use PlentyConnector\Connector\TransferObject\Product\Price\Price;
-use PlentyConnector\Connector\Validator\ValidatorInterface;
+use SystemConnector\TransferObject\Product\Price\Price;
+use SystemConnector\Validator\ValidatorInterface;
 
-/**
- * Class PriceValidator
- */
 class PriceValidator implements ValidatorInterface
 {
     /**

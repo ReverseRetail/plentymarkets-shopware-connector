@@ -2,17 +2,14 @@
 
 namespace ShopwareAdapter\ResponseParser\Address;
 
-use PlentyConnector\Connector\IdentityService\Exception\NotFoundException;
-use PlentyConnector\Connector\IdentityService\IdentityServiceInterface;
-use PlentyConnector\Connector\TransferObject\Country\Country;
-use PlentyConnector\Connector\TransferObject\Order\Address\Address;
-use PlentyConnector\Connector\TransferObject\Order\Customer\Customer;
 use ShopwareAdapter\ResponseParser\GetAttributeTrait;
 use ShopwareAdapter\ShopwareAdapter;
+use SystemConnector\IdentityService\Exception\NotFoundException;
+use SystemConnector\IdentityService\IdentityServiceInterface;
+use SystemConnector\TransferObject\Country\Country;
+use SystemConnector\TransferObject\Order\Address\Address;
+use SystemConnector\TransferObject\Order\Customer\Customer;
 
-/**
- * Class AddressResponseParser
- */
 class AddressResponseParser implements AddressResponseParserInterface
 {
     use GetAttributeTrait;
@@ -22,11 +19,6 @@ class AddressResponseParser implements AddressResponseParserInterface
      */
     private $identityService;
 
-    /**
-     * CountryResponseParser constructor.
-     *
-     * @param IdentityServiceInterface $identityService
-     */
     public function __construct(IdentityServiceInterface $identityService)
     {
         $this->identityService = $identityService;
