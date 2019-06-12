@@ -39,7 +39,7 @@ class AmazonPayPaymentResponseParser implements PaymentResponseParserInterface
     /**
      * {@inheritdoc}
      */
-    public function parse(array $element)
+    public function parse(array $element): array
     {
         $payments = $this->parentResponseParser->parse($element);
 
@@ -77,13 +77,13 @@ class AmazonPayPaymentResponseParser implements PaymentResponseParserInterface
     {
         $data = $this->getAmazonPayData($element['id']);
 
-        if (empty($data)) {
+        if (empty($data) || null === $this->configService->get('amazon_pay_key')) {
             return;
         }
 
         $paymentData = new AmazonPayPaymentData();
         $paymentData->setTransactionId($element['transactionId']);
-        $paymentData->setKey($this->configService->get('rest_password'));
+        $paymentData->setKey($this->configService->get('amazon_pay_key'));
 
         $payment->setPaymentData($paymentData);
     }

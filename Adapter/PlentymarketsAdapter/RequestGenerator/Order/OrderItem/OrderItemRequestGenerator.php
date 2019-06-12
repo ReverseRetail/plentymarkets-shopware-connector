@@ -43,8 +43,12 @@ class OrderItemRequestGenerator implements OrderItemRequestGeneratorInterface
 
     /**
      * {@inheritdoc}
+     *
+     * @throws NotFoundException
+     * @throws NotFoundException
+     * @throws NotFoundException
      */
-    public function generate(OrderItem $orderItem, Order $order)
+    public function generate(OrderItem $orderItem, Order $order): array
     {
         $shippingProfileIdentity = $this->identityService->findOneBy([
             'objectIdentifier' => $order->getShippingProfileIdentifier(),
@@ -86,7 +90,7 @@ class OrderItemRequestGenerator implements OrderItemRequestGeneratorInterface
             throw new RuntimeException('unsupported type');
         }
 
-        // orderItemName should contain specific coupon number, to allow futher analysis
+        // orderItemName should contain specific coupon number, to allow further analysis
         if ($this->isCouponItem($orderItem)) {
             $itemParams['orderItemName'] = $orderItem->getNumber();
         } else {
@@ -101,7 +105,7 @@ class OrderItemRequestGenerator implements OrderItemRequestGeneratorInterface
         }
 
         if ($typeId === 1 && empty($itemParams['itemVariationId'])) {
-            $itemParams['typeId'] = 9; // TYPE_UNASSIGEND_VARIATION;
+            $itemParams['typeId'] = 9; // TYPE_UNASSIGNED_VARIATION;
         }
 
         if (null !== $orderItem->getVatRateIdentifier()) {
@@ -133,7 +137,7 @@ class OrderItemRequestGenerator implements OrderItemRequestGeneratorInterface
             $itemParams['properties'] = [
                 [
                     'typeId' => 2,
-                    'value' => (string) $shippingProfileIdentity->getAdapterIdentifier(),
+                    'value' => $shippingProfileIdentity->getAdapterIdentifier(),
                 ],
             ];
         }
@@ -150,7 +154,7 @@ class OrderItemRequestGenerator implements OrderItemRequestGeneratorInterface
      *
      * @return int
      */
-    private function getVariationIdentifier(OrderItem $orderItem)
+    private function getVariationIdentifier(OrderItem $orderItem): int
     {
         if ($this->configService->get('variation_number_field', 'number') === 'number') {
             return $this->getVariationIdentifierFromNumber($orderItem->getNumber());
@@ -164,7 +168,7 @@ class OrderItemRequestGenerator implements OrderItemRequestGeneratorInterface
      *
      * @return int
      */
-    private function getVariationIdentifierByIdentifier($identifier)
+    private function getVariationIdentifierByIdentifier($identifier): int
     {
         $variations = $this->client->request('GET', 'items/variations', ['id' => $identifier]);
 
@@ -182,7 +186,7 @@ class OrderItemRequestGenerator implements OrderItemRequestGeneratorInterface
      *
      * @return int
      */
-    private function getVariationIdentifierFromNumber($number)
+    private function getVariationIdentifierFromNumber($number): int
     {
         $variations = $this->client->request('GET', 'items/variations', ['numberExact' => $number]);
 
@@ -200,7 +204,7 @@ class OrderItemRequestGenerator implements OrderItemRequestGeneratorInterface
      *
      * @return bool
      */
-    private function isCouponItem(OrderItem $orderItem)
+    private function isCouponItem(OrderItem $orderItem): bool
     {
         return $orderItem->getType() === OrderItem::TYPE_VOUCHER || $orderItem->getType() === OrderItem::TYPE_COUPON;
     }

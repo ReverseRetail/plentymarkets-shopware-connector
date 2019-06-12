@@ -44,7 +44,7 @@ class HandleAmazonPayPaymentCommandHandler implements CommandHandlerInterface
     /**
      * {@inheritdoc}
      */
-    public function supports(CommandInterface $command)
+    public function supports(CommandInterface $command): bool
     {
         return $command instanceof TransferObjectCommand &&
             $command->getAdapterName() === PlentymarketsAdapter::NAME &&
@@ -57,7 +57,7 @@ class HandleAmazonPayPaymentCommandHandler implements CommandHandlerInterface
      *
      * @var TransferObjectCommand $command
      */
-    public function handle(CommandInterface $command)
+    public function handle(CommandInterface $command): bool
     {
         /**
          * @var Payment $payment
@@ -74,13 +74,13 @@ class HandleAmazonPayPaymentCommandHandler implements CommandHandlerInterface
         }
 
         $orderIdentity = $this->identityService->findOneBy([
-            'objectIdentifier' => $payment->getOrderIdentifer(),
+            'objectIdentifier' => $payment->getOrderIdentifier(),
             'objectType' => Order::TYPE,
             'adapterName' => PlentymarketsAdapter::NAME,
         ]);
 
         if (null === $orderIdentity) {
-            throw new NotFoundException('could not find order for amazon payment handling - ' . $payment->getOrderIdentifer());
+            throw new NotFoundException('could not find order for amazon payment handling - ' . $payment->getOrderIdentifier());
         }
 
         $amazonPayDataParams = [

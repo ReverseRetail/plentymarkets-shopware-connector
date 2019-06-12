@@ -239,13 +239,24 @@ Ext.define('Shopware.apps.PlentyConnector.view.Settings', {
                     {
                         xtype: 'textfield',
                         fieldLabel: '{s name=plentyconnector/view/settings/amazon_pay_key}{/s}',
-                        name: 'amazonPayKey',
+                        name: 'amazon_pay_key',
                         allowBlank: true,
                         inputType: 'password'
                     }
                 ]
-            }
+            },
             // {block name="backend/plentyconnector/view/settings/fields"}{/block}
+            {
+                xtype: 'label',
+                text: '{s name=plentyconnector/view/settings/helperLink/text}{/s}',
+                cls: 'x-form-item-label',
+                autoEl: {
+                    tag: 'a',
+                    href: 'https://github.com/arvatis/shopware-psc7-helper-plugin',
+                    html: ' plentymarkets Shopware Connector Helper',
+                    target: '_blank'
+                }
+            }
         ];
     }
 });

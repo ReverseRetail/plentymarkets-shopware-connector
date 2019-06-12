@@ -1,7 +1,12 @@
 <?xml version="1.0" ?>
 
-<container xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://symfony.com/schema/dic/services" xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+<container xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xmlns="http://symfony.com/schema/dic/services"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+    <!-- Services -->
+
     <services>
+
         <!-- Guzzle -->
 
         <service id="plentymarkets_adapter.http_client" class="GuzzleHttp\Client" public="false">
@@ -56,7 +61,7 @@
             <argument type="service" id="plentymarkets_adapter.client" />
         </service>
 
-        <service id="plentymarkets_adapter.read_api.cateogry" class="PlentymarketsAdapter\ReadApi\Category\Category" public="false">
+        <service id="plentymarkets_adapter.read_api.category" class="PlentymarketsAdapter\ReadApi\Category\Category" public="false">
             <argument type="service" id="plentymarkets_adapter.client" />
             <argument type="service" id="plentymarkets_adapter.helper.language" />
         </service>
@@ -237,7 +242,7 @@
         <!-- Category query handlers -->
 
         <service id="plentymarkets_adapter.query_handler.fetch_all_categories" class="PlentymarketsAdapter\ServiceBus\QueryHandler\Category\FetchAllCategoriesQueryHandler" public="false">
-            <argument type="service" id="plentymarkets_adapter.read_api.cateogry" />
+            <argument type="service" id="plentymarkets_adapter.read_api.category" />
             <argument type="service" id="plentymarkets_adapter.response_parser.category" />
             <argument type="service" id="plenty_connector.logger" />
             <argument type="service" id="plenty_connector.console.output_handler" />
@@ -246,7 +251,7 @@
         </service>
 
         <service id="plentymarkets_adapter.query_handler.fetch_changed_categories" class="PlentymarketsAdapter\ServiceBus\QueryHandler\Category\FetchChangedCategoriesQueryHandler" public="false">
-            <argument type="service" id="plentymarkets_adapter.read_api.cateogry" />
+            <argument type="service" id="plentymarkets_adapter.read_api.category" />
             <argument type="service" id="plentymarkets_adapter.response_parser.category" />
             <argument type="service" id="plenty_connector.logger" />
             <argument type="service" id="plenty_connector.console.output_handler" />
@@ -319,7 +324,7 @@
             <tag name="plenty_connector.query_handler" />
         </service>
 
-        <!-- Media cateogry query handlers -->
+        <!-- Media category query handlers -->
 
         <service id="plentymarkets_adapter.query_handler.fetch_all_media_categories" class="PlentymarketsAdapter\ServiceBus\QueryHandler\MediaCategory\FetchAllMediaCategoriesQueryHandler" public="false">
             <argument type="service" id="plentymarkets_adapter.helper.media_category" />
@@ -427,6 +432,26 @@
            <tag name="plenty_connector.query_handler" />
         </service>
 
+        <!-- Price query handlers -->
+
+        <service id="plentymarkets_adapter.query_handler.fetch_all_prices" class="PlentymarketsAdapter\ServiceBus\QueryHandler\Price\FetchAllPricesQueryHandler" public="false">
+            <argument type="service" id="plentymarkets_adapter.client" />
+            <argument type="service" id="plentymarkets_adapter.response_parser.product.price" />
+            <argument type="service" id="plenty_connector.logger" />
+            <argument type="service" id="plenty_connector.console.output_handler" />
+
+            <tag name="plenty_connector.query_handler" />
+        </service>
+
+        <service id="plentymarkets_adapter.query_handler.fetch_changed_prices" class="PlentymarketsAdapter\ServiceBus\QueryHandler\Price\FetchChangedPricesQueryHandler" public="false">
+            <argument type="service" id="plentymarkets_adapter.client" />
+            <argument type="service" id="plentymarkets_adapter.response_parser.product.price" />
+            <argument type="service" id="plenty_connector.logger" />
+            <argument type="service" id="plenty_connector.console.output_handler" />
+
+            <tag name="plenty_connector.query_handler" />
+        </service>
+
         <!-- Mapping query handlers -->
 
         <service id="plentymarkets_adapter.query_handler.fetch_all_countries" class="PlentymarketsAdapter\ServiceBus\QueryHandler\Country\FetchAllCountriesQueryHandler" public="false">
@@ -443,7 +468,7 @@
             <tag name="plenty_connector.query_handler" />
         </service>
 
-        <service id="plentymarkets_adapter.query_handler.fetch_all_custoemr_groups" class="PlentymarketsAdapter\ServiceBus\QueryHandler\CustomerGroup\FetchAllCustomerGroupsQueryHandler" public="false">
+        <service id="plentymarkets_adapter.query_handler.fetch_all_customer_groups" class="PlentymarketsAdapter\ServiceBus\QueryHandler\CustomerGroup\FetchAllCustomerGroupsQueryHandler" public="false">
             <argument type="service" id="plentymarkets_adapter.client" />
             <argument type="service" id="plentymarkets_adapter.response_parser.customer_group" />
 

@@ -2,6 +2,7 @@
 
 namespace ShopwareAdapter\DataPersister\Translation;
 
+use Doctrine\DBAL\Exception\InvalidArgumentException;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Shopware\Models\Article\Image as ArticleImage;
@@ -19,6 +20,7 @@ use SystemConnector\TransferObject\Product\Property\Property;
 use SystemConnector\TransferObject\Product\Property\Value\Value;
 use SystemConnector\Translation\TranslationHelperInterface;
 use SystemConnector\ValueObject\Attribute\Attribute;
+use Zend_Db_Adapter_Exception;
 
 class TranslationDataPersister implements TranslationDataPersisterInterface
 {
@@ -213,7 +215,9 @@ class TranslationDataPersister implements TranslationDataPersisterInterface
     }
 
     /**
-     * @param Image $image
+     * @param ArticleImage $image
+     *
+     * @throws InvalidArgumentException
      */
     public function removeMediaTranslation(ArticleImage $image)
     {
@@ -410,10 +414,12 @@ class TranslationDataPersister implements TranslationDataPersisterInterface
      * @param int      $primaryKey
      * @param array    $translation
      * @param Identity $languageIdentity
+     *
+     * @throws Zend_Db_Adapter_Exception
      */
     private function writeTranslations($type, $primaryKey, array $translation, Identity $languageIdentity)
     {
-        $shops = $this->dataProvider->getShopsByLocaleIdentitiy($languageIdentity);
+        $shops = $this->dataProvider->getShopsByLocaleIdentity($languageIdentity);
 
         foreach ($shops as $shop) {
             $this->shopwareTranslationManager->write(

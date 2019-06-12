@@ -8,12 +8,19 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - fix getNumber() on boolean bug (@Pfabeck)
 - fix error after changed mainvariationnumber (@Pfabeck)
 - fix multipack articles (@Pfabeck)
+- fix price referrer (@Pfabeck)
 
 ### Added
 - article image translation (@Pfabeck)
 - amazonPay by BestIT integration (@Pfabeck)
 - export custom products options as order items (@Pfabeck)
 - transmit surcharge as item option (@Pfabeck)
+- separate price import logic (@Pfabeck)
+- bundle variation limit (@Pfabeck)
+
+### Changed
+- change media command handler to update media if exists (@lacodimizer)
+- PHP 7.1 required
 
 ## [## [5.1.0]]
 ### Fixed
