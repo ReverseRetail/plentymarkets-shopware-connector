@@ -2,13 +2,11 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-## [## [5.3.0]]
+## [## [unreleased]]
 ### Fixed
 - fix handling of important data on item sync (@lacodimizer)
 - fix tax handling on order export (@lacodimizer)
 - fixed wrong float cast (@ArvatisJohannes)
-- SW 5.6 required
-- PHP 7.2 required
 
 ## [## [5.2.1]]
 ### Fixed

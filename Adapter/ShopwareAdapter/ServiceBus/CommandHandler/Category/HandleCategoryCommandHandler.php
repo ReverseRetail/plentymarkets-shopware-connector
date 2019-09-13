@@ -36,11 +36,6 @@ use SystemConnector\ValueObject\Attribute\Attribute;
 class HandleCategoryCommandHandler implements CommandHandlerInterface
 {
     /**
-     * @var EntityManagerInterface
-     */
-    private $entityManager;
-
-    /**
      * @var IdentityServiceInterface
      */
     private $identityService;
@@ -77,7 +72,6 @@ class HandleCategoryCommandHandler implements CommandHandlerInterface
         AttributeDataPersisterInterface $attributePersister,
         TranslationDataPersisterInterface $translationDataPersister
     ) {
-        $this->entityManager = $entityManager;
         $this->identityService = $identityService;
         $this->translationHelper = $translationHelper;
         $this->attributePersister = $attributePersister;
@@ -332,7 +326,7 @@ class HandleCategoryCommandHandler implements CommandHandlerInterface
         }
 
         if (null === $categoryIdentity) {
-            $categoryModel = $this->createOrUpdateCategory(new CategoryModel(), $params);
+            $categoryModel = $resource->create($params);
 
             $categoryIdentity = $this->identityService->insert(
                 $category->getIdentifier(),
@@ -341,12 +335,7 @@ class HandleCategoryCommandHandler implements CommandHandlerInterface
                 ShopwareAdapter::NAME
             );
         } else {
-            /**
-             * @var CategoryModel $categoryModel
-             */
-            $categoryModel = $this->categoryRepository->find($categoryIdentity->getAdapterIdentifier());
-
-            $this->createOrUpdateCategory($categoryModel, $params);
+            $categoryModel = $resource->update($categoryIdentity->getAdapterIdentifier(), $params);
         }
 
         $this->attributePersister->saveCategoryAttributes($categoryModel, $category->getAttributes());
@@ -442,35 +431,6 @@ class HandleCategoryCommandHandler implements CommandHandlerInterface
 
             $resource->update($identity->getAdapterIdentifier(), $params);
         }
-    }
-
-    /**
-     * @param CategoryModel $categoryModel
-     * @param array         $params
-     *
-     * @return CategoryModel
-     */
-    private function createOrUpdateCategory(CategoryModel $categoryModel, array $params = []): CategoryModel
-    {
-        /**
-         * @var CategoryModel $parent
-         */
-        $parent = $this->categoryRepository->find($params['parent']);
-
-        $categoryModel->setActive($params['active']);
-        $categoryModel->setPosition($params['position']);
-        $categoryModel->setName($params['name']);
-        $categoryModel->setParent($parent);
-        $categoryModel->setMetaTitle($params['metaTitle']);
-        $categoryModel->setMetaKeywords($params['metaKeywords']);
-        $categoryModel->setMetaDescription($params['metaDescription']);
-        $categoryModel->setCmsHeadline($params['cmsHeadline']);
-        $categoryModel->setCmsText($params['cmsText']);
-
-        $this->entityManager->persist($categoryModel);
-        $this->entityManager->flush();
-
-        return $categoryModel;
     }
 
     /**
