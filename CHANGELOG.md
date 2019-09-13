@@ -2,6 +2,22 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [## [5.3.0]]
+### Fixed
+- fix handling of important data on item sync (@lacodimizer)
+- fix tax handling on order export (@lacodimizer)
+- fixed wrong float cast (@ArvatisJohannes)
+- SW 5.6 required
+- PHP 7.2 required
+
+## [## [5.2.1]]
+### Fixed
+- fix sorting of product images (@lacodimizer)
+
+### Changed
+- tax handling refactored (@Pfabeck)
+- remove item variation id at vouchers and discounts @jmanz
+
 ## [## [5.2.0]]
 ### Fixed
 - fix category sync if more then one shop has the same root category (@lacodimizer)
@@ -18,6 +34,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - separate price import logic (@Pfabeck)
 - bundle variation limit (@Pfabeck)
 - variant properties are now transferred as attribute (beta feature) (@Pfabeck)
+- 3rd gender support (@Pfabeck)
 
 ### Changed
 - change media command handler to update media if exists (@lacodimizer)

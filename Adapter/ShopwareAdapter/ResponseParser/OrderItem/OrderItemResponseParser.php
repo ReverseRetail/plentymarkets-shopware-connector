@@ -3,7 +3,6 @@
 namespace ShopwareAdapter\ResponseParser\OrderItem;
 
 use Doctrine\ORM\EntityRepository;
-use InvalidArgumentException;
 use Shopware\Models\Tax\Tax;
 use ShopwareAdapter\ResponseParser\GetAttributeTrait;
 use ShopwareAdapter\ShopwareAdapter;
@@ -66,30 +65,33 @@ class OrderItemResponseParser implements OrderItemResponseParserInterface
             'name' => $entry['articleName'],
             'number' => $entry['articleNumber'],
             'price' => $this->getPrice($entry, $taxFree),
-            'vatRateIdentifier' => $this->getVatRateIdentifier($entry),
+            'vatRateIdentifier' => $this->getVatRateIdentifier($entry, $taxFree),
             'attributes' => $this->getAttributes($entry['attribute']),
         ]);
     }
 
     /**
      * @param array $entry
+     * @param $taxFree
      *
      * @throws NotFoundException
      *
-     * @return null|string
+     * @return string
      */
-    private function getVatRateIdentifier(array $entry)
+    private function getVatRateIdentifier(array $entry, $taxFree): string
     {
-        /**
-         * @var null|Tax $taxModel
-         */
-        $taxModel = $this->taxRepository->findOneBy(['tax' => $entry['taxRate']]);
+        if ($taxFree || $entry['taxId'] === 0) {
+            /**
+             * @var null|Tax $taxModel
+             */
+            $taxModel = $this->taxRepository->findOneBy(['tax' => $entry['taxRate']]);
 
-        if (null === $taxModel) {
-            throw new InvalidArgumentException('no matching tax rate found - ' . $entry['taxRate']);
+            if (null === $taxModel) {
+                throw new NotFoundException('no matching tax rate found - ' . $entry['taxRate']);
+            }
+
+            $entry['taxId'] = $taxModel->getId();
         }
-
-        $entry['taxId'] = $taxModel->getId();
 
         $vatRateIdentity = $this->identityService->findOneBy([
             'adapterIdentifier' => (string) $entry['taxId'],

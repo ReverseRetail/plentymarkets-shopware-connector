@@ -108,6 +108,10 @@ class OrderItemRequestGenerator implements OrderItemRequestGeneratorInterface
             $itemParams['typeId'] = 9; // TYPE_UNASSIGNED_VARIATION;
         }
 
+        if ($typeId === 4) {
+            unset($itemParams['itemVariationId']);
+        }
+
         if (null !== $orderItem->getVatRateIdentifier()) {
             $vatRateIdentity = $this->identityService->findOneBy([
                 'objectIdentifier' => $orderItem->getVatRateIdentifier(),

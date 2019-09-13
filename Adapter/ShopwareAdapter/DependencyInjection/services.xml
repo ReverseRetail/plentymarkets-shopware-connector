@@ -3,7 +3,10 @@
 <container xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://symfony.com/schema/dic/services" xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
     <services>
         <!-- Misc Components -->
-        <service id="shopware_adapter.shopware_translation_component" class="Shopware_Components_Translation" />
+        <service id="shopware_adapter.shopware_translation_component" class="Shopware_Components_Translation" >
+            <argument type="service" id="dbal_connection"/>
+            <argument type="service" id="service_container"/>
+        </service>
 
         <service id="shopware.tax_repository" class="Shopware\Models\Tax\Repository">
             <factory service="models" method="getRepository" />
@@ -21,6 +24,10 @@
         </service>
 
         <service id="shopware_adapter.data_provider.translation" class="ShopwareAdapter\DataProvider\Translation\TranslationDataProvider" public="false">
+            <argument type="service" id="models" />
+        </service>
+
+        <service id="shopware_adapter.data_provider.tax" class="ShopwareAdapter\DataProvider\Tax\TaxDataProvider" public="false">
             <argument type="service" id="models" />
         </service>
 
@@ -110,8 +117,8 @@
             <argument type="service" id="shopware_adapter.response_parser.address" />
             <argument type="service" id="shopware_adapter.response_parser.customer" />
             <argument type="service" id="shopware_adapter.data_provider.currency" />
+            <argument type="service" id="shopware_adapter.data_provider.tax" />
             <argument type="service" id="plenty_connector.logger" />
-            <argument type="service" id="shopware.tax_repository" />
         </service>
 
         <service id="shopware_adapter.response_parser.order_item" class="ShopwareAdapter\ResponseParser\OrderItem\OrderItemResponseParser" public="false">
@@ -225,6 +232,8 @@
             <argument type="service" id="shopware_adapter.data_provider.media" />
             <argument type="service" id="shopware_adapter.attribute_helper" />
             <argument type="service" id="shopware_adapter.data_persister.attribute" />
+            <argument type="service" id="shopware.api.media" />
+            <argument type="service" id="models" />
 
             <tag name="plenty_connector.command_handler" />
         </service>

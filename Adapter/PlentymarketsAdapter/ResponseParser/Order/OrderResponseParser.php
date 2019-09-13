@@ -355,7 +355,7 @@ class OrderResponseParser implements OrderResponseParserInterface
         $customer->setEmail($this->getMail($entry));
         $customer->setLanguageIdentifier($languageIdentity->getObjectIdentifier());
         $customer->setCustomerGroupIdentifier($customerGroupIdentity->getObjectIdentifier());
-        $customer->setGender($entry['customerData']['gender'] === 'male' ? Customer::GENDER_MALE : Customer::GENDER_FEMALE);
+        $customer->setGender($entry['customerData']['gender']);
         $customer->setFirstname($entry['customerData']['firstName']);
         $customer->setLastname($entry['customerData']['lastName']);
         $customer->setPhoneNumber($this->getPhoneNumber($entry));
@@ -382,9 +382,9 @@ class OrderResponseParser implements OrderResponseParserInterface
     /**
      * @param array $plentyCustomer
      *
-     * @return Identity
+     * @return null|Identity
      */
-    private function getCustomerGroupIdentity(array $plentyCustomer): Identity
+    private function getCustomerGroupIdentity(array $plentyCustomer)
     {
         return $this->identityService->findOneBy([
             'adapterIdentifier' => (string) $plentyCustomer['classId'],
