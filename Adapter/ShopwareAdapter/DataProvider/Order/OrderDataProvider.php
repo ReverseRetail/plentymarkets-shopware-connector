@@ -51,6 +51,11 @@ class OrderDataProvider implements OrderDataProviderInterface
 
         $order['shopId'] = $this->getCorrectSubShopIdentifier($identifier);
 
+        // for Klarna (paymentid 106) switch order ID to Transaktions ID | 24.02.2020 | MW 
+        if($order->getPaymentMethodIdentifier() === 106) {
+            $order->setOrderNumber($this->getTransactionIdForKlarnaOrder($identifier));    
+        }
+
         return $this->removeOrphanedShopArray($order);
     }
 
@@ -62,6 +67,16 @@ class OrderDataProvider implements OrderDataProviderInterface
     private function getCorrectSubShopIdentifier($orderIdentifier): int
     {
         return $this->connection->fetchColumn('SELECT language FROM s_order WHERE id = ?', [$orderIdentifier]);
+    }
+
+    /** 24.02.2020 | MW 
+     * @param int $orderIdentifier
+     *
+     * @return string
+     */
+    private function getTransactionIdForKlarnaOrder($orderIdentifier): string
+    {
+        return $this->connection->fetchColumn('SELECT transactionID FROM s_order WHERE id = ?', [$orderIdentifier]);
     }
 
     /**
