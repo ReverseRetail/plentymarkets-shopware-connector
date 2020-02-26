@@ -51,12 +51,10 @@ class OrderDataProvider implements OrderDataProviderInterface
 
         $order['shopId'] = $this->getCorrectSubShopIdentifier($identifier);
 
-        // for Klarna (paymentid 106) switch order ID to Transaktions ID | 24.02.2020 | MW 
-        file_put_contents('./log_klarna_order.log', '\n\nOrdernumber: '.$order['number'].' / PaymentMethodIdentifier: '.$order['paymentId'].'\n\n', FILE_APPEND);
+        // for Klarna (paymentId 106) switch order number to transactionId for further processing | 24.02.2020 | MW 
         if($order['paymentId'] === 106) {
             $order['number'] = $order['transactionId'];
-            file_put_contents('./log_klarna_order.log', 'OrderNumber After: '.$order['number'].'\n\n', FILE_APPEND); 
-            file_put_contents('./log_klarna_order.log', 'Order: '.print_r($order, true).'\n\n#####\n\n', FILE_APPEND);
+            // file_put_contents('./log_klarna_order.log', 'Order: '.print_r($order, true).'\n\n#####\n\n', FILE_APPEND);
         }
 
         return $this->removeOrphanedShopArray($order);
@@ -70,16 +68,6 @@ class OrderDataProvider implements OrderDataProviderInterface
     private function getCorrectSubShopIdentifier($orderIdentifier): int
     {
         return $this->connection->fetchColumn('SELECT language FROM s_order WHERE id = ?', [$orderIdentifier]);
-    }
-
-    /** 24.02.2020 | MW 
-     * @param int $orderIdentifier
-     *
-     * @return string
-     */
-    private function getTransactionIdForKlarnaOrder($orderIdentifier): string
-    {
-        return $this->connection->fetchColumn('SELECT transactionID FROM s_order WHERE id = ?', [$orderIdentifier]);
     }
 
     /**
