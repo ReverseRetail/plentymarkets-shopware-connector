@@ -52,12 +52,12 @@ class OrderDataProvider implements OrderDataProviderInterface
         $order['shopId'] = $this->getCorrectSubShopIdentifier($identifier);
 
         // for Klarna (paymentid 106) switch order ID to Transaktions ID | 24.02.2020 | MW 
-        file_put_contents('./log_klarna_order.log', 'Order: '.$order, FILE_APPEND);
-        file_put_contents('./log_klarna_order.log', '\n\nPaymentMethodIdentifier: '.$order->paymentMethodIdentifier.'\n\n#####\n\n', FILE_APPEND);
-        if($order->paymentMethodIdentifier === 106) {
+        file_put_contents('./log_klarna_order.log', 'Order: '.print_r($order, true), FILE_APPEND);
+        file_put_contents('./log_klarna_order.log', '\n\nPaymentMethodIdentifier: '.$order['paymentMethodIdentifier'].'\n\n#####\n\n', FILE_APPEND);
+        if($order['paymentMethodIdentifier'] === 106) {
             file_put_contents('./log_klarna_order.log', '\n\nOrderNumber Before: '.$order->orderNumber.'\n', FILE_APPEND); 
-            $order->orderNumber = $this->getTransactionIdForKlarnaOrder($identifier);
-            file_put_contents('./log_klarna_order.log', 'OrderNumber After: '.$order->orderNumber.'\n\n#####\n\n', FILE_APPEND); 
+            $order['orderNumber'] = $this->getTransactionIdForKlarnaOrder($identifier);
+            file_put_contents('./log_klarna_order.log', 'OrderNumber After: '.$order['orderNumber'].'\n\n#####\n\n', FILE_APPEND); 
         }
 
         return $this->removeOrphanedShopArray($order);
