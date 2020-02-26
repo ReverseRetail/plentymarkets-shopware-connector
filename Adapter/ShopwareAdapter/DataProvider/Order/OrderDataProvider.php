@@ -52,8 +52,8 @@ class OrderDataProvider implements OrderDataProviderInterface
         $order['shopId'] = $this->getCorrectSubShopIdentifier($identifier);
 
         // for Klarna (paymentid 106) switch order ID to Transaktions ID | 24.02.2020 | MW 
-        if($order->getPaymentMethodIdentifier() === 106) {
-            $order->setOrderNumber($this->getTransactionIdForKlarnaOrder($identifier));    
+        if($order->paymentMethodIdentifier === 106) {
+            $order->orderNumber = $this->getTransactionIdForKlarnaOrder($identifier);    
         }
 
         return $this->removeOrphanedShopArray($order);
