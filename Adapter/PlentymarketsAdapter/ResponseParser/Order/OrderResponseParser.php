@@ -764,15 +764,15 @@ class OrderResponseParser implements OrderResponseParserInterface
      *
      * @return string
      */
-    private function getNumberFromVariation($variationId): string
+    private function getNumberFromVariation($variationId): ?string
     {
         static $variations;
 
         if (!isset($variations[$variationId])) {
             $response = $this->client->request('GET', 'items/variations', ['id' => $variationId]);
-
+            
             if (empty($response)) {
-                return '';
+                return null;
             }
 
             $variation = array_shift($response);
