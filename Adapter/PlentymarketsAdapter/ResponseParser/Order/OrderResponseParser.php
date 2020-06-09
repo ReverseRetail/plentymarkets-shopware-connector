@@ -707,6 +707,13 @@ class OrderResponseParser implements OrderResponseParserInterface
         foreach ($entry['orderItems'] as $item) {
             $number = $this->getNumberFromVariation($item['itemVariationId']);
 
+	    if (empty($number)) {
+	        $this->logger->info('product not found', [
+	            'itemVariationId' => $item['itemVariationId'],
+	        ]);
+		continue;
+	    }
+
             $orderItem = new OrderItem();
             $orderItem->setQuantity((float) $item['quantity']);
             $orderItem->setName($item['orderItemName']);
@@ -741,7 +748,7 @@ class OrderResponseParser implements OrderResponseParserInterface
      *
      * @return string
      */
-    private function getNumberFromVariation($variationId): string
+    private function getNumberFromVariation($variationId): ?string
     {
         static $variations;
 
@@ -749,9 +756,7 @@ class OrderResponseParser implements OrderResponseParserInterface
             $response = $this->client->request('GET', 'items/variations', ['id' => $variationId]);
 
             if (empty($response)) {
-                $variations[$variationId] = null;
-
-                return $variations[$variationId];
+                return null;
             }
 
             $variation = array_shift($response);
