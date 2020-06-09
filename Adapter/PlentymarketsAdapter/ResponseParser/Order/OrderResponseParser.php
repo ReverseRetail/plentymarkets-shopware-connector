@@ -726,7 +726,6 @@ class OrderResponseParser implements OrderResponseParserInterface
                 $this->logger->info('product not found', [
                     'itemVariationId' => $item['itemVariationId'],
                 ]);
-
                 continue;
             }
 
