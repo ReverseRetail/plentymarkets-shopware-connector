@@ -209,6 +209,7 @@
             <argument type="service" id="shopware_adapter.shopware_resource.manufacturer" />
             <argument type="service" id="plenty_connector.identity_service" />
             <argument type="service" id="shopware_adapter.data_persister.attribute" />
+            <argument type="service" id="models" />
 
             <tag name="plenty_connector.command_handler" />
         </service>
@@ -260,6 +261,7 @@
         <!-- Order command handlers -->
 
         <service id="shopware_adapter.command_handler.handle_order" class="ShopwareAdapter\ServiceBus\CommandHandler\Order\HandleOrderCommandHandler" public="false">
+            <argument type="service" id="models" />
             <argument type="service" id="plenty_connector.identity_service" />
             <argument type="service" id="plenty_connector.logger" />
             <argument type="service" id="shopware_adapter.data_persister.attribute" />
